@@ -1,0 +1,4 @@
+interface:
+  display_name: "LLM Contract Harness"
+  short_description: "Validate structured model output under real constraints."
+  default_prompt: "Use $llm-contract-validation-harness to build tests and guards for JSON model output."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Sim Fact Ledger"
+  short_description: "Keep AI simulations grounded in local facts."
+  default_prompt: "Use $ai-sim-fact-ledger to design an AI simulation where models propose events but local rules own facts."

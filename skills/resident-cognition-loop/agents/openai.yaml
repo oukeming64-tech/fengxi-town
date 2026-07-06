@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resident Cognition Loop"
+  short_description: "Design audited multi-agent resident behavior loops."
+  default_prompt: "Use $resident-cognition-loop to add memory, perception, and audited intent to NPC residents."

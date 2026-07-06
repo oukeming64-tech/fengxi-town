@@ -1,0 +1,4 @@
+interface:
+  display_name: "World Rules Normalizer"
+  short_description: "Turn narrative world rules into executable modules."
+  default_prompt: "Use $world-rules-normalizer to convert a setting document into auditable runtime rules."
