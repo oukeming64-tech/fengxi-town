@@ -62,7 +62,6 @@
     return {
       id: villager.id,
       name: villager.name,
-      tag: villager.tag,
       zone: villager.zone,
       health: villager.health,
       energy: villager.energy,
@@ -114,7 +113,7 @@
         title: T.worldConfig?.title || "枫溪镇",
         year: T.worldConfig?.year || 2006,
         townName: T.worldConfig?.townName || "枫溪镇",
-        farmName: T.worldConfig?.farmName || "田地",
+        farmName: T.worldConfig?.farmName || "黄石农场",
         population: T.worldConfig?.population?.residents || 30,
         currency: T.worldConfig?.currency?.code || "YSC",
         zones: (T.worldConfig?.zones || []).map((zone) => ({ id: zone.id, name: zone.name }))

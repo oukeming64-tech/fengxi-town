@@ -8,7 +8,7 @@
     currentMode: "resident-cognition-loop-local-audited",
     allowedInputs: [
       "日期、季节、天气、任务和公开事件",
-      "居民虚构名、槽位 id、公开标签、地点、健康、体力、金币、背包和最近行动",
+      "居民随机英文姓名、槽位 id、地点、健康、体力、金币、背包和最近行动",
       "本地生成的居民 scratch、公开 memory stream 和 perception packet",
       "规范化世界规则摘要",
       "完整行动层活动 ID 字典、地点风险、劳动点和可见文案规则",
@@ -18,11 +18,11 @@
     ],
     forbiddenInputs: [
       "现实姓名",
-      "非公开个人信息",
+      "现实隐私",
       "现实敏感事件",
       "可一对一识别现实人物的材料",
       "未压缩的关系流水账",
-      "模型 key"
+      "API key 或本地环境变量"
     ],
     immutableState: [
       "金币",
@@ -45,20 +45,20 @@
       "派系数值"
     ],
     forbiddenWords: [
-      "班级",
-      "同学",
-      "班主任",
-      "导师",
-      "课程",
-      "EMBA",
-      "企业",
-      "金融",
-      "项目",
-      "供应链",
-      "职位",
-      "曝光",
-      "贡献",
-      "生态"
+      "\u73ed\u7ea7",
+      "\u540c\u5b66",
+      "\u73ed\u4e3b\u4efb",
+      "\u5bfc\u5e08",
+      "\u8bfe\u7a0b",
+      "\u0045\u004d\u0042\u0041",
+      "\u4f01\u4e1a",
+      "\u91d1\u878d",
+      "\u9879\u76ee",
+      "\u4f9b\u5e94\u94fe",
+      "\u804c\u4f4d",
+      "\u66dd\u5149",
+      "\u8d21\u732e",
+      "\u751f\u6001"
     ],
     polishSchema: {
       logs: [{ id: "string", text: "string" }],
@@ -174,7 +174,7 @@
       "默认推进链路先请求行动候选，本地审核结算后调用独立互动接口，只生成候选会话和风险提示，不再把行动、润色、周报塞进同一个长输出",
       "互动周报必须绑定本地周快照 weekId；模型只能润色或生成候选周报文本，不能改现金、债务、关系、设施、合同或居民行动事实",
       "候选会话的采纳、丢弃和重生成不属于当前模型输出可执行操作，页面只展示通过证据 guard 的候选文本",
-      "模型 key 只用于当前配置请求，前端不持久化明文 key"
+      "key 只由本机桥接服务读取或接收，前端不持久化明文 key"
     ],
     cognitionRules: [
       "residentScratch、memoryNode 和 perceptionPacket 都由本地规则生成，模型不能自造居民 id、memory id、log id 或地点 id",
@@ -190,8 +190,8 @@
     ],
     audit: {
       normalizedAt: "2026-07-04",
-      source: "枫溪镇规则；枫溪镇行动规则",
-      correction: "residentCount 固定为 30；模型基于公开记忆和感知包提出候选行动与互动意图，本地规则审核后才执行并继续锁定事实账本"
+      source: "local-world-rules",
+      correction: "residentCount 固定为 30；v0.1.0 进入 Resident Cognition Loop，模型基于本地 scratch、公开记忆和感知包提出候选行动与互动意图，本地规则审核后才执行并继续锁定事实账本"
     }
   };
 }());
