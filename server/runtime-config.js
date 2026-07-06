@@ -78,6 +78,7 @@ function createRuntimeConfig({ host, port, mockModel, cleanString }) {
     endpoint: "",
     model: "",
     sessionKeys: [],
+    sessionKeyConfigs: [],
     keyCursor: {}
   };
 
@@ -93,13 +94,86 @@ function createRuntimeConfig({ host, port, mockModel, cleanString }) {
     return uniqueList([...arrayKeys, ...legacyKeys]);
   }
 
+  function providerId(value, fallback = runtimeConfig.provider) {
+    const requested = cleanString(value, 24);
+    return providerCatalog[requested] ? requested : fallback;
+  }
+
+  function makeKeyConfig({ provider, endpoint, model, key }) {
+    const targetProvider = providerDefaults(providerId(provider));
+    return {
+      provider: targetProvider.id,
+      endpoint: cleanString(endpoint, 200) || runtimeConfig.endpoint || targetProvider.endpoint,
+      model: cleanString(model, 100) || runtimeConfig.model || targetProvider.model,
+      key
+    };
+  }
+
+  function uniqueKeyConfigs(items) {
+    const seen = new Set();
+    return items.filter((item) => {
+      const id = [item.provider, item.endpoint, item.model, item.key].join("\n");
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  }
+
+  function inputKeyConfigs(input) {
+    const fromSlots = Array.isArray(input.keyConfigs)
+      ? input.keyConfigs.flatMap((item) => {
+        const keys = splitKeyList(item?.apiKey || item?.key || "");
+        return keys.map((key) => makeKeyConfig({
+          provider: item?.provider,
+          endpoint: item?.endpoint,
+          model: item?.model,
+          key
+        }));
+      })
+      : [];
+    const fromLegacyKeys = inputKeys(input).map((key) => makeKeyConfig({
+      provider: input.provider,
+      endpoint: input.endpoint,
+      model: input.model,
+      key
+    }));
+    return uniqueKeyConfigs([...fromSlots, ...fromLegacyKeys]);
+  }
+
+  function publicKeySlots(keyPool, base) {
+    return keyPool.keys.slice(0, 4).map((slot) => {
+      const config = configForKeySlot(slot, base);
+      return {
+        provider: config.provider,
+        providerLabel: config.providerLabel,
+        endpoint: config.endpoint,
+        model: config.model,
+        hasKey: Boolean(config.key)
+      };
+    });
+  }
+
   function activeKeyPool(providerId) {
     const provider = providerDefaults(providerId || runtimeConfig.provider);
-    const sessionKeys = uniqueList(runtimeConfig.sessionKeys || []);
+    const sessionConfigs = uniqueKeyConfigs(runtimeConfig.sessionKeyConfigs || []);
+    if (sessionConfigs.length) {
+      return { keys: sessionConfigs, source: "session", envName: "" };
+    }
+    const sessionKeys = uniqueList(runtimeConfig.sessionKeys || []).map((key) => makeKeyConfig({
+      provider: provider.id,
+      endpoint: runtimeConfig.endpoint || provider.endpoint,
+      model: runtimeConfig.model || provider.model,
+      key
+    }));
     if (sessionKeys.length) {
       return { keys: sessionKeys, source: "session", envName: "" };
     }
-    const keys = envKeys(provider.id);
+    const keys = envKeys(provider.id).map((key) => makeKeyConfig({
+      provider: provider.id,
+      endpoint: runtimeConfig.endpoint || provider.endpoint,
+      model: runtimeConfig.model || provider.model,
+      key
+    }));
     return {
       keys,
       source: keys.length ? "environment" : "none",
@@ -107,18 +181,34 @@ function createRuntimeConfig({ host, port, mockModel, cleanString }) {
     };
   }
 
+  function configForKeySlot(slot, fallback = null) {
+    const base = fallback || activeConfig();
+    const key = typeof slot === "string" ? slot : slot?.key || "";
+    const targetProvider = providerDefaults(providerId(typeof slot === "object" ? slot?.provider : base.provider, base.provider));
+    return {
+      provider: targetProvider.id,
+      providerLabel: targetProvider.label,
+      endpoint: (typeof slot === "object" && slot?.endpoint) || base.endpoint || targetProvider.endpoint,
+      model: (typeof slot === "object" && slot?.model) || base.model || targetProvider.model,
+      key
+    };
+  }
+
   function activeConfig() {
     const provider = providerDefaults(runtimeConfig.provider);
     const keyPool = activeKeyPool(provider.id);
-    return {
+    const firstSlot = keyPool.keys[0] || {};
+    const config = {
       provider: provider.id,
       providerLabel: provider.label,
-      endpoint: runtimeConfig.endpoint || provider.endpoint,
-      model: runtimeConfig.model || provider.model,
+      endpoint: runtimeConfig.endpoint || firstSlot.endpoint || provider.endpoint,
+      model: runtimeConfig.model || firstSlot.model || provider.model,
       hasKey: Boolean(keyPool.keys.length),
       keyCount: keyPool.keys.length,
       keySource: keyPool.source
     };
+    config.keySlots = publicKeySlots(keyPool, config);
+    return config;
   }
 
   function publicConfig() {
@@ -149,11 +239,13 @@ function createRuntimeConfig({ host, port, mockModel, cleanString }) {
     runtimeConfig.model = model || defaults.model || "";
     if (input.clearSessionKey) {
       runtimeConfig.sessionKeys = [];
+      runtimeConfig.sessionKeyConfigs = [];
       runtimeConfig.keyCursor[runtimeConfig.provider] = 0;
     }
-    const keys = inputKeys(input);
-    if (keys.length) {
-      runtimeConfig.sessionKeys = keys;
+    const keyConfigs = inputKeyConfigs(input);
+    if (keyConfigs.length) {
+      runtimeConfig.sessionKeys = [];
+      runtimeConfig.sessionKeyConfigs = keyConfigs;
       runtimeConfig.keyCursor[runtimeConfig.provider] = 0;
     }
     return publicConfig();
@@ -165,6 +257,7 @@ function createRuntimeConfig({ host, port, mockModel, cleanString }) {
     providerDefaults,
     activeKeyPool,
     activeConfig,
+    configForKeySlot,
     publicConfig,
     updateRuntimeConfig
   };

@@ -154,7 +154,7 @@ h1 {
 
 .controls {
   display: grid;
-  grid-template-columns: repeat(4, minmax(124px, 1fr)) repeat(3, minmax(86px, auto));
+  grid-template-columns: repeat(3, minmax(124px, 1fr)) repeat(3, minmax(86px, auto));
   gap: 8px;
   align-items: end;
 }
@@ -183,7 +183,10 @@ h1 {
 }
 
 .pane {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  min-height: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 254, 249, 0.94);
@@ -235,6 +238,8 @@ h1 {
 }
 
 .pane-body {
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 12px;
 }
 

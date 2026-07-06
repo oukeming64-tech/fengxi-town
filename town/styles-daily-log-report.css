@@ -1,7 +1,7 @@
 .log-list {
   display: grid;
   gap: 10px;
-  max-height: calc(50vh - 114px);
+  max-height: calc(100vh - 204px);
   min-height: 260px;
   overflow: auto;
   padding-right: 3px;
@@ -72,7 +72,7 @@
 .report {
   display: grid;
   gap: 10px;
-  max-height: calc(50vh - 114px);
+  max-height: calc(100vh - 204px);
   min-height: 260px;
   overflow: auto;
   padding-right: 3px;

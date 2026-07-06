@@ -40,15 +40,12 @@
       </div>
 
       <div class="controls">
-        <label class="control-field">
-          <span class="field-label">任务</span>
-          <select id="sceneSelect">
-            <option value="daily">日常杂活</option>
-            <option value="bridge">修老木桥</option>
-            <option value="harvest">丰收集市</option>
-            <option value="storm">暴风雨准备</option>
-          </select>
-        </label>
+        <select id="sceneSelect" hidden aria-hidden="true">
+          <option value="daily">日常杂活</option>
+          <option value="bridge">修老木桥</option>
+          <option value="harvest">丰收集市</option>
+          <option value="storm">暴风雨准备</option>
+        </select>
         <label class="control-field">
           <span class="field-label">季节</span>
           <select id="seasonSelect">
@@ -197,22 +194,66 @@
             <input id="modelEndpointInput" type="url" autocomplete="off" placeholder="https://openrouter.ai/api/v1/chat/completions">
           </label>
           <div class="key-grid" aria-label="模型 keys">
-            <label class="control-field key-field">
-              <span class="field-label">模型 key 1</span>
-              <input id="apiKeyInput1" type="password" autocomplete="off" placeholder="可选">
-            </label>
-            <label class="control-field key-field">
-              <span class="field-label">模型 key 2</span>
-              <input id="apiKeyInput2" type="password" autocomplete="off" placeholder="可选">
-            </label>
-            <label class="control-field key-field">
-              <span class="field-label">模型 key 3</span>
-              <input id="apiKeyInput3" type="password" autocomplete="off" placeholder="可选">
-            </label>
-            <label class="control-field key-field">
-              <span class="field-label">模型 key 4</span>
-              <input id="apiKeyInput4" type="password" autocomplete="off" placeholder="可选">
-            </label>
+            <fieldset class="key-slot">
+              <legend>key 1</legend>
+              <label class="control-field key-field">
+                <span class="field-label">模型 key</span>
+                <input id="apiKeyInput1" type="password" autocomplete="off" placeholder="可选">
+              </label>
+              <label class="control-field key-field">
+                <span class="field-label">模型</span>
+                <input id="slotModelInput1" type="text" autocomplete="off" placeholder="默认同上">
+              </label>
+              <label class="control-field key-field">
+                <span class="field-label">接口地址</span>
+                <input id="slotEndpointInput1" type="url" autocomplete="off" placeholder="默认同上">
+              </label>
+            </fieldset>
+            <fieldset class="key-slot">
+              <legend>key 2</legend>
+              <label class="control-field key-field">
+                <span class="field-label">模型 key</span>
+                <input id="apiKeyInput2" type="password" autocomplete="off" placeholder="可选">
+              </label>
+              <label class="control-field key-field">
+                <span class="field-label">模型</span>
+                <input id="slotModelInput2" type="text" autocomplete="off" placeholder="默认同上">
+              </label>
+              <label class="control-field key-field">
+                <span class="field-label">接口地址</span>
+                <input id="slotEndpointInput2" type="url" autocomplete="off" placeholder="默认同上">
+              </label>
+            </fieldset>
+            <fieldset class="key-slot">
+              <legend>key 3</legend>
+              <label class="control-field key-field">
+                <span class="field-label">模型 key</span>
+                <input id="apiKeyInput3" type="password" autocomplete="off" placeholder="可选">
+              </label>
+              <label class="control-field key-field">
+                <span class="field-label">模型</span>
+                <input id="slotModelInput3" type="text" autocomplete="off" placeholder="默认同上">
+              </label>
+              <label class="control-field key-field">
+                <span class="field-label">接口地址</span>
+                <input id="slotEndpointInput3" type="url" autocomplete="off" placeholder="默认同上">
+              </label>
+            </fieldset>
+            <fieldset class="key-slot">
+              <legend>key 4</legend>
+              <label class="control-field key-field">
+                <span class="field-label">模型 key</span>
+                <input id="apiKeyInput4" type="password" autocomplete="off" placeholder="可选">
+              </label>
+              <label class="control-field key-field">
+                <span class="field-label">模型</span>
+                <input id="slotModelInput4" type="text" autocomplete="off" placeholder="默认同上">
+              </label>
+              <label class="control-field key-field">
+                <span class="field-label">接口地址</span>
+                <input id="slotEndpointInput4" type="url" autocomplete="off" placeholder="默认同上">
+              </label>
+            </fieldset>
           </div>
           <div class="model-config-actions">
             <button type="button" id="saveModelConfigBtn" class="primary">保存配置</button>

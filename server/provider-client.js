@@ -39,8 +39,7 @@ function createProviderClient({
   parseModelJson,
   modelTimeoutMs
 }) {
-  function buildProviderBody(payload, useJsonMode, purpose = "full") {
-    const config = runtime.activeConfig();
+  function buildProviderBody(payload, useJsonMode, purpose = "full", config = runtime.activeConfig()) {
     const tuning = modelTuning(purpose);
     const body = {
       model: config.model,
@@ -104,22 +103,23 @@ function createProviderClient({
 
   async function callProvider(payload, useJsonMode, purpose = "full") {
     const config = runtime.activeConfig();
-    const provider = runtime.providerDefaults(config.provider);
-    if (!config.endpoint) throw new Error("missing_model_endpoint");
-    if (!config.model) throw new Error("missing_model_name");
-    const keyPool = runtime.activeKeyPool(provider.id);
-    if (!keyPool.keys.length) throw new Error(`missing_${provider.id}_key`);
+    const keyPool = runtime.activeKeyPool(config.provider);
+    if (!keyPool.keys.length) throw new Error(`missing_${config.provider}_key`);
 
-    const body = buildProviderBody(payload, useJsonMode, purpose);
-
-    const start = Number(runtime.runtimeConfig.keyCursor[provider.id] || 0) % keyPool.keys.length;
+    const cursorKey = config.provider;
+    const start = Number(runtime.runtimeConfig.keyCursor[cursorKey] || 0) % keyPool.keys.length;
     let lastError = null;
     for (let attempt = 0; attempt < keyPool.keys.length; attempt += 1) {
       const index = (start + attempt) % keyPool.keys.length;
-      const key = keyPool.keys[index];
+      const keySlot = keyPool.keys[index];
+      const keyConfig = runtime.configForKeySlot(keySlot, config);
+      const provider = runtime.providerDefaults(keyConfig.provider);
+      if (!keyConfig.endpoint) throw new Error("missing_model_endpoint");
+      if (!keyConfig.model) throw new Error("missing_model_name");
       try {
-        const result = await callProviderWithKey(config, provider, key, body);
-        runtime.runtimeConfig.keyCursor[provider.id] = (index + 1) % keyPool.keys.length;
+        const body = buildProviderBody(payload, useJsonMode, purpose, keyConfig);
+        const result = await callProviderWithKey(keyConfig, provider, keyConfig.key, body);
+        runtime.runtimeConfig.keyCursor[cursorKey] = (index + 1) % keyPool.keys.length;
         return result;
       } catch (error) {
         error.keyAttempts = attempt + 1;
@@ -130,16 +130,16 @@ function createProviderClient({
         }
       }
     }
-    throw lastError || new Error(`${provider.id}_error`);
+    throw lastError || new Error(`${config.provider}_error`);
   }
 
   async function callProviderOnKey(payload, useJsonMode, purpose, key) {
-    const config = runtime.activeConfig();
+    const config = runtime.configForKeySlot(key, runtime.activeConfig());
     const provider = runtime.providerDefaults(config.provider);
     if (!config.endpoint) throw new Error("missing_model_endpoint");
     if (!config.model) throw new Error("missing_model_name");
-    if (!key) throw new Error(`missing_${provider.id}_key`);
-    return callProviderWithKey(config, provider, key, buildProviderBody(payload, useJsonMode, purpose));
+    if (!config.key) throw new Error(`missing_${provider.id}_key`);
+    return callProviderWithKey(config, provider, config.key, buildProviderBody(payload, useJsonMode, purpose, config));
   }
 
   async function callWithJsonFallback(payload, purpose = "full") {

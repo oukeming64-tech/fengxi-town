@@ -2,9 +2,9 @@
   display: grid;
   grid-template-columns: minmax(112px, 0.68fr) minmax(0, 1.32fr);
   gap: 10px;
-  max-height: calc(50vh - 114px);
+  max-height: calc(100vh - 204px);
   min-height: 260px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .week-list {

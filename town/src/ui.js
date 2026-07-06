@@ -42,6 +42,14 @@
     apiKeyInput2: document.getElementById("apiKeyInput2"),
     apiKeyInput3: document.getElementById("apiKeyInput3"),
     apiKeyInput4: document.getElementById("apiKeyInput4"),
+    slotModelInput1: document.getElementById("slotModelInput1"),
+    slotModelInput2: document.getElementById("slotModelInput2"),
+    slotModelInput3: document.getElementById("slotModelInput3"),
+    slotModelInput4: document.getElementById("slotModelInput4"),
+    slotEndpointInput1: document.getElementById("slotEndpointInput1"),
+    slotEndpointInput2: document.getElementById("slotEndpointInput2"),
+    slotEndpointInput3: document.getElementById("slotEndpointInput3"),
+    slotEndpointInput4: document.getElementById("slotEndpointInput4"),
     saveModelConfigBtn: document.getElementById("saveModelConfigBtn"),
     clearSessionKeyBtn: document.getElementById("clearSessionKeyBtn")
   };
@@ -136,6 +144,17 @@
     return `${provider} · ${model} · ${keyText}`;
   }
 
+  function setInputValue(input, value) {
+    if (input && document.activeElement !== input) input.value = value || "";
+  }
+
+  function modelSlotInputs() {
+    return [1, 2, 3, 4].map((index) => ({
+      model: el[`slotModelInput${index}`],
+      endpoint: el[`slotEndpointInput${index}`]
+    }));
+  }
+
   function renderModelConfig() {
     if (!el.modelConfigPanel) return;
     el.modelConfigPanel.hidden = !modelConfigOpen;
@@ -143,8 +162,14 @@
     const config = T.llm?.config || {};
     el.modelConfigStatus.textContent = configStatusText();
     if (config.provider && el.providerSelect.value !== config.provider) el.providerSelect.value = config.provider;
-    if (document.activeElement !== el.modelNameInput) el.modelNameInput.value = config.model || "";
-    if (document.activeElement !== el.modelEndpointInput) el.modelEndpointInput.value = config.endpoint || "";
+    setInputValue(el.modelNameInput, config.model || "");
+    setInputValue(el.modelEndpointInput, config.endpoint || "");
+    const keySlots = Array.isArray(config.keySlots) ? config.keySlots : [];
+    modelSlotInputs().forEach((slot, index) => {
+      const configSlot = keySlots[index] || {};
+      setInputValue(slot.model, configSlot.model || config.model || "");
+      setInputValue(slot.endpoint, configSlot.endpoint || config.endpoint || "");
+    });
   }
 
   function render() {
