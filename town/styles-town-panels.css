@@ -1,0 +1,53 @@
+.resident-card {
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--blue);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--panel);
+}
+
+.town-state-card {
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--green);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--panel);
+}
+
+.facility-card {
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--amber);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--panel);
+}
+
+.life-overlay {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 5;
+  border: 1px solid rgba(32, 37, 31, 0.16);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: rgba(255, 254, 249, 0.92);
+  color: var(--ink);
+  box-shadow: 0 10px 22px rgba(31, 39, 33, 0.16);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.life-overlay[hidden] {
+  display: none;
+}
+
+body.is-living .town-map {
+  filter: saturate(0.84);
+}
+
+@media (max-width: 720px) {
+  .life-overlay {
+    top: 18px;
+    right: 18px;
+  }
+}

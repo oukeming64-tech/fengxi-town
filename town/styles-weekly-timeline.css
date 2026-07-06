@@ -1,0 +1,170 @@
+.weekly-timeline {
+  display: grid;
+  grid-template-columns: minmax(112px, 0.68fr) minmax(0, 1.32fr);
+  gap: 10px;
+  max-height: calc(50vh - 114px);
+  min-height: 260px;
+  overflow: hidden;
+}
+
+.week-list {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 3px;
+}
+
+.week-row {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--blue);
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--panel);
+  text-align: left;
+}
+
+.week-row:hover,
+.week-row:focus,
+.week-row.is-selected {
+  border-color: #6e8f74;
+  border-left-color: var(--green);
+  outline: none;
+  background: #f7fbf1;
+}
+
+.week-row span,
+.week-row em {
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
+  line-height: 1.35;
+}
+
+.week-row strong {
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.week-detail {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 3px;
+}
+
+.week-detail-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--green);
+  border-radius: 8px;
+  padding: 10px;
+  background: #fbfdf7;
+}
+
+.week-detail-head h3 {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.week-detail-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.week-detail-head > span {
+  border-radius: 7px;
+  padding: 3px 7px;
+  background: var(--green-soft);
+  color: #31543a;
+  font-size: 11px;
+  font-weight: 730;
+}
+
+.week-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 9px 0;
+}
+
+.week-metrics span {
+  min-width: 0;
+  border-radius: 7px;
+  padding: 4px 6px;
+  background: var(--panel-soft);
+  color: #4e5b52;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.week-detail-section,
+.model-week-candidate {
+  margin-top: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--panel);
+}
+
+.week-detail-section h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.week-detail-section p,
+.week-detail-section li,
+.model-week-candidate p,
+.model-week-candidate li {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.week-detail-section ul,
+.model-week-candidate ul {
+  margin: 0;
+  padding-left: 17px;
+}
+
+.model-week-candidate {
+  border-left: 5px solid var(--violet);
+  background: #fbf9ff;
+}
+
+.model-week-section {
+  background: #fffefe;
+}
+
+.stage-evaluation-section {
+  border-left: 5px solid var(--red);
+  background: #fff9f4;
+}
+
+@media (max-width: 1180px) {
+  .weekly-timeline {
+    max-height: none;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .weekly-timeline,
+  .week-metrics {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,144 @@
+.resident-card.work {
+  border-left-color: var(--green);
+}
+
+.resident-card.talk {
+  border-left-color: var(--amber);
+}
+
+.resident-card-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.resident-avatar {
+  display: grid;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 50%;
+  background: #203f34;
+  color: #fffef9;
+  font-size: 16px;
+  font-weight: 800;
+  overflow: hidden;
+}
+
+.resident-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.resident-card h3 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.resident-card p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.resident-facts,
+.resident-deltas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.resident-facts span,
+.resident-deltas span {
+  border-radius: 7px;
+  padding: 3px 7px;
+  background: var(--panel-soft);
+  color: #4e5b52;
+  font-size: 12px;
+}
+
+.resident-action {
+  min-height: 40px;
+}
+
+.resident-plan {
+  margin-top: 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px;
+  background: #fbfcf6;
+}
+
+.resident-plan-title {
+  margin-bottom: 7px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 740;
+}
+
+.resident-plan ol {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resident-plan li {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 7px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.resident-plan strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resident-plan em {
+  color: #536257;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.resident-bars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.resident-bars span {
+  min-width: 0;
+  border-radius: 7px;
+  padding: 4px 6px;
+  background:
+    linear-gradient(90deg, rgba(47, 123, 79, 0.28) var(--value), rgba(229, 237, 227, 0.88) 0);
+  color: #36423a;
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .resident-card-head {
+    grid-template-columns: 1fr;
+  }
+
+  .resident-bars {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    text-align: left;
+  }
+}

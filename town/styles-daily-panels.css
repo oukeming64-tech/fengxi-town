@@ -1,0 +1,17 @@
+.empty {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  border: 1px dashed #aebfaa;
+  border-radius: 8px;
+  background: rgba(255, 254, 249, 0.68);
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.7;
+  padding: 24px;
+}
+
+.empty.compact {
+  min-height: 120px;
+}

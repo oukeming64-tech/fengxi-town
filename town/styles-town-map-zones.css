@@ -1,0 +1,132 @@
+.zone-marker {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  max-width: 150px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(32, 37, 31, 0.28);
+  border-radius: 8px;
+  padding: 4px 7px;
+  background: rgba(255, 254, 249, 0.78);
+  box-shadow: 0 5px 12px rgba(31, 39, 33, 0.16);
+  backdrop-filter: blur(3px);
+}
+
+.map-zone {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(44, 69, 51, 0.18);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.map-zone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 46%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0 1px, transparent 1px 17px);
+  pointer-events: none;
+}
+
+.map-zone.yellowstone-farm {
+  grid-area: farm;
+  background: #bfe0a8;
+}
+
+.map-zone.town-center {
+  grid-area: town;
+  background: #ead08f;
+}
+
+.map-zone.community-hall {
+  grid-area: community;
+  background: #d8e4c7;
+}
+
+.map-zone.wetlands {
+  grid-area: wetlands;
+  background: #a9d6e7;
+}
+
+.map-zone.old-mine {
+  grid-area: oldmine;
+  background: #c5c8bd;
+}
+
+.map-zone.maple-forest {
+  grid-area: forest;
+  background: #b7d3ad;
+}
+
+.map-zone.south-road {
+  grid-area: road;
+  background: #d8c6b4;
+}
+
+.map-zone.goldkin-station {
+  grid-area: goldkin;
+  background: #e1c58b;
+}
+
+.map-zone.accounting-office {
+  grid-area: accounting;
+  background: #d9c8ed;
+}
+
+.zone-label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.map-name {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+.map-count {
+  border-radius: 7px;
+  padding: 2px 6px;
+  background: rgba(255, 254, 249, 0.74);
+  color: #38443b;
+  font-size: 12px;
+  font-weight: 680;
+}
+
+.zone-note {
+  position: relative;
+  z-index: 1;
+  max-width: 22ch;
+  margin: 5px 0 0;
+  color: rgba(31, 41, 34, 0.72);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+@media (max-width: 720px) {
+  .zone-note {
+    max-width: 18ch;
+  }
+
+  .zone-marker {
+    max-width: 98px;
+    padding: 3px 5px;
+  }
+
+  .map-name,
+  .map-count {
+    font-size: 10px;
+  }
+}

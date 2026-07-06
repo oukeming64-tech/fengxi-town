@@ -1,0 +1,56 @@
+.town-state-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.town-state-head h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.town-state-head span,
+.town-state-weather {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.town-state-weather {
+  margin: 7px 0 10px;
+  line-height: 1.5;
+}
+
+.town-state-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.town-state-grid strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.state-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.state-chip-list span {
+  border-radius: 7px;
+  padding: 3px 7px;
+  background: var(--panel-soft);
+  color: #4e5b52;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+@media (max-width: 720px) {
+  .town-state-grid {
+    grid-template-columns: 1fr;
+  }
+}

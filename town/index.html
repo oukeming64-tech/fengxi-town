@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles-town-map.css">
+  <link rel="stylesheet" href="./styles-town-map-zones.css">
+  <link rel="stylesheet" href="./styles-town-map-residents.css">
+  <link rel="stylesheet" href="./styles-town-map-notice.css">
+  <link rel="stylesheet" href="./styles-town-panels.css">
+  <link rel="stylesheet" href="./styles-town-resident-panel.css">
+  <link rel="stylesheet" href="./styles-town-state-panel.css">
+  <link rel="stylesheet" href="./styles-town-facility-notice.css">
+  <link rel="stylesheet" href="./styles-daily-panels.css">
+  <link rel="stylesheet" href="./styles-daily-resident-list.css">
+  <link rel="stylesheet" href="./styles-daily-log-report.css">
+  <link rel="stylesheet" href="./styles-conversation-panel.css">
+  <link rel="stylesheet" href="./styles-weekly-timeline.css">
+  <link rel="stylesheet" href="./styles-model-config.css">
+  <title>枫溪镇</title>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="title-block">
+        <h1>枫溪镇</h1>
+        <div class="status-strip" aria-live="polite">
+          <span class="pill">版本 <strong id="versionLabel">v0.1.0 · 小镇日常</strong></span>
+          <span class="pill">日子 <strong id="dayLabel">第 1 天</strong></span>
+          <span class="pill">季节 <strong id="seasonLabel">春季</strong></span>
+          <span class="pill">天气 <strong id="weatherLabel">阴天</strong></span>
+          <span class="pill">账本 <strong id="ledgerLabel">YSC 5000</strong></span>
+          <span class="pill">时辰 <strong id="slotLabel">清晨待开始</strong></span>
+          <span class="pill">居民 <strong id="countLabel">30 人</strong></span>
+          <span class="pill">小报 <strong id="reportLabel">尚未写成</strong></span>
+          <span class="pill">模型 <strong id="llmLabel">未开启</strong></span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <label class="control-field">
+          <span class="field-label">任务</span>
+          <select id="sceneSelect">
+            <option value="daily">日常杂活</option>
+            <option value="bridge">修老木桥</option>
+            <option value="harvest">丰收集市</option>
+            <option value="storm">暴风雨准备</option>
+          </select>
+        </label>
+        <label class="control-field">
+          <span class="field-label">季节</span>
+          <select id="seasonSelect">
+            <option value="spring">春季</option>
+            <option value="summer">夏季</option>
+            <option value="fall">秋季</option>
+            <option value="winter">冬季</option>
+          </select>
+        </label>
+        <label class="control-field">
+          <span class="field-label">推进天数</span>
+          <select id="advanceSelect">
+            <option value="1">1 天</option>
+            <option value="3">3 天</option>
+            <option value="7">7 天</option>
+            <option value="30">30 天</option>
+          </select>
+        </label>
+        <label class="control-field">
+          <span class="field-label">模型文本</span>
+          <select id="modelSelect">
+            <option value="local">关闭</option>
+            <option value="model">开启</option>
+          </select>
+        </label>
+        <button type="button" id="modelConfigBtn">模型配置</button>
+        <button id="advanceBtn" class="primary">推进</button>
+        <button id="resetBtn">重新开始</button>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <section class="pane map-pane" aria-labelledby="mapTitle">
+        <div class="pane-header">
+          <div>
+            <h2 class="pane-title" id="mapTitle">小镇地图</h2>
+            <p class="pane-note">9 个分区，30 位居民正在各处生活</p>
+          </div>
+        </div>
+        <div class="pane-body map-pane-body">
+          <div class="town-map" id="townMap"></div>
+          <aside class="resident-card" id="residentCard"></aside>
+          <aside class="town-state-card" id="townStatePanel"></aside>
+          <aside class="facility-card" id="facilityPanel"></aside>
+          <aside class="notice-board-panel" id="noticeBoardPanel" role="dialog" aria-labelledby="noticeBoardTitle" hidden>
+            <div class="notice-board-head">
+              <div>
+                <h3 id="noticeBoardTitle">公告板</h3>
+                <p>设施、招标、账务和居民互动</p>
+              </div>
+              <button type="button" id="noticeBoardClose" class="notice-board-close">关闭</button>
+            </div>
+            <div class="notice-board-content" id="noticeBoardContent"></div>
+          </aside>
+          <div class="life-overlay" id="lifeOverlay" aria-live="polite">居民正在生活中</div>
+        </div>
+      </section>
+
+      <section class="pane roster-pane" aria-labelledby="villagersTitle">
+        <div class="pane-header">
+          <div>
+            <h2 class="pane-title" id="villagersTitle">镇上居民</h2>
+            <p class="pane-note">背包、健康和最近行动</p>
+          </div>
+        </div>
+        <div class="pane-body">
+          <div class="villager-list" id="villagerList"></div>
+        </div>
+      </section>
+
+      <section class="pane log-pane" aria-labelledby="logTitle">
+        <div class="pane-header">
+          <div>
+            <h2 class="pane-title" id="logTitle">今日小事</h2>
+            <p class="pane-note">只写行动和痕迹，不替人下判词</p>
+          </div>
+        </div>
+        <div class="pane-body">
+          <div class="log-list" id="logList"></div>
+        </div>
+      </section>
+
+      <section class="pane report-pane" aria-labelledby="reportTitle">
+        <div class="pane-header">
+          <div>
+            <h2 class="pane-title" id="reportTitle">镇上小报</h2>
+            <p class="pane-note">一天结束后自动写成</p>
+          </div>
+        </div>
+        <div class="pane-body">
+          <div class="report" id="reportPanel"></div>
+        </div>
+      </section>
+
+      <section class="pane conversation-pane" aria-labelledby="conversationTitle">
+        <div class="pane-header">
+          <div>
+            <h2 class="pane-title" id="conversationTitle">镇上对话</h2>
+            <p class="pane-note">推进后出现居民短会话</p>
+          </div>
+        </div>
+        <div class="pane-body">
+          <div class="conversation-panel" id="conversationPanel"></div>
+        </div>
+      </section>
+
+      <section class="pane timeline-pane" aria-labelledby="timelineTitle">
+        <div class="pane-header">
+          <div>
+            <h2 class="pane-title" id="timelineTitle">周报时间线</h2>
+            <p class="pane-note">可回看的小镇历史</p>
+          </div>
+        </div>
+        <div class="pane-body">
+          <div class="weekly-timeline" id="weeklyTimelinePanel"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <aside class="model-config-panel" id="modelConfigPanel" role="dialog" aria-labelledby="modelConfigTitle" hidden>
+      <div class="model-config-card">
+        <div class="notice-board-head">
+          <div>
+            <h3 id="modelConfigTitle">模型 key 配置</h3>
+            <p>同学们可以填入自己的模型 key，开启后让居民对话更生动。key 不会写进页面展示。</p>
+          </div>
+          <button type="button" id="modelConfigClose" class="notice-board-close">关闭</button>
+        </div>
+        <form class="model-config-body" id="modelConfigForm">
+          <div class="config-status" id="modelConfigStatus">读取配置中</div>
+          <label class="control-field">
+            <span class="field-label">平台</span>
+            <select id="providerSelect">
+              <option value="openrouter">OpenRouter</option>
+              <option value="openai">OpenAI</option>
+              <option value="compatible">兼容接口</option>
+            </select>
+          </label>
+          <label class="control-field">
+            <span class="field-label">模型</span>
+            <input id="modelNameInput" type="text" autocomplete="off" placeholder="deepseek/deepseek-v4-pro">
+          </label>
+          <label class="control-field">
+            <span class="field-label">接口地址</span>
+            <input id="modelEndpointInput" type="url" autocomplete="off" placeholder="https://openrouter.ai/api/v1/chat/completions">
+          </label>
+          <div class="key-grid" aria-label="模型 keys">
+            <label class="control-field key-field">
+              <span class="field-label">模型 key 1</span>
+              <input id="apiKeyInput1" type="password" autocomplete="off" placeholder="可选">
+            </label>
+            <label class="control-field key-field">
+              <span class="field-label">模型 key 2</span>
+              <input id="apiKeyInput2" type="password" autocomplete="off" placeholder="可选">
+            </label>
+            <label class="control-field key-field">
+              <span class="field-label">模型 key 3</span>
+              <input id="apiKeyInput3" type="password" autocomplete="off" placeholder="可选">
+            </label>
+            <label class="control-field key-field">
+              <span class="field-label">模型 key 4</span>
+              <input id="apiKeyInput4" type="password" autocomplete="off" placeholder="可选">
+            </label>
+          </div>
+          <div class="model-config-actions">
+            <button type="button" id="saveModelConfigBtn" class="primary">保存配置</button>
+            <button type="button" id="clearSessionKeyBtn">清除页面 key</button>
+          </div>
+        </form>
+      </div>
+    </aside>
+  </div>
+
+  <script src="./src/shared.js"></script>
+  <script src="./src/world/world-config.js"></script>
+  <script src="./src/world/model-contract.js"></script>
+  <script src="./src/world/weather-data.js"></script>
+  <script src="./src/world/weather-system-utils.js"></script>
+  <script src="./src/world/weather-system-inertia.js"></script>
+  <script src="./src/world/weather-system-output.js"></script>
+  <script src="./src/world/weather-system.js"></script>
+  <script src="./src/world/town-ledger-crop-root-data.js"></script>
+  <script src="./src/world/town-ledger-crop-leaf-grain-data.js"></script>
+  <script src="./src/world/town-ledger-crop-fruit-data.js"></script>
+  <script src="./src/world/town-ledger-crop-specialty-data.js"></script>
+  <script src="./src/world/town-ledger-crop-plan-data.js"></script>
+  <script src="./src/world/town-ledger-crop-data.js"></script>
+  <script src="./src/world/town-ledger-economy-data.js"></script>
+  <script src="./src/world/town-ledger-facility-data.js"></script>
+  <script src="./src/world/town-ledger-weather-compat-data.js"></script>
+  <script src="./src/world/town-ledger-data.js"></script>
+  <script src="./src/world/town-ledger-core.js"></script>
+  <script src="./src/world/town-ledger-initial-state.js"></script>
+  <script src="./src/world/town-facility-ledger.js"></script>
+  <script src="./src/world/town-market-ledger.js"></script>
+  <script src="./src/world/town-crop-field-ledger.js"></script>
+  <script src="./src/world/town-crop-inventory-ledger.js"></script>
+  <script src="./src/world/town-crop-ledger.js"></script>
+  <script src="./src/world/town-contract-bids-ledger.js"></script>
+  <script src="./src/world/town-consignment-ledger.js"></script>
+  <script src="./src/world/town-contract-report-ledger.js"></script>
+  <script src="./src/world/town-contract-delivery-ledger.js"></script>
+  <script src="./src/world/town-surplus-sales-ledger.js"></script>
+  <script src="./src/world/town-contract-accounting-ledger.js"></script>
+  <script src="./src/world/town-contract-ledger.js"></script>
+  <script src="./src/world/town-debt-ledger.js"></script>
+  <script src="./src/world/town-relationship-rules.js"></script>
+  <script src="./src/world/town-relationship-interactions.js"></script>
+  <script src="./src/world/town-relationship-public.js"></script>
+  <script src="./src/world/town-relationship-ledger.js"></script>
+  <script src="./src/world/town-ledger.js"></script>
+  <script src="./src/world/weekly-timeline-utils.js"></script>
+  <script src="./src/world/weekly-timeline-snapshots.js"></script>
+  <script src="./src/world/weekly-timeline-reports.js"></script>
+  <script src="./src/world/weekly-timeline-stage.js"></script>
+  <script src="./src/world/weekly-timeline.js"></script>
+  <script src="./src/world/activity-data.js"></script>
+  <script src="./src/world/activity-effects.js"></script>
+  <script src="./src/world/activity-copy.js"></script>
+  <script src="./src/world/activity-rules.js"></script>
+  <script src="./src/world/action-policy-town-needs.js"></script>
+  <script src="./src/world/action-policy.js"></script>
+  <script src="./src/world/resident-memory-stream.js"></script>
+  <script src="./src/world/resident-cognition-payload.js"></script>
+  <script src="./src/world/resident-cognition.js"></script>
+  <script src="./src/world/model-action-audit.js"></script>
+  <script src="./src/world/model-action-proposals.js"></script>
+  <script src="./src/world/prompt-context.js"></script>
+  <script src="./src/villagers/villager-01.js"></script>
+  <script src="./src/villagers/villager-02.js"></script>
+  <script src="./src/villagers/villager-03.js"></script>
+  <script src="./src/villagers/villager-04.js"></script>
+  <script src="./src/villagers/villager-05.js"></script>
+  <script src="./src/villagers/villager-06.js"></script>
+  <script src="./src/villagers/villager-07.js"></script>
+  <script src="./src/villagers/villager-08.js"></script>
+  <script src="./src/villagers/villager-09.js"></script>
+  <script src="./src/villagers/villager-10.js"></script>
+  <script src="./src/villagers/villager-11.js"></script>
+  <script src="./src/villagers/villager-12.js"></script>
+  <script src="./src/villagers/villager-13.js"></script>
+  <script src="./src/villagers/villager-14.js"></script>
+  <script src="./src/villagers/villager-15.js"></script>
+  <script src="./src/villagers/villager-16.js"></script>
+  <script src="./src/villagers/villager-17.js"></script>
+  <script src="./src/villagers/villager-18.js"></script>
+  <script src="./src/villagers/villager-19.js"></script>
+  <script src="./src/villagers/villager-20.js"></script>
+  <script src="./src/villagers/villager-21.js"></script>
+  <script src="./src/villagers/villager-22.js"></script>
+  <script src="./src/villagers/villager-23.js"></script>
+  <script src="./src/villagers/villager-24.js"></script>
+  <script src="./src/villagers/villager-25.js"></script>
+  <script src="./src/villagers/villager-26.js"></script>
+  <script src="./src/villagers/villager-27.js"></script>
+  <script src="./src/villagers/villager-28.js"></script>
+  <script src="./src/villagers/villager-29.js"></script>
+  <script src="./src/villagers/villager-30.js"></script>
+  <script src="./src/engine-static-data.js"></script>
+  <script src="./src/engine-daily-report.js"></script>
+  <script src="./src/engine-action-runner.js"></script>
+  <script src="./src/engine-timeline.js"></script>
+  <script src="./src/engine-day-cycle.js"></script>
+  <script src="./src/engine.js"></script>
+  <script src="./src/ui/weekly-timeline-panel.js"></script>
+  <script src="./src/ui/facility-notice-panel.js"></script>
+  <script src="./src/ui/resident-map-panel.js"></script>
+  <script src="./src/ui/daily-panels.js"></script>
+  <script src="./src/ui/town-state-panel.js"></script>
+  <script src="./src/ui/conversation-panel.js"></script>
+  <script src="./src/ui.js"></script>
+  <script src="./src/llm-payloads.js"></script>
+  <script src="./src/llm.js"></script>
+  <script src="./src/main.js"></script>
+</body>
+</html>
