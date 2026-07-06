@@ -4,7 +4,7 @@
   const { facilityCatalog, processingRecipes, qualityOrder } = D;
   const { clamp, addLedgerEntry } = T.townLedgerCore;
 
-  const version = "town-facility-v0.0.5-visual-facility-depth-local";
+  const version = "town-facility-v0.0.6-public-balance";
 
   function ensureFacilities(state) {
     state.facilities = state.facilities || {};
@@ -139,7 +139,7 @@
     const cost = Math.round(data.upgradeCostYsc * (1 + (target.level - 1) * 0.42));
     const lastUpgradeDay = Math.max(0, ...Object.values(facilities).map((facility) => Number(facility.upgradedDay || 0)));
     if (lastUpgradeDay && state.day - lastUpgradeDay < 7) return;
-    if ((state.ledger?.cashYsc || 0) < cost + 1600) return;
+    if ((state.ledger?.cashYsc || 0) < cost + 2200) return;
     target.level += 1;
     target.condition = clamp(target.condition - 8, 0, 100);
     target.upgradedDay = state.day;

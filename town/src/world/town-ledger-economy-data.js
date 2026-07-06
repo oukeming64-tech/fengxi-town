@@ -1,7 +1,7 @@
 (function () {
   const T = window.MorningTown || (window.MorningTown = {});
 
-  const version = "town-ledger-economy-data-v0.0.6-local";
+  const version = "town-ledger-economy-data-v0.0.7-public-balance";
 
   const contractTemplates = {
     goldkin_bulk: {
@@ -13,7 +13,7 @@
       quantity: 9,
       dueInDays: 6,
       marketChannel: "goldkin_station",
-      channelMultiplier: 0.88,
+      channelMultiplier: 0.94,
       advanceYsc: 120,
       penaltyYsc: 160,
       paymentLagDays: 0,
@@ -31,7 +31,7 @@
       quantity: 4,
       dueInDays: 5,
       marketChannel: "city_cold_chain",
-      channelMultiplier: 1.45,
+      channelMultiplier: 1.55,
       advanceYsc: 50,
       penaltyYsc: 120,
       paymentLagDays: 1,
@@ -49,7 +49,7 @@
       quantity: 7,
       dueInDays: 7,
       marketChannel: "school_board",
-      channelMultiplier: 0.98,
+      channelMultiplier: 1.06,
       advanceYsc: 0,
       penaltyYsc: 90,
       paymentLagDays: 0,
@@ -67,7 +67,7 @@
       quantity: 6,
       dueInDays: 8,
       marketChannel: "cooperative_pantry",
-      channelMultiplier: 1.02,
+      channelMultiplier: 1.1,
       advanceYsc: 0,
       penaltyYsc: 70,
       paymentLagDays: 0,
@@ -85,7 +85,7 @@
       quantity: 5,
       dueInDays: 4,
       marketChannel: "festival_stall",
-      channelMultiplier: 1.18,
+      channelMultiplier: 1.28,
       advanceYsc: 0,
       penaltyYsc: 60,
       paymentLagDays: 0,
@@ -103,7 +103,7 @@
       quantity: 4,
       dueInDays: 9,
       marketChannel: "preserve_shop",
-      channelMultiplier: 1.22,
+      channelMultiplier: 1.32,
       advanceYsc: 0,
       penaltyYsc: 50,
       paymentLagDays: 1,
@@ -150,7 +150,7 @@
     goldkin_station: {
       id: "goldkin_station",
       label: "高金采购站",
-      baseMultiplier: 0.92,
+      baseMultiplier: 0.98,
       volatility: 0.04,
       paymentLagDays: 0,
       pressureNote: "现金快，议价权偏弱。"
@@ -158,7 +158,7 @@
     city_cold_chain: {
       id: "city_cold_chain",
       label: "南路口冷链",
-      baseMultiplier: 1.28,
+      baseMultiplier: 1.38,
       volatility: 0.07,
       paymentLagDays: 1,
       logisticsSensitive: true,
@@ -167,7 +167,7 @@
     school_board: {
       id: "school_board",
       label: "学校午餐账本",
-      baseMultiplier: 0.98,
+      baseMultiplier: 1.05,
       volatility: 0.02,
       paymentLagDays: 0,
       pressureNote: "利润平，但社区信任稳定。"
@@ -175,7 +175,7 @@
     cooperative_pantry: {
       id: "cooperative_pantry",
       label: "合作社粮架",
-      baseMultiplier: 1.04,
+      baseMultiplier: 1.12,
       volatility: 0.03,
       paymentLagDays: 0,
       pressureNote: "适合压仓和分散买方。"
@@ -183,7 +183,7 @@
     festival_stall: {
       id: "festival_stall",
       label: "公共屋临时摊位",
-      baseMultiplier: 1.16,
+      baseMultiplier: 1.26,
       volatility: 0.08,
       paymentLagDays: 0,
       festivalSensitive: true,
@@ -192,7 +192,7 @@
     preserve_shop: {
       id: "preserve_shop",
       label: "街口寄售货架",
-      baseMultiplier: 1.14,
+      baseMultiplier: 1.24,
       volatility: 0.04,
       paymentLagDays: 1,
       processedOnly: true,
