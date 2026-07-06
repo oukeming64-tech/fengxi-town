@@ -1,7 +1,7 @@
 (function () {
   const town = {
     version: {
-      code: "v0.1.1",
+      code: "v0.1.2",
       name: "枫溪镇",
       status: "小镇日常"
     },
