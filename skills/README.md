@@ -6,4 +6,3 @@ These Codex skills capture reusable methods extracted from the Fengxi Town proje
 - `world-rules-normalizer`: turn narrative world rules into traceable runtime modules.
 - `resident-cognition-loop`: design audited multi-agent resident behavior loops.
 - `llm-contract-validation-harness`: validate structured model output with guards, sharding, retries, and fixtures.
-- `private-to-public-gift-site`: convert private inspired projects into safe public gift sites.

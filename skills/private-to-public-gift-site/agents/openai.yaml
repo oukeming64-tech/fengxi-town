@@ -1,4 +1,0 @@
-interface:
-  display_name: "Private To Public Gift Site"
-  short_description: "Publish sensitive source projects as safe gift sites."
-  default_prompt: "Use $private-to-public-gift-site to turn a private inspired project into a public gift website."
