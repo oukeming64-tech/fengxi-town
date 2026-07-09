@@ -21,12 +21,12 @@
       },
       line(action, ctx) {
         const lines = {
-          notice: ["{name}在告示牌前先应了一声，笔还没递过来，手已经伸到帮工名单最上面。", "{name}把会堂桌上的纸递得很勤，纸边擦过袖口，递完总要看看管事的人有没有点头。"],
-          bridge: ["{name}在桥边谁喊都答应，木板、绳子、钉子轮着递，眼角却总往记名册那一页瞟。", "{name}帮人扶住桥梁的时候站得很正，掌心被木刺扎了一下，也先看远处的人有没有看见。"],
-          farm: ["{name}跑到田里帮忙浇水，水桶还没放下，就问下一处还缺不缺人，裤脚一路湿到膝盖。"],
-          market: ["{name}替几个摊子都搬了货，搬完没有马上走，等摊主把那句谢谢说完整。"],
-          inn: ["{name}在酒馆替人添杯摆凳，听见有人夸今天帮手多，背一下就挺直了，杯里的水晃出半圈。"],
-          home: ["{name}回住处把袖口洗干净，又把今天被记下的名字看了一遍，纸上那一点墨晕被灯照得很重。"]
+          notice: ["{name}在 community board 前先应了一声，Sharpie 还没递过来，手已经伸到 volunteer sheet 最上面。", "{name}把 town hall 折叠桌上的纸递得很勤，纸边擦过袖口，递完总要看看管事的人有没有点头。"],
+          bridge: ["{name}在木桥边谁喊都答应，plank、rope、钉子轮着递，眼角却总往 sign-in sheet 那一页瞟。", "{name}帮人扶住桥梁的时候站得很正，掌心被木刺扎了一下，也先看远处的人有没有看见。"],
+          farm: ["{name}跑到 community garden 帮忙浇水，喷壶还没放下，就问下一排 raised bed 还缺不缺人，裤脚一路湿到膝盖。"],
+          market: ["{name}替几个 farmers' market booth 都搬了货，搬完没有马上走，等 booth owner 把那句 thanks 说完整。"],
+          inn: ["{name}在 diner 替人添咖啡摆高脚椅，听见有人夸今天帮手多，背一下就挺直了，纸杯里的水晃出半圈。"],
+          home: ["{name}回到 kitchen sink 前把袖口洗干净，又把今天被记下的名字看了一遍，纸上那一点墨晕被台灯照得很重。"]
         };
         return T.pick(lines[action] || lines.inn).replace("{name}", name).replace("{task}", ctx.scene.task);
       }

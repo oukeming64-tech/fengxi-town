@@ -20,12 +20,12 @@
       },
       line(action, ctx) {
         const lines = {
-          notice: ["{name}在告示牌贴了一张远方集市的彩纸，纸边还卷着，他说枫溪镇也该有个大日子。", "{name}把{task}写得像一场仪式，笔画很大，真正搬东西的几个人反倒挤在角落里。"],
-          market: ["{name}站在集市入口和来客打招呼，袖口抬得比摊旗还高，看摊这件事倒像顺带的。", "{name}举着一张外镇的热闹画，讲得像那些灯今晚就会照到枫溪镇的石路上。"],
-          inn: ["{name}在酒馆讲远处镇子的热闹，桌上有人听得点头，也有人低头把豆壳剥成一小堆。"],
-          bridge: ["{name}到桥边看了一会儿，说等修好那天一定要挂彩旗，手却一直没从袖子里伸出来。", "{name}被问今天能搬几块木头，便指向桥头说先把气势立起来，脚边那块木板还没挪窝。"],
-          farm: ["{name}在田边停得很短，草叶上的泥都没蹭到鞋面，更多时候是在看谁抬头看见了自己。"],
-          home: ["{name}回住处翻出旧彩纸，挑最大的一张压到桌面上，压纸的石头比纸还沉。"]
+          notice: ["{name}在 community board 贴了一张外镇 county fair 的彩纸，纸边还卷着，他说枫溪镇也该有个 parade day。", "{name}把{task}写得像一场 town hall ceremony，马克笔划得很大，真正搬折叠椅的几个人反倒挤在角落里。"],
+          market: ["{name}站在 farmers' market 入口和来客打招呼，袖口抬得比 booth flag 还高，看 booth 这件事倒像顺带的。", "{name}举着一张外镇灯会的海报，讲得像那些 string lights 今晚就会照到 Main Street 的砖路上。"],
+          inn: ["{name}在 diner 吧台讲远处镇子的热闹，桌上有人听得点头，也有人低头把纸巾撕成一小堆。"],
+          bridge: ["{name}到木桥边看了一会儿，说等修好那天一定要挂 bunting，手却一直没从夹克口袋里伸出来。", "{name}被问今天能搬几块 lumber，便指向桥头说先把气势立起来，脚边那块 plank 还没挪窝。"],
+          farm: ["{name}在 community garden 停得很短，鞋底连 mulch 都没沾上，更多时候是在看谁抬头看见了自己。"],
+          home: ["{name}回到 front room 翻出旧彩纸，挑最大的一张压到桌面上，压纸的镇庆纪念杯比纸还沉。"]
         };
         return T.pick(lines[action] || lines.notice).replace("{name}", name).replace("{task}", ctx.scene.task);
       }

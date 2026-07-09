@@ -20,12 +20,12 @@
       },
       line(action, ctx) {
         const lines = {
-          inn: ["{name}拍着桌子说来者都是邻人，碗里的汤晃到桌沿，酒馆一下热了。", "{name}把两张桌子并到一起，桌脚刮过地面，三句闲话就把卖鱼的和缺木头的人介绍上了。"],
-          farm: ["{name}帮人扛了两袋肥，肩上沾着灰，讲种法时还是绕回了吃饭喝汤。"],
-          bridge: ["{name}搬木头搬得很实在，一边搬一边喊晚上住处有热饭，喊到最后嗓子都有点哑。", "{name}看桥边气氛低了，立刻说谁出一把力晚上就多一碗汤，木屑还粘在袖口上。"],
-          market: ["{name}在集市请人尝了一口炖菜，勺子还没放回锅里，摊前已经围出一圈。", "{name}听说两家都缺工具，马上拍板让他们傍晚到酒馆碰头，像这张桌子本来就是给他们留的。"],
-          notice: ["{name}在告示牌上写今晚住处开灶，字大得远处也看得见，最后一笔墨滴到鞋面上。"],
-          home: ["{name}回住处先把长桌擦出来，桌角那道旧油印也擦了两遍，像是认定今晚还会来一屋子人。"]
+          inn: ["{name}拍着 diner 的长桌说来者都是邻居，碗里的 chili 晃到桌沿，吧台那边一下热了。", "{name}把两张卡座旁的小桌并到一起，桌脚刮过地面，三句闲话就把卖鱼的和缺 lumber 的人介绍上了。"],
+          farm: ["{name}帮人扛了两袋 potting soil，肩上沾着灰，讲种法时还是绕回了晚上谁带 cornbread。"],
+          bridge: ["{name}搬 lumber 搬得很实在，一边搬一边喊晚上 front porch 有热 chili，喊到最后嗓子都有点哑。", "{name}看木桥边气氛低了，立刻说谁出一把力晚上就多一勺 chili，木屑还粘在袖口上。"],
+          market: ["{name}在 farmers' market 请人尝了一口炖豆子，勺子还没放回锅里，booth 前已经围出一圈。", "{name}听说两家都缺工具，马上拍板让他们傍晚到 diner 碰头，像那张靠窗的桌子本来就是给他们留的。"],
+          notice: ["{name}在 community board 上写今晚 front porch 有 potluck，字大得从街对面也看得见，最后一笔 marker 蹭到鞋面上。"],
+          home: ["{name}回到后门先把 picnic table 擦出来，桌角那道旧酱汁印也擦了两遍，像是认定今晚还会来一院子人。"]
         };
         return T.pick(lines[action] || lines.inn).replace("{name}", name).replace("{task}", ctx.scene.task);
       }

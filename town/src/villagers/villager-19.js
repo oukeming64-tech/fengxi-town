@@ -20,12 +20,12 @@
       },
       line(action, ctx) {
         const lines = {
-          river: ["{name}在河边绕着话问了一圈，真正想知道的事藏在第二句里，第一句只问水冷不冷。", "{name}把热茶递给洗网的人，杯口冒着白气，先问手冻不冻，再问谁刚从会堂回来。"],
-          home: ["{name}回住处把窗边的小礼物收起来，纸绳解了又系，没等到回应就不再往外送。", "{name}把多泡的一杯茶倒掉，茶叶贴在碗底，没有再让人替自己传话。"],
-          inn: ["{name}在酒馆听完两种说法，又找第三个人轻轻问了一遍，声音压得比炉火还低。"],
-          market: ["{name}在集市把一小包茶叶换出去，换回来的不是钱，是几句明天的安排和一个没说完的眼神。"],
-          notice: ["{name}在告示牌前看谁的名字被挪到前面，手指停在纸边，没有马上说破。"],
-          farm: ["{name}在田边送出一把香草，草梗还带着露水，换来几句明天早上的安排。"]
+          river: ["{name}在 creek 边绕着话问了一圈，真正想知道的事藏在第二句里，第一句只问水冷不冷。", "{name}把一杯热 coffee 递给补渔网的人，纸杯口冒着白气，先问手冻不冻，再问谁刚从 town hall 回来。"],
+          home: ["{name}回到窗边把小礼物收起来，牛皮纸绳解了又系，没等到回应就不再往外送。", "{name}把多泡的一杯 coffee 倒掉，杯底留下半圈深色水痕，没有再让人替自己传话。"],
+          inn: ["{name}在 diner 听完两种说法，又找第三个人压低声音问了一遍，声音比烤盘上的油声还低。"],
+          market: ["{name}在 farmers' market 把一小包 herb mix 换出去，换回来的不是钱，是几句明天的安排和一个没说完的眼神。"],
+          notice: ["{name}在 community board 前看谁的名字被挪到前面，手指停在 flyer 边，没有马上说破。"],
+          farm: ["{name}在 community garden 送出一把 basil，叶尖还带着露水，换来几句明天早上的安排。"]
         };
         return T.pick(lines[action] || lines.river).replace("{name}", name).replace("{task}", ctx.scene.task);
       }
