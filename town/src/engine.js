@@ -200,7 +200,7 @@
   function logScore(villager, action, delta) {
     let score = Math.abs(delta.renown) + Math.abs(delta.help) + Math.abs(delta.favor) * 2 + Math.abs(delta.standing) * 2 + Math.abs(delta.distance);
     if (["bridge", "notice", "inn", "market"].includes(action)) score += 3;
-    if (villager.tag !== "草帽" && villager.tag !== "豆袋") score += 2;
+    if (!["Sac de Fèves"].includes(villager.tag)) score += 2;
     return score + Math.random() * 4;
   }
 

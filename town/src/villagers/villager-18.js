@@ -2,7 +2,7 @@
   const T = window.MorningTown;
   T.registerVillager(function (name) {
     return T.makeVillager({
-      name, tag: "旧炉", home: "18号",
+      name, tag: "Vieux Four", home: "18号",
       storage: { seeds: 2, crop: 2, wood: 5, stone: 1, ore: 0, fish: 1, meal: 5 },
       coins: 134, energy: 90, renown: 18, help: 18, favor: 3, standing: 19,
       traits: { work: 0.95, talk: 1.72, trade: 1.22, risk: 1.15, quiet: 0.34, order: 0.58 },
@@ -20,12 +20,12 @@
       },
       line(action, ctx) {
         const lines = {
-          inn: ["{name}拍着桌子说来者都是邻人，酒馆一下热了。", "{name}把两张桌子并到一起，三句闲话就把卖鱼的和缺木头的人介绍上了。"],
-          farm: ["{name}帮人扛了两袋肥，讲种法时还是绕回了吃饭喝汤。"],
-          bridge: ["{name}搬木头搬得很实在，一边搬一边喊晚上住处有热饭。", "{name}看桥边气氛低了，立刻说谁出一把力晚上就多一碗汤。"],
-          market: ["{name}在集市请人尝了一口炖菜，摊前很快围出一圈。", "{name}听说两家都缺工具，马上拍板让他们傍晚到酒馆碰头。"],
-          notice: ["{name}在告示牌上写今晚住处开灶，字大得远处也看得见。"],
-          home: ["{name}回住处先把长桌擦出来，像是认定今晚还会来一屋子人。"]
+          inn: ["{name}拍着桌子说来者都是邻人，碗里的汤晃到桌沿，酒馆一下热了。", "{name}把两张桌子并到一起，桌脚刮过地面，三句闲话就把卖鱼的和缺木头的人介绍上了。"],
+          farm: ["{name}帮人扛了两袋肥，肩上沾着灰，讲种法时还是绕回了吃饭喝汤。"],
+          bridge: ["{name}搬木头搬得很实在，一边搬一边喊晚上住处有热饭，喊到最后嗓子都有点哑。", "{name}看桥边气氛低了，立刻说谁出一把力晚上就多一碗汤，木屑还粘在袖口上。"],
+          market: ["{name}在集市请人尝了一口炖菜，勺子还没放回锅里，摊前已经围出一圈。", "{name}听说两家都缺工具，马上拍板让他们傍晚到酒馆碰头，像这张桌子本来就是给他们留的。"],
+          notice: ["{name}在告示牌上写今晚住处开灶，字大得远处也看得见，最后一笔墨滴到鞋面上。"],
+          home: ["{name}回住处先把长桌擦出来，桌角那道旧油印也擦了两遍，像是认定今晚还会来一屋子人。"]
         };
         return T.pick(lines[action] || lines.inn).replace("{name}", name).replace("{task}", ctx.scene.task);
       }

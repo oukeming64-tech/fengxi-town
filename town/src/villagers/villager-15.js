@@ -2,7 +2,7 @@
   const T = window.MorningTown;
   T.registerVillager(function (name) {
     return T.makeVillager({
-      name, tag: "常坐", home: "15号",
+      name, tag: "Banc", home: "15号",
       storage: { seeds: 1, crop: 1, wood: 2, stone: 1, ore: 0, fish: 1, meal: 2 },
       coins: 142, energy: 84, renown: 15, help: 14, favor: 2, standing: 17,
       traits: { work: 0.88, talk: 1.28, trade: 1.08, risk: 0.72, quiet: 0.72, order: 0.86 },
@@ -20,12 +20,12 @@
       },
       line(action, ctx) {
         const lines = {
-          inn: ["{name}又坐到熟人旁边，话不多，但凳子几乎没换过地方。", "{name}把多带的一碗汤推到桌边，像早就知道会有人少带饭。"],
-          market: ["{name}把摊位往熟人旁边挪了一点，像只是为了借阴凉。", "{name}在集市来回走了两趟，每次都刚好停在有人需要递篮子的时候。"],
-          bridge: ["{name}抱着木板在桥边等人一起登记，站得很稳。", "{name}没有急着开口，只是把自己的木板放到同一堆里。"],
-          notice: ["{name}在告示牌下看谁先写名，自己晚了一步才跟上。"],
-          farm: ["{name}帮旁边的人扶了一下水桶，动作小，但出现得及时。"],
-          home: ["{name}回住处把明天要带的东西摆到门边，像是怕错过谁的一声招呼。"]
+          inn: ["{name}又坐到熟人旁边，话不多，凳脚在地上磨出的白印子却越来越深。", "{name}把多带的一碗汤推到桌边，汤面还冒着热气，像早就知道会有人少带饭。"],
+          market: ["{name}把摊位往熟人旁边挪了一点，嘴上说借阴凉，货篮却刚好替对方挡住了过道的风。", "{name}在集市来回走了两趟，每次都刚好停在有人需要递篮子的时候。"],
+          bridge: ["{name}抱着木板在桥边等人一起登记，木板边角硌着手掌，也没先把名字写到前面。", "{name}没有急着开口，只是把自己的木板放到同一堆里，拍了拍上面的灰。"],
+          notice: ["{name}在告示牌下看谁先写名，等前面的人把笔放稳，自己才晚一步跟上。"],
+          farm: ["{name}帮旁边的人扶了一下水桶，动作很小，水却没有泼到刚冒头的苗。"],
+          home: ["{name}回住处把明天要带的东西摆到门边，篮绳绕了两圈，像是怕错过谁的一声招呼。"]
         };
         return T.pick(lines[action] || lines.inn).replace("{name}", name).replace("{task}", ctx.scene.task);
       }
