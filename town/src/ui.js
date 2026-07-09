@@ -20,6 +20,7 @@
     resetBtn: document.getElementById("resetBtn"),
     advanceBtn: document.getElementById("advanceBtn"),
     townMap: document.getElementById("townMap"),
+    stageDrawer: document.getElementById("stageDrawer"),
     residentCard: document.getElementById("residentCard"),
     townStatePanel: document.getElementById("townStatePanel"),
     facilityPanel: document.getElementById("facilityPanel"),
@@ -42,22 +43,26 @@
     apiKeyInput2: document.getElementById("apiKeyInput2"),
     apiKeyInput3: document.getElementById("apiKeyInput3"),
     apiKeyInput4: document.getElementById("apiKeyInput4"),
-    slotModelInput1: document.getElementById("slotModelInput1"),
-    slotModelInput2: document.getElementById("slotModelInput2"),
-    slotModelInput3: document.getElementById("slotModelInput3"),
-    slotModelInput4: document.getElementById("slotModelInput4"),
-    slotEndpointInput1: document.getElementById("slotEndpointInput1"),
-    slotEndpointInput2: document.getElementById("slotEndpointInput2"),
-    slotEndpointInput3: document.getElementById("slotEndpointInput3"),
-    slotEndpointInput4: document.getElementById("slotEndpointInput4"),
     saveModelConfigBtn: document.getElementById("saveModelConfigBtn"),
     clearSessionKeyBtn: document.getElementById("clearSessionKeyBtn")
   };
 
-  const noticeBoardAsset = T.assets.noticeBoard || "./assets/runtime/props/notice-board.png";
+  const noticeBoardAsset = T.assets.noticeBoard || "../assets/runtime/maple-creek-notice-board-v0.0.6.svg";
   let selectedVillagerId = null;
   let noticeBoardOpen = false;
   let modelConfigOpen = false;
+  let stageDrawerOpen = false;
+  let stageDrawerPanel = "residents";
+  const mapViewport = {
+    scale: 1,
+    x: 0,
+    y: 0,
+    reducedWeatherMotion: false,
+    selectedHotspotId: "",
+    stageIndex: 0,
+    playbackId: ""
+  };
+  let mapDrag = null;
 
   function selectedVillager() {
     const villagers = engine.state.villagers;
@@ -80,10 +85,19 @@
   }
 
   function renderMap() {
+    const playback = T.townStage?.currentPlayback?.(engine) || null;
+    if (playback?.id && playback.id !== mapViewport.playbackId) {
+      mapViewport.playbackId = playback.id;
+      mapViewport.stageIndex = 0;
+    }
     T.residentMapPanel?.renderMap(el.townMap, engine, {
       current: selectedVillager(),
       noticeBoardOpen,
-      noticeBoardAsset
+      noticeBoardAsset,
+      viewport: mapViewport,
+      selectedHotspotId: mapViewport.selectedHotspotId,
+      stageIndex: mapViewport.stageIndex,
+      playback
     });
   }
 
@@ -137,22 +151,11 @@
     const keyCount = Number(config.keyCount || 0);
     const keyCountText = keyCount > 1 ? ` x${keyCount}` : "";
     const keyText = config.hasKey
-      ? (config.keySource === "environment" ? `已读取保存的 key${keyCountText}` : `已使用页面临时 key${keyCountText}`)
+      ? (config.keySource === "environment" ? `已复用本地环境 key${keyCountText}` : `已使用页面临时 key${keyCountText}`)
       : "还没有可用 key";
     const provider = config.providerLabel || config.provider || "模型平台";
     const model = config.model || "未填写模型";
     return `${provider} · ${model} · ${keyText}`;
-  }
-
-  function setInputValue(input, value) {
-    if (input && document.activeElement !== input) input.value = value || "";
-  }
-
-  function modelSlotInputs() {
-    return [1, 2, 3, 4].map((index) => ({
-      model: el[`slotModelInput${index}`],
-      endpoint: el[`slotEndpointInput${index}`]
-    }));
   }
 
   function renderModelConfig() {
@@ -162,13 +165,26 @@
     const config = T.llm?.config || {};
     el.modelConfigStatus.textContent = configStatusText();
     if (config.provider && el.providerSelect.value !== config.provider) el.providerSelect.value = config.provider;
-    setInputValue(el.modelNameInput, config.model || "");
-    setInputValue(el.modelEndpointInput, config.endpoint || "");
-    const keySlots = Array.isArray(config.keySlots) ? config.keySlots : [];
-    modelSlotInputs().forEach((slot, index) => {
-      const configSlot = keySlots[index] || {};
-      setInputValue(slot.model, configSlot.model || config.model || "");
-      setInputValue(slot.endpoint, configSlot.endpoint || config.endpoint || "");
+    if (document.activeElement !== el.modelNameInput) el.modelNameInput.value = config.model || "";
+    if (document.activeElement !== el.modelEndpointInput) el.modelEndpointInput.value = config.endpoint || "";
+  }
+
+  function applyStageDrawerState() {
+    const drawer = el.stageDrawer;
+    if (!drawer) return;
+    drawer.classList?.toggle("is-open", stageDrawerOpen);
+    drawer.setAttribute?.("aria-expanded", stageDrawerOpen ? "true" : "false");
+    const buttons = drawer.querySelectorAll?.("[data-stage-drawer-target]") || [];
+    buttons.forEach((button) => {
+      const active = button.dataset.stageDrawerTarget === stageDrawerPanel;
+      button.classList.toggle("is-active", active && stageDrawerOpen);
+      button.setAttribute?.("aria-pressed", active && stageDrawerOpen ? "true" : "false");
+    });
+    const panels = drawer.querySelectorAll?.("[data-stage-drawer-panel]") || [];
+    panels.forEach((panel) => {
+      const active = panel.dataset.stageDrawerPanel === stageDrawerPanel;
+      panel.classList.toggle("is-active", active);
+      panel.hidden = !active;
     });
   }
 
@@ -183,7 +199,7 @@
     el.slotLabel.textContent = slot;
     el.countLabel.textContent = `${engine.state.villagers.length} 人`;
     el.reportLabel.textContent = engine.state.lastReport ? `第 ${engine.state.lastReport.day} 天` : "尚未写成";
-    el.llmLabel.textContent = el.modelSelect.value === "model" && T.llm ? T.llm.status : "未开启";
+    el.llmLabel.textContent = el.modelSelect.value === "model" && T.llm ? T.llm.status : "本地";
     document.body.classList.toggle("is-living", Boolean(T.llm?.busy));
     el.lifeOverlay.hidden = !T.llm?.busy;
     renderMap();
@@ -197,6 +213,7 @@
     renderWeeklyTimeline();
     renderNoticeBoard();
     renderModelConfig();
+    applyStageDrawerState();
   }
 
   function openNoticeBoard() {
@@ -212,6 +229,43 @@
     renderNoticeBoard();
   }
 
+  function clampMapViewport() {
+    mapViewport.scale = T.clamp(Number(mapViewport.scale) || 1, 1, 2.8);
+    const maxX = Math.round(220 * (mapViewport.scale - 1));
+    const maxY = Math.round(150 * (mapViewport.scale - 1));
+    mapViewport.x = T.clamp(Number(mapViewport.x) || 0, -maxX, maxX);
+    mapViewport.y = T.clamp(Number(mapViewport.y) || 0, -maxY, maxY);
+  }
+
+  function applyMapTransform() {
+    clampMapViewport();
+    const surface = el.townMap.querySelector?.(".map-stage-surface");
+    if (!surface) return;
+    surface.style.transform = `translate(${Math.round(mapViewport.x * 10) / 10}px, ${Math.round(mapViewport.y * 10) / 10}px) scale(${mapViewport.scale})`;
+  }
+
+  function zoomMap(delta) {
+    mapViewport.scale = T.clamp(Math.round((mapViewport.scale + delta) * 100) / 100, 1, 2.8);
+    applyMapTransform();
+  }
+
+  function resetMapView() {
+    mapViewport.scale = 1;
+    mapViewport.x = 0;
+    mapViewport.y = 0;
+    renderMap();
+  }
+
+  function handleMapAction(action) {
+    if (action === "zoom-in") zoomMap(0.2);
+    if (action === "zoom-out") zoomMap(-0.2);
+    if (action === "reset-view") resetMapView();
+    if (action === "toggle-weather-motion") {
+      mapViewport.reducedWeatherMotion = !mapViewport.reducedWeatherMotion;
+      renderMap();
+    }
+  }
+
   function openModelConfig() {
     modelConfigOpen = true;
     renderModelConfig();
@@ -223,6 +277,28 @@
     renderModelConfig();
   }
 
+  function openStageDrawer(panel) {
+    stageDrawerPanel = panel || stageDrawerPanel;
+    stageDrawerOpen = true;
+    applyStageDrawerState();
+  }
+
+  function closeStageDrawer() {
+    stageDrawerOpen = false;
+    applyStageDrawerState();
+  }
+
+  function handleStageDrawerClick(event) {
+    const action = event.target.closest("[data-stage-drawer-action]");
+    if (action?.dataset.stageDrawerAction === "close") {
+      closeStageDrawer();
+      return;
+    }
+    const target = event.target.closest("[data-stage-drawer-target]");
+    if (!target) return;
+    openStageDrawer(target.dataset.stageDrawerTarget);
+  }
+
   function handleResidentPointer(event) {
     const target = event.target.closest("[data-villager-id]");
     if (!target) return;
@@ -230,12 +306,63 @@
   }
 
   function handleMapClick(event) {
+    const action = event.target.closest("[data-map-action]");
+    if (action) {
+      handleMapAction(action.dataset.mapAction);
+      return;
+    }
+    const stage = event.target.closest("[data-stage-index]");
+    if (stage) {
+      mapViewport.stageIndex = Number(stage.dataset.stageIndex) || 0;
+      renderMap();
+      return;
+    }
     const board = event.target.closest("[data-notice-board]");
     if (board) {
       openNoticeBoard();
       return;
     }
+    const hotspot = event.target.closest("[data-hotspot-id]");
+    if (hotspot) {
+      mapViewport.selectedHotspotId = hotspot.dataset.hotspotId || "";
+      renderMap();
+      return;
+    }
     handleResidentPointer(event);
+  }
+
+  function handleMapPointerDown(event) {
+    if (event.button !== 0) return;
+    if (event.target.closest("button, aside")) return;
+    const viewport = event.target.closest(".map-stage-viewport");
+    if (!viewport) return;
+    mapDrag = {
+      startX: event.clientX,
+      startY: event.clientY,
+      x: mapViewport.x,
+      y: mapViewport.y,
+      viewport
+    };
+    viewport.classList.add("is-dragging");
+  }
+
+  function handleMapPointerMove(event) {
+    if (!mapDrag) return;
+    mapViewport.x = mapDrag.x + event.clientX - mapDrag.startX;
+    mapViewport.y = mapDrag.y + event.clientY - mapDrag.startY;
+    applyMapTransform();
+  }
+
+  function finishMapDrag() {
+    if (!mapDrag) return;
+    mapDrag.viewport?.classList.remove("is-dragging");
+    mapDrag = null;
+  }
+
+  function handleMapWheel(event) {
+    if (!event.target.closest(".map-stage-viewport")) return;
+    event.preventDefault();
+    zoomMap(event.deltaY < 0 ? 0.12 : -0.12);
   }
 
   function handleWeekClick(event) {
@@ -243,17 +370,24 @@
   }
 
   el.townMap.addEventListener("click", handleMapClick);
+  el.townMap.addEventListener("pointerdown", handleMapPointerDown);
+  el.townMap.addEventListener("wheel", handleMapWheel, { passive: false });
+  document.addEventListener("pointermove", handleMapPointerMove);
+  document.addEventListener("pointerup", finishMapDrag);
+  document.addEventListener("pointercancel", finishMapDrag);
   el.townMap.addEventListener("mouseover", handleResidentPointer);
   el.townMap.addEventListener("focusin", handleResidentPointer);
   el.villagerList.addEventListener("click", handleResidentPointer);
   el.villagerList.addEventListener("mouseover", handleResidentPointer);
   el.villagerList.addEventListener("focusin", handleResidentPointer);
   el.weeklyTimelinePanel?.addEventListener("click", handleWeekClick);
+  el.stageDrawer?.addEventListener("click", handleStageDrawerClick);
   el.noticeBoardClose?.addEventListener("click", closeNoticeBoard);
   el.modelConfigClose?.addEventListener("click", closeModelConfig);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && noticeBoardOpen) closeNoticeBoard();
     if (event.key === "Escape" && modelConfigOpen) closeModelConfig();
+    if (event.key === "Escape" && stageDrawerOpen) closeStageDrawer();
   });
 
   T.ui = { el, render, openModelConfig, closeModelConfig };

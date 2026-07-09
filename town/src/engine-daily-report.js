@@ -33,7 +33,7 @@
       day: state.day,
       scene: `${state.season.label} · ${state.scene.label}`,
       sections: [
-        { title: "今日公告", body: `${state.season.field} ${state.scene.task}走过了一天，镇上的动静都留在田地、街口、河湾湿地和山坡上。` },
+        { title: "今日公告", body: `${state.season.field} ${state.scene.task}走过了一天，镇上的动静都留在黄石农场、镇中心、河湾湿地和旧矿区上。` },
         ...settlementSections,
         { title: "做过的事", list: work.length ? listFor(work, visibleLogs.slice(0, 4)) : fallbackList },
         { title: "听见的话", list: talk.length ? listFor(talk, visibleLogs.slice(0, 4)) : fallbackList },
@@ -82,7 +82,7 @@
     uniqueNotes(settlement.cropChanges)
       .filter((note) => !/状态更新/.test(note))
       .slice(0, 2)
-      .forEach((note) => add("work", "田地 · 作物", note));
+      .forEach((note) => add("work", "黄石农场 · 作物", note));
 
     uniqueNotes(settlement.inventoryChanges)
       .filter((note) => !/无明显损耗/.test(note))
@@ -91,7 +91,7 @@
 
     uniqueNotes(settlement.marketChanges)
       .slice(0, 1)
-      .forEach((note) => add("talk", "街口 · 行情", note));
+      .forEach((note) => add("talk", "镇中心 · 行情", note));
 
     uniqueNotes(settlement.contractChanges)
       .filter((note) => !/今日无交割/.test(note))

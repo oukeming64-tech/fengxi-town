@@ -25,25 +25,10 @@
     return [ui.el.apiKeyInput1, ui.el.apiKeyInput2, ui.el.apiKeyInput3, ui.el.apiKeyInput4].filter(Boolean);
   }
 
-  function keyConfigInputs() {
-    return [1, 2, 3, 4].map((index) => ({
-      key: ui.el[`apiKeyInput${index}`],
-      model: ui.el[`slotModelInput${index}`],
-      endpoint: ui.el[`slotEndpointInput${index}`]
-    })).filter((slot) => slot.key);
-  }
-
-  function readKeyConfigs() {
-    const fallbackModel = ui.el.modelNameInput.value.trim();
-    const fallbackEndpoint = ui.el.modelEndpointInput.value.trim();
-    return keyConfigInputs()
-      .map((slot) => ({
-        provider: ui.el.providerSelect.value,
-        model: slot.model?.value.trim() || fallbackModel,
-        endpoint: slot.endpoint?.value.trim() || fallbackEndpoint,
-        apiKey: slot.key.value.trim()
-      }))
-      .filter((slot) => slot.apiKey);
+  function readApiKeys() {
+    return apiKeyInputs()
+      .map((input) => input.value.trim())
+      .filter(Boolean);
   }
 
   function clearApiKeyInputs() {
@@ -86,7 +71,7 @@
     runAction(() => engine.advanceDays(ui.el.advanceSelect.value));
   });
 
-  ui.el.sceneSelect.addEventListener("change", () => {
+  ui.el.sceneSelect?.addEventListener("change", () => {
     ui.render();
   });
 
@@ -111,13 +96,13 @@
 
   ui.el.saveModelConfigBtn?.addEventListener("click", async () => {
     if (!llm) return;
-    const keyConfigs = readKeyConfigs();
+    const apiKeys = readApiKeys();
     const config = {
       provider: ui.el.providerSelect.value,
       model: ui.el.modelNameInput.value,
       endpoint: ui.el.modelEndpointInput.value
     };
-    if (keyConfigs.length) config.keyConfigs = keyConfigs;
+    if (apiKeys.length) config.apiKeys = apiKeys;
     await llm.saveConfig(config);
     clearApiKeyInputs();
     ui.render();

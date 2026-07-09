@@ -85,7 +85,7 @@
     if (festival) {
       notes.push(`${festival.name}临近：${festival.note}`);
       if ((festival.accountingPressure || 0) > 0 && (activitySummary.accounting || 0) <= 0) {
-        notes.push("公共屋和会计协会会多看寄售、库存和应收记录。");
+        notes.push("会堂和会计协会会多看寄售、库存和应收记录。");
       }
     } else {
       notes.push("今日没有大型节日，价格只随天气、渠道和库存预期轻微波动。");

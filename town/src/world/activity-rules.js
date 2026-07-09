@@ -112,7 +112,7 @@
     id: "REST-01",
     zoneCode: "TC",
     zoneId: "townCenter",
-    zoneName: "街口",
+    zoneName: "镇中心",
     title: "回小屋休息 / 整理仓房",
     shortTitle: "回小屋休息",
     conditions: ["疲劳过高", "伤病", "没有合适行动"],

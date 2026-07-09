@@ -1,19 +1,20 @@
 .map-pane-body {
   position: relative;
-  display: grid;
-  grid-template-rows: minmax(520px, 1fr) auto;
-  gap: 12px;
-  min-height: calc(100vh - 176px);
+  display: block;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
 }
 
 .town-map {
   position: relative;
   display: block;
   overflow: hidden;
-  aspect-ratio: 3 / 2;
-  min-height: 520px;
-  border: 1px solid #b8c9b7;
-  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
   padding: 0;
   background:
     linear-gradient(180deg, rgba(215, 234, 211, 0.78), rgba(220, 239, 234, 0.84)),
@@ -22,13 +23,32 @@
 }
 
 .map-visual,
+.map-stage-viewport,
+.map-stage-surface,
 .map-image,
 .map-shade,
+.weather-layer,
 .zone-marker-layer,
 .map-hotspot-layer,
-.resident-token-layer {
+.resident-token-layer,
+.stage-dialogue-layer {
   position: absolute;
   inset: 0;
+}
+
+.map-stage-viewport {
+  overflow: hidden;
+  cursor: grab;
+}
+
+.map-stage-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.map-stage-surface {
+  transform-origin: 50% 50%;
+  transition: transform 180ms ease;
+  will-change: transform;
 }
 
 .map-image {
@@ -46,13 +66,330 @@
 
 .zone-marker-layer,
 .map-hotspot-layer,
-.resident-token-layer {
+.resident-token-layer,
+.stage-dialogue-layer,
+.weather-layer {
   pointer-events: none;
 }
 
+.map-view-controls,
+.map-stage-controls,
+.map-stage-hud,
+.map-action-legend,
+.map-hotspot-inspector {
+  position: absolute;
+  z-index: 16;
+}
+
+.map-view-controls {
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid rgba(32, 37, 31, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 254, 249, 0.86);
+  box-shadow: 0 8px 18px rgba(31, 39, 33, 0.18);
+  backdrop-filter: blur(5px);
+}
+
+.map-view-controls button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  min-height: 0;
+  border-radius: 7px;
+  padding: 0;
+  font-weight: 760;
+}
+
+.map-view-controls button.is-active {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.map-stage-controls {
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  max-width: calc(100% - 24px);
+  padding: 6px;
+  border: 1px solid rgba(32, 37, 31, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 254, 249, 0.88);
+  box-shadow: 0 8px 18px rgba(31, 39, 33, 0.18);
+  backdrop-filter: blur(5px);
+}
+
+.map-stage-hud {
+  top: 12px;
+  left: 50%;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  max-width: calc(100% - 180px);
+  transform: translateX(-50%);
+  border: 1px solid rgba(32, 37, 31, 0.22);
+  border-radius: 8px;
+  padding: 7px 9px;
+  background: rgba(255, 254, 249, 0.9);
+  box-shadow: 0 8px 18px rgba(31, 39, 33, 0.17);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 730;
+  backdrop-filter: blur(6px);
+}
+
+.map-stage-hud span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-stage-hud span + span {
+  border-left: 1px solid rgba(32, 37, 31, 0.16);
+  padding-left: 7px;
+  color: var(--muted);
+}
+
+.map-action-legend {
+  right: 70px;
+  top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: flex-end;
+  max-width: min(420px, calc(100% - 280px));
+  pointer-events: none;
+}
+
+.map-action-legend span {
+  border: 1px solid rgba(32, 37, 31, 0.18);
+  border-radius: 7px;
+  padding: 3px 6px;
+  background: rgba(255, 254, 249, 0.82);
+  box-shadow: 0 6px 14px rgba(31, 39, 33, 0.12);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 720;
+}
+
+.map-stage-controls span {
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.map-stage-controls button {
+  min-height: 30px;
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.map-stage-controls button.is-active {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fffef9;
+}
+
+.map-hotspot-inspector {
+  right: 70px;
+  bottom: 12px;
+  width: min(300px, calc(100% - 24px));
+  border: 1px solid rgba(32, 37, 31, 0.24);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 254, 249, 0.92);
+  box-shadow: 0 12px 28px rgba(31, 39, 33, 0.24);
+  backdrop-filter: blur(6px);
+}
+
+.inspector-kicker {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.map-hotspot-inspector h3 {
+  margin: 4px 0 6px;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.map-hotspot-inspector p {
+  margin: 0 0 10px;
+  color: rgba(31, 41, 34, 0.76);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.inspector-list {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 8px;
+  align-items: start;
+  padding-top: 7px;
+  border-top: 1px solid rgba(32, 37, 31, 0.12);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.inspector-list + .inspector-list {
+  margin-top: 7px;
+}
+
+.inspector-list span {
+  color: var(--muted);
+}
+
+.inspector-list strong {
+  color: var(--ink);
+  font-weight: 720;
+}
+
+.weather-layer {
+  z-index: 1;
+  overflow: hidden;
+}
+
+.weather-particles {
+  position: absolute;
+  inset: -18%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.weather-rainy .weather-particles,
+.weather-storm .weather-particles,
+.weather-flood .weather-particles {
+  opacity: 0.72;
+  background: repeating-linear-gradient(106deg, rgba(44, 93, 124, 0.34) 0 2px, transparent 2px 13px);
+  animation: weather-rain 820ms linear infinite;
+}
+
+.weather-storm {
+  background: rgba(22, 37, 44, 0.16);
+}
+
+.weather-fog,
+.weather-cloudy {
+  background:
+    radial-gradient(circle at 24% 28%, rgba(255, 255, 255, 0.32), transparent 34%),
+    radial-gradient(circle at 77% 64%, rgba(245, 248, 241, 0.3), transparent 38%);
+}
+
+.weather-fog .weather-particles {
+  opacity: 0.5;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+  animation: weather-fog 9s ease-in-out infinite;
+}
+
+.weather-wind .weather-particles {
+  opacity: 0.45;
+  background: repeating-linear-gradient(166deg, transparent 0 30px, rgba(238, 246, 236, 0.42) 30px 32px, transparent 32px 64px);
+  animation: weather-wind 3.8s linear infinite;
+}
+
+.weather-heatwave,
+.weather-drought {
+  background: rgba(197, 112, 49, 0.14);
+}
+
+.weather-heatwave .weather-particles,
+.weather-drought .weather-particles {
+  opacity: 0.4;
+  background: repeating-linear-gradient(90deg, rgba(255, 238, 187, 0.2) 0 8px, transparent 8px 21px);
+  animation: weather-heat 4.2s ease-in-out infinite;
+}
+
+.weather-snow .weather-particles,
+.weather-blizzard .weather-particles,
+.weather-iceStorm .weather-particles,
+.weather-frost .weather-particles {
+  opacity: 0.65;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.86) 0 1px, transparent 2px) 0 0 / 34px 34px,
+    radial-gradient(circle, rgba(232, 244, 252, 0.74) 0 1px, transparent 2px) 15px 18px / 42px 42px;
+  animation: weather-snow 6s linear infinite;
+}
+
+.weather-blizzard,
+.weather-iceStorm,
+.weather-frost {
+  background: rgba(178, 211, 226, 0.13);
+}
+
+.weather-layer.is-reduced .weather-particles {
+  animation: none;
+  opacity: 0.28;
+}
+
+.stage-dialogue-layer {
+  z-index: 9;
+}
+
+.stage-dialogue {
+  position: absolute;
+  max-width: 210px;
+  transform: translate(-50%, -118%);
+  border: 1px solid rgba(32, 37, 31, 0.24);
+  border-radius: 8px;
+  padding: 7px 9px;
+  background: rgba(255, 254, 249, 0.92);
+  box-shadow: 0 8px 20px rgba(31, 39, 33, 0.18);
+}
+
+.stage-dialogue span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.stage-dialogue p {
+  margin: 0;
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+@keyframes weather-rain {
+  from { transform: translate3d(0, -7%, 0); }
+  to { transform: translate3d(-5%, 7%, 0); }
+}
+
+@keyframes weather-fog {
+  0%, 100% { transform: translate3d(-8%, 0, 0); opacity: 0.28; }
+  50% { transform: translate3d(8%, 0, 0); opacity: 0.54; }
+}
+
+@keyframes weather-wind {
+  from { transform: translate3d(-6%, 0, 0); }
+  to { transform: translate3d(6%, 0, 0); }
+}
+
+@keyframes weather-heat {
+  0%, 100% { transform: skewX(-2deg) translate3d(-1%, 0, 0); }
+  50% { transform: skewX(2deg) translate3d(1%, 0, 0); }
+}
+
+@keyframes weather-snow {
+  from { transform: translate3d(0, -6%, 0); }
+  to { transform: translate3d(-2%, 6%, 0); }
+}
+
 @media (max-width: 1180px) {
-  .map-pane-body {
-    min-height: 0;
+  .map-action-legend {
+    display: none;
   }
 }
 

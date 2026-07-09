@@ -27,7 +27,7 @@
 
     panel.innerHTML = `
       <div class="town-state-head">
-        <h3>小镇状态</h3>
+        <h3>农场状态</h3>
         <span>${T.escapeHtml(snapshot.seasonLabel)} · Day ${snapshot.day}</span>
       </div>
       <p class="town-state-weather">${T.escapeHtml(weather)}</p>

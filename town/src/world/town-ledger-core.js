@@ -197,7 +197,7 @@
       consignmentWork: (counts["CH-08"] || 0) + (counts["YF-09"] || 0) + (counts["TC-05"] || 0) + (counts["CH-11"] || 0),
       creditPurchase: (counts["GG-02"] || 0),
       complaint: (counts["TC-08"] || 0) + (counts["CH-03"] || 0),
-      fieldWorkFallback: /田地|采收|巡田|浇水|除草|播种/.test(textBlob) ? 1 : 0,
+      fieldWorkFallback: /黄石农场|采收|巡田|浇水|除草|播种/.test(textBlob) ? 1 : 0,
       lowEnergyVillagers,
       unhealthyVillagers
     };

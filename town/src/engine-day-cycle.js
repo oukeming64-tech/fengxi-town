@@ -127,6 +127,13 @@
       const settlementLogs = engineDailyReport.makeSettlementLogs(settlement, state);
       const report = engineDailyReport.generateReport({ state, zones });
       state.lastReport = report;
+      if (T.townStage?.buildPlayback) {
+        state.lastStagePlayback = T.townStage.buildPlayback(state, {
+          day: state.day,
+          activityLogs: settlementActivityLogs,
+          timeSlots
+        });
+      }
       const daySnapshot = timeline.makeDailyFactSnapshot(state.day, report, [...finishedLogs, ...settlementLogs]);
       if (daySnapshot) state.dailySnapshots.push(daySnapshot);
       timeline.maybeCreateStageEvaluation(state.day, state.lastWeeklyDebtSettlement);
@@ -162,7 +169,7 @@
       state.displayLogs = [...finishedLogs, ...settlementLogs, doneLog];
       state.allLogs.push(...settlementLogs, doneLog);
       if (state.currentWeather) {
-        systemLog(weatherSystem.summarize ? weatherSystem.summarize(state.currentWeather) : `${state.currentWeather.label}压在镇上，田地先看天气再开工。`, state.day, "清晨");
+        systemLog(weatherSystem.summarize ? weatherSystem.summarize(state.currentWeather) : `${state.currentWeather.label}压在镇上，农场先看天气再开工。`, state.day, "清晨");
       }
     }
 

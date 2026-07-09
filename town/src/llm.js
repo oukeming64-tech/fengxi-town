@@ -9,7 +9,7 @@
     actionEndpoint: localStorage.getItem("morningTownActionApi") || "http://127.0.0.1:8787/api/town-actions",
     interactionEndpoint: localStorage.getItem("morningTownInteractionApi") || "http://127.0.0.1:8787/api/town-interactions",
     configEndpoint: localStorage.getItem("morningTownConfigApi") || "http://127.0.0.1:8787/api/config",
-    status: "未开启",
+    status: "本地",
     lastError: "",
     busy: false,
     config: null,
@@ -95,7 +95,7 @@
   function keyStatusLabel(config) {
     const count = Number(config?.keyCount || 0);
     const suffix = count > 1 ? ` x${count}` : "";
-    return config?.keySource === "environment" ? `已读取 key${suffix}` : `页面 key${suffix}`;
+    return config?.keySource === "environment" ? `环境 key${suffix}` : `页面 key${suffix}`;
   }
 
   async function loadConfig() {
@@ -166,7 +166,7 @@
       state.status = "文本已整理";
       return true;
     } catch (error) {
-      state.status = "未开启";
+      state.status = "本地";
       state.lastError = error.message || "model_shadow_failed";
       return false;
     } finally {
@@ -199,10 +199,10 @@
       state.actionControl = control;
       state.actionAudit = control?.audit || result.actionAudit || result.audit || null;
       state.config = result.config || state.config;
-      state.status = control?.audit?.accepted ? "已安排" : "未开启";
+      state.status = control?.audit?.accepted ? "已安排" : "本地";
       return Boolean(control);
     } catch (error) {
-      state.status = "未开启";
+      state.status = "本地";
       state.lastError = error.message || "model_action_control_failed";
       T.modelActionProposals?.clear?.(engine);
       state.actionControl = null;
@@ -243,10 +243,10 @@
         return true;
       }
       if (state.audit?.parseError) state.lastError = state.audit.parseError;
-      state.status = "未开启";
+      state.status = "本地";
       return false;
     } catch (error) {
-      state.status = "未开启";
+      state.status = "本地";
       state.lastError = error.message || "model_interaction_failed";
       return false;
     } finally {
@@ -255,7 +255,7 @@
   }
 
   function resetStatus() {
-    state.status = "未开启";
+    state.status = "本地";
     state.lastError = "";
     state.busy = false;
     state.shadow = null;

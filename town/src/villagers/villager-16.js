@@ -2,31 +2,21 @@
   const T = window.MorningTown;
   T.registerVillager(function (name) {
     return T.makeVillager({
-      name, tag: "Écho", home: "16号",
-      storage: { seeds: 2, crop: 1, wood: 3, stone: 2, ore: 0, fish: 0, meal: 2 },
-      coins: 138, energy: 90, renown: 24, help: 22, favor: 4, standing: 17,
-      traits: { work: 1.18, talk: 1.48, trade: 0.82, risk: 0.7, quiet: 0.32, order: 1.18 },
+      name, tag: "均灯", home: "16号",
+      storage: { seeds: 2, crop: 0, wood: 3, stone: 2, ore: 1, fish: 0, meal: 2 },
+      coins: 170, energy: 82, renown: 21, help: 14, favor: 2, standing: 18,
+      traits: { work: 0.85, talk: 1.55, trade: 1.35, risk: 1.0, quiet: 0.45, order: 0.65 },
       decide(ctx, self) {
         if (self.energy < 20) return "home";
-        const nameListPull = 1 + (self.renown * 0.012) + (self.help * 0.01);
-        const chorePull = self.standing < self.help ? 1.2 : 0.95;
-        return T.chooseWeighted([
-          { value: "notice", weight: 2.25 * nameListPull },
-          { value: "bridge", weight: ctx.scene.bridge * 1.65 * chorePull },
-          { value: "farm", weight: 1.45 * chorePull },
-          { value: "market", weight: 1.25 * nameListPull },
-          { value: "inn", weight: 1.1 * nameListPull },
-          { value: "home", weight: 0.25 }
-        ]);
+        return T.chooseWeighted([{ value: "inn", weight: 1.8 }, { value: "market", weight: 1.7 }, { value: "notice", weight: 1.3 }, { value: "bridge", weight: ctx.scene.bridge * 1.0 }, { value: "mine", weight: 0.8 }]);
       },
       line(action, ctx) {
         const lines = {
-          notice: ["{name}在社区公告栏前先应了一声，粗头记号笔还没递过来，手已经伸到志愿者登记表最上面。", "{name}把镇政厅折叠桌上的纸递得很勤，纸边擦过袖口，递完总要看看管事的人有没有点头。"],
-          bridge: ["{name}在木桥边谁喊都答应，木板、绳子、钉子轮着递，眼角却总往签到表那一页瞟。", "{name}帮人扶住桥梁的时候站得很正，掌心被木刺扎了一下，也先看远处的人有没有看见。"],
-          farm: ["{name}跑到社区菜园帮忙浇水，喷壶还没放下，就问下一排高畦种植箱还缺不缺人，裤脚一路湿到膝盖。"],
-          market: ["{name}替几个农夫市集摊位都搬了货，搬完没有马上走，等摊主把那句谢谢说完整。"],
-          inn: ["{name}在小餐馆替人添咖啡摆高脚椅，听见有人夸今天帮手多，背一下就挺直了，纸杯里的水晃出半圈。"],
-          home: ["{name}回到厨房水槽前把袖口洗干净，又把今天被记下的名字看了一遍，纸上那一点墨晕被台灯照得很重。"]
+          inn: ["{name}每桌都问了一圈火够不够旺，每桌都觉得自己被照看到了。"],
+          market: ["{name}替好几个摊子都说了几句好话，旁人分不清哪一个才是重点。"],
+          notice: ["{name}在告示牌旁解释新灯怎么挂，听的人一个接一个靠近。"],
+          bridge: ["{name}给桥边几个人都递了工具，热心分得很均匀。"],
+          mine: ["{name}去矿洞找亮石，说可以给镇口做几盏新灯。"]
         };
         return T.pick(lines[action] || lines.inn).replace("{name}", name).replace("{task}", ctx.scene.task);
       }

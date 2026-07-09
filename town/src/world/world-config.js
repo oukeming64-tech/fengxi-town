@@ -3,7 +3,7 @@
 
   T.worldConfig = {
     version: "world-rules-v0.1-normalized",
-    source: "枫溪镇规则",
+    source: "04_AI班级小镇/world/00_source/枫溪镇_黄石农场_世界规则文件_v0.1_原文.md",
     normalizedAt: "2026-07-04",
     corrections: [
       {
@@ -17,8 +17,8 @@
     year: 2006,
     townName: "枫溪镇",
     townEnglishName: "Maple Creek",
-    farmName: "田地",
-    currency: { code: "YSC", name: "枫溪币", approximateUsd: 1 },
+    farmName: "黄石农场",
+    currency: { code: "YSC", name: "黄石币", approximateUsd: 1 },
     population: {
       residents: 30,
       externalCharacters: "按事件临时出现"
@@ -39,18 +39,18 @@
       }
     ],
     zones: [
-      { id: "yellowstoneFarm", name: "田地", className: "yellowstone-farm", note: "老田、谷仓、温室和小溪边", resource: "土地、作物、仓储", risk: "疲劳、虫害、资金压力" },
-      { id: "townCenter", name: "街口", className: "town-center", note: "商店、诊所、公告栏和餐馆", resource: "商店、诊所、公告栏、餐馆", risk: "流言、价格垄断" },
+      { id: "yellowstoneFarm", name: "黄石农场", className: "yellowstone-farm", note: "老田、谷仓、温室和小溪边", resource: "土地、作物、仓储", risk: "疲劳、虫害、资金压力" },
+      { id: "townCenter", name: "镇中心", className: "town-center", note: "商店、诊所、公告栏和餐馆", resource: "商店、诊所、公告栏、餐馆", risk: "流言、价格垄断" },
       { id: "mapleForest", name: "枫溪森林", className: "maple-forest", note: "木材、蘑菇、草药和雾中小路", resource: "木材、蘑菇、草药", risk: "迷路、暴雨、野兽传闻" },
-      { id: "oldMine", name: "山坡", className: "old-mine", note: "旧设备、山洞口和石坡", resource: "石材、石料、旧设备", risk: "塌方、受伤、禁入" },
-      { id: "southRoad", name: "南路口", className: "south-road", note: "县城方向、物流和城市订单", resource: "物流、城市订单", risk: "延误、运费、天气封路" },
+      { id: "oldMine", name: "旧矿区", className: "old-mine", note: "旧设备、矿洞口和石坡", resource: "石材、矿物、旧设备", risk: "塌方、受伤、禁入" },
+      { id: "southRoad", name: "南部公路", className: "south-road", note: "县城方向、物流和城市订单", resource: "物流、城市订单", risk: "延误、运费、天气封路" },
       { id: "wetlands", name: "河湾湿地", className: "wetlands", note: "鱼、芦苇、湿地作物和水质", resource: "鱼、芦苇、湿地作物", risk: "洪水、蚊虫、泥陷" },
-      { id: "communityHall", name: "公共屋", className: "community-hall", note: "节日、会议、投票和公听会", resource: "节日、会议、投票", risk: "派系冲突" },
+      { id: "communityHall", name: "社区会堂", className: "community-hall", note: "节日、会议、投票和公听会", resource: "节日、会议、投票", risk: "派系冲突" },
       { id: "goldkinStation", name: "高金采购站", className: "goldkin-station", note: "大宗交易、贷款和采购合同", resource: "大宗交易、贷款", risk: "合同依赖" },
       { id: "accountingOffice", name: "会计协会办公室", className: "accounting-office", note: "账本、审计、补贴和合规培训", resource: "账本、审计、补贴", risk: "官僚压力" }
     ],
     seasons: {
-      spring: { label: "春季", field: "开垦、播种和修复刚开始，田地的旧账和湿土都等着人处理。" },
+      spring: { label: "春季", field: "开垦、播种和修复刚开始，黄石农场的旧账和湿土都等着人处理。" },
       summer: { label: "夏季", field: "灌溉、市场和劳动压力一起升温，高金采购站也变得更活跃。" },
       fall: { label: "秋季", field: "收获、结算和合同续签压到门口，账本比天气更难躲。" },
       winter: { label: "冬季", field: "农活慢下来，审计、维修、节庆和明年的计划浮上桌面。" }
@@ -69,7 +69,7 @@
     },
     styleRules: [
       "温馨但不幼稚",
-      "表层是田地小镇生活，底层是资源配置、组织行为、信任和制度",
+      "表层是农场小镇生活，底层是资源配置、组织行为、信任和制度",
       "冲突必须有现实原因，不使用纯粹恶人",
       "民间传说可以存在，但默认不明确证实超自然",
       "每个 NPC 都应该既有优点也有盲区",

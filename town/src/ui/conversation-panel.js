@@ -64,7 +64,7 @@
     if (!conversations && !notices) {
       const text = llm.busy && llm.status === "整理对话中"
         ? "居民短对话正在整理中。"
-        : "开启模型文本并推进后，这里会出现根据今日小事整理出的居民短对话。";
+        : "打开外部文本并推进后，这里会出现根据今日小事整理出的居民短对话。";
       const softAlert = llm.lastError ? `<p class="conversation-alert">这次没有整理出可展示对话。</p>` : "";
       panel.innerHTML = `
         <div class="empty">${T.escapeHtml(text)}</div>

@@ -115,6 +115,99 @@
   line-height: 1.35;
 }
 
+.map-feature-hotspot {
+  position: absolute;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: calc(var(--hotspot-radius, 5) * 9px);
+  height: calc(var(--hotspot-radius, 5) * 9px);
+  min-height: 0;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(32, 37, 31, 0.28);
+  border-radius: 50%;
+  padding: 0;
+  background: rgba(255, 254, 249, 0.82);
+  box-shadow: 0 7px 15px rgba(31, 39, 33, 0.18);
+  pointer-events: auto;
+}
+
+.map-feature-hotspot:hover,
+.map-feature-hotspot:focus,
+.map-feature-hotspot.is-selected {
+  z-index: 9;
+  border-color: #20251f;
+  background: rgba(255, 254, 249, 0.95);
+  outline: none;
+}
+
+.hotspot-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 0 7px rgba(47, 111, 146, 0.15);
+}
+
+.hotspot-label {
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 86px;
+  border: 1px solid rgba(32, 37, 31, 0.18);
+  border-radius: 7px;
+  padding: 2px 5px;
+  overflow: hidden;
+  background: rgba(255, 254, 249, 0.9);
+  color: #30372f;
+  font-size: 10px;
+  font-weight: 760;
+  line-height: 1.15;
+  opacity: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: opacity 120ms ease;
+}
+
+.map-feature-hotspot:hover .hotspot-label,
+.map-feature-hotspot:focus .hotspot-label,
+.map-feature-hotspot.is-selected .hotspot-label {
+  opacity: 1;
+}
+
+.kind-farm .hotspot-dot {
+  background: var(--green);
+  box-shadow: 0 0 0 7px rgba(47, 123, 79, 0.16);
+}
+
+.kind-repair .hotspot-dot {
+  background: var(--slate);
+  box-shadow: 0 0 0 7px rgba(67, 82, 98, 0.16);
+}
+
+.kind-buy .hotspot-dot,
+.kind-sell .hotspot-dot {
+  background: var(--amber);
+  box-shadow: 0 0 0 7px rgba(169, 118, 34, 0.18);
+}
+
+.kind-notice .hotspot-dot,
+.kind-stock .hotspot-dot {
+  background: var(--violet);
+  box-shadow: 0 0 0 7px rgba(103, 85, 138, 0.16);
+}
+
+.kind-social .hotspot-dot {
+  background: var(--red);
+  box-shadow: 0 0 0 7px rgba(155, 77, 66, 0.14);
+}
+
+.kind-home .hotspot-dot {
+  background: #6d6b52;
+  box-shadow: 0 0 0 7px rgba(109, 107, 82, 0.14);
+}
+
 @media (max-width: 720px) {
   .zone-note {
     max-width: 18ch;

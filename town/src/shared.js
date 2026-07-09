@@ -1,14 +1,16 @@
 (function () {
   const town = {
     version: {
-      code: "v0.1.2",
+      code: "v0.1.4",
       name: "枫溪镇",
-      status: "小镇日常"
+      status: "桌面舞台"
     },
     assets: {
       townMap: "./assets/concept/map.png",
       residentSpriteSheet: "./assets/concept/residents.png",
       residentAvatarDir: "./assets/runtime/residents",
+      actionCueAtlas: "./assets/runtime/action-cues/action-cue-atlas-v0.1.4.png",
+      actionCueDir: "./assets/runtime/action-cues",
       noticeBoard: "./assets/runtime/props/notice-board.png"
     },
     villagerFactories: []

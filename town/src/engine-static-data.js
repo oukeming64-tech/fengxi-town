@@ -17,13 +17,13 @@
   ];
 
   const zones = [
-    { id: "yellowstoneFarm", name: "田地", className: "yellowstone-farm", note: "老田、谷仓和温室" },
-    { id: "townCenter", name: "街口", className: "town-center", note: "商店、诊所和餐馆" },
+    { id: "yellowstoneFarm", name: "黄石农场", className: "yellowstone-farm", note: "老田、谷仓和温室" },
+    { id: "townCenter", name: "镇中心", className: "town-center", note: "商店、诊所和餐馆" },
     { id: "mapleForest", name: "枫溪森林", className: "maple-forest", note: "木材、蘑菇和草药" },
-    { id: "oldMine", name: "山坡", className: "old-mine", note: "山洞、石坡和旧设备" },
-    { id: "southRoad", name: "南路口", className: "south-road", note: "县城方向和物流" },
+    { id: "oldMine", name: "旧矿区", className: "old-mine", note: "矿洞、石坡和旧设备" },
+    { id: "southRoad", name: "南部公路", className: "south-road", note: "县城方向和物流" },
     { id: "wetlands", name: "河湾湿地", className: "wetlands", note: "鱼、芦苇和水质" },
-    { id: "communityHall", name: "公共屋", className: "community-hall", note: "节日、会议和投票" },
+    { id: "communityHall", name: "社区会堂", className: "community-hall", note: "节日、会议和投票" },
     { id: "goldkinStation", name: "高金采购站", className: "goldkin-station", note: "大宗交易和贷款" },
     { id: "accountingOffice", name: "会计协会办公室", className: "accounting-office", note: "账本、审计和补贴" }
   ];
@@ -41,12 +41,12 @@
   };
 
   const activityPlaces = [
-    { id: "farm", name: "田地", className: "farm", zone: "yellowstoneFarm" },
-    { id: "mine", name: "山坡", className: "mine", zone: "oldMine" },
+    { id: "farm", name: "黄石农场", className: "farm", zone: "yellowstoneFarm" },
+    { id: "mine", name: "旧矿区", className: "mine", zone: "oldMine" },
     { id: "river", name: "河湾湿地", className: "river", zone: "wetlands" },
-    { id: "market", name: "街口", className: "market", zone: "townCenter" },
-    { id: "bridge", name: "公共屋", className: "bridge", zone: "communityHall" },
-    { id: "notice", name: "公共屋", className: "notice", zone: "communityHall" },
+    { id: "market", name: "镇中心", className: "market", zone: "townCenter" },
+    { id: "bridge", name: "社区会堂", className: "bridge", zone: "communityHall" },
+    { id: "notice", name: "社区会堂", className: "notice", zone: "communityHall" },
     { id: "inn", name: "餐馆", className: "inn", zone: "townCenter" },
     { id: "home", name: "镇上小屋", className: "home", zone: "townCenter" }
   ];
@@ -96,10 +96,10 @@
   };
 
   const seasons = {
-    spring: { label: "春季", field: "新芽刚起，田地和街口都醒得早。" },
+    spring: { label: "春季", field: "新芽刚起，黄石农场和镇中心都醒得早。" },
     summer: { label: "夏季", field: "白天更长，河湾湿地、餐馆和采购站更热。" },
-    fall: { label: "秋季", field: "收成压到门口，谷仓、公共屋和账本都忙。" },
-    winter: { label: "冬季", field: "山路冷，办公室和公共屋的灯亮得久。" }
+    fall: { label: "秋季", field: "收成压到门口，谷仓、会堂和账本都忙。" },
+    winter: { label: "冬季", field: "山路冷，办公室和会堂的灯亮得久。" }
   };
 
   const timeSlots = ["清晨", "午后", "夜里"];

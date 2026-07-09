@@ -58,7 +58,7 @@
   function tagFor(log, otherLog, context) {
     const text = `${log.activityId} ${otherLog.activityId} ${log.activityTitle} ${otherLog.activityTitle} ${log.place} ${context.sceneKey || ""}`;
     if (/YF-07|YF-10|OM-02|OM-08|设施|维修|温室|谷仓/.test(text)) return "facility-care";
-    if (/CH-|公共屋|节日|bridge/.test(text)) return "community-hall";
+    if (/CH-|会堂|节日|bridge/.test(text)) return "community-hall";
     if (/AC-|账|会计/.test(text)) return "accounting";
     if (/GG-|采购|合同|招标/.test(text)) return "contract-board";
     if (/TC-|市场|餐馆|寄售/.test(text)) return "market-talk";
@@ -76,8 +76,8 @@
     const seed = rules.stableHash(`${context.day || ""}:${log.id}:${otherLog.id}:${pair.pairId}`);
     const text = `${log.activityId} ${otherLog.activityId} ${log.activityTitle} ${otherLog.activityTitle} ${log.kind} ${otherLog.kind} ${log.place}`;
     if (/TC-08|CH-03|抱怨|争议|投诉|排队/.test(text)) return "exclusion";
-    if ((pair.friction >= 14 || pair.exclusion >= 10) && /CH-|AC-|TC-|公共屋|账|餐馆|市场/.test(text)) return "mediation";
-    if (/CH-01|CH-05|CH-09|AC-10|GG-03|SR-06|公告|公共屋|计划|报价/.test(text)) return "alliance";
+    if ((pair.friction >= 14 || pair.exclusion >= 10) && /CH-|AC-|TC-|会堂|账|餐馆|市场/.test(text)) return "mediation";
+    if (/CH-01|CH-05|CH-09|AC-10|GG-03|SR-06|公告|会堂|计划|报价/.test(text)) return "alliance";
     if (/TC-05|CH-08|YF-09|RW-01|RW-09|餐馆|市场|寄售|采收|鱼/.test(text)) return "gift";
     if (log.kind === "work" || otherLog.kind === "work" || /YF-|OM-|SR-|修|搬|巡|浇|除草|加工/.test(text)) return "help";
     if (log.kind === "talk" && otherLog.kind === "talk") return seed % 3 === 0 ? "gift" : "alliance";
@@ -87,9 +87,9 @@
   function giftItemFor(log) {
     const text = `${log.activityId} ${log.activityTitle} ${log.place}`;
     if (/RW|湿地|鱼/.test(text)) return "一小包河边带回来的东西";
-    if (/YF|田地|采收|谷仓/.test(text)) return "一份刚整理好的田地小物";
+    if (/YF|农场|采收|谷仓/.test(text)) return "一份刚整理好的农场小物";
     if (/TC|市场|餐馆/.test(text)) return "一份顺手买下的小点心";
-    if (/CH|公共屋|节日/.test(text)) return "一张公共屋桌边留下的纸签";
+    if (/CH|会堂|节日/.test(text)) return "一张会堂桌边留下的纸签";
     return "一件今天用得上的小东西";
   }
 

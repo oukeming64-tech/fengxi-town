@@ -26,11 +26,194 @@
     };
   }
 
+  function playbackFor(engine, options) {
+    return options.playback || T.townStage?.currentPlayback?.(engine) || null;
+  }
+
+  function activeStageFor(playback, stageIndex) {
+    return T.townStage?.stageAt?.(playback, stageIndex) || null;
+  }
+
+  function viewportStyle(viewport = {}) {
+    const scale = T.clamp(Number(viewport.scale) || 1, 1, 2.8);
+    const x = Math.round((Number(viewport.x) || 0) * 10) / 10;
+    const y = Math.round((Number(viewport.y) || 0) * 10) / 10;
+    return `transform: translate(${x}px, ${y}px) scale(${scale});`;
+  }
+
+  function renderMapControls(viewport = {}) {
+    const reduced = Boolean(viewport.reducedWeatherMotion);
+    return `
+      <div class="map-view-controls" aria-label="地图视图">
+        <button type="button" data-map-action="zoom-out" title="缩小" aria-label="缩小">-</button>
+        <button type="button" data-map-action="zoom-in" title="放大" aria-label="放大">+</button>
+        <button type="button" data-map-action="reset-view" title="重置视图" aria-label="重置视图">0</button>
+        <button type="button" class="${reduced ? "is-active" : ""}" data-map-action="toggle-weather-motion" title="减少天气动画" aria-label="减少天气动画">~</button>
+      </div>
+    `;
+  }
+
+  function renderStageControls(playback, stageIndex) {
+    if (!playback?.stages?.length) return "";
+    return `
+      <div class="map-stage-controls" aria-label="居民行动分幕">
+        <span>第 ${playback.day} 天</span>
+        ${playback.stages.map((stage, index) => `
+          <button type="button" class="${index === stageIndex ? "is-active" : ""}" data-stage-index="${index}" title="${T.escapeHtml(stage.label)}">
+            ${T.escapeHtml(stage.label)}
+          </button>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function renderStageHud(engine, playback, activeStage) {
+    const weather = T.townStage?.weatherView?.(engine.state.currentWeather) || { label: "阴天" };
+    return `
+      <div class="map-stage-hud" aria-live="polite">
+        <span>第 ${playback?.day || engine.state.day} 天</span>
+        <span>${T.escapeHtml(weather.label)}</span>
+        <span>${T.escapeHtml(activeStage?.label || "清晨")}</span>
+      </div>
+    `;
+  }
+
+  function renderActionLegend(activeStage) {
+    const labels = [];
+    (activeStage?.events || []).forEach((event) => {
+      const label = event.animationLabel || T.townStage?.animationForKey?.(event.animationKey)?.label || "";
+      if (label && !labels.includes(label)) labels.push(label);
+    });
+    if (!labels.length) return "";
+    return `
+      <div class="map-action-legend" aria-hidden="true">
+        ${labels.slice(0, 8).map((label) => `<span>${T.escapeHtml(label)}</span>`).join("")}
+      </div>
+    `;
+  }
+
+  function renderWeatherLayer(engine, options = {}) {
+    const weather = T.townStage?.weatherView?.(engine.state.currentWeather) || { type: "cloudy", label: "阴天" };
+    const reduced = options.viewport?.reducedWeatherMotion ? " is-reduced" : "";
+    return `
+      <div class="weather-layer weather-${T.escapeHtml(weather.type)}${reduced}" aria-label="${T.escapeHtml(weather.label)}天气蒙版">
+        <span class="weather-particles" aria-hidden="true"></span>
+      </div>
+    `;
+  }
+
+  function activityNames(hotspot) {
+    return (T.townStage?.activitiesForHotspot?.(hotspot) || [])
+      .slice(0, 5)
+      .map((activity) => activity.shortTitle || activity.title || activity.id);
+  }
+
+  function renderHotspotButton(hotspot, options) {
+    const selected = options.selectedHotspotId === hotspot.id ? " is-selected" : "";
+    const title = `${hotspot.label} · ${activityNames(hotspot).slice(0, 3).join(" / ") || "本地活动锚点"}`;
+    if (hotspot.id === "notice-board") {
+      const boardLabel = options.noticeBoardOpen ? "公告板已打开" : "打开公告板：设施、招标、账务与居民互动";
+      return `
+        <button type="button" class="notice-board-hotspot${options.noticeBoardOpen ? " is-open" : ""}${selected}" data-hotspot-id="${T.escapeHtml(hotspot.id)}" data-notice-board="true" style="left: ${hotspot.x}%; top: ${hotspot.y}%;" aria-label="${T.escapeHtml(boardLabel)}" title="${T.escapeHtml(boardLabel)}">
+          <img src="${T.escapeHtml(options.noticeBoardAsset)}" alt="">
+          <span>${T.escapeHtml(hotspot.label)}</span>
+        </button>
+      `;
+    }
+    return `
+      <button type="button" class="map-feature-hotspot kind-${T.escapeHtml(hotspot.kind)}${selected}" data-hotspot-id="${T.escapeHtml(hotspot.id)}" style="left: ${hotspot.x}%; top: ${hotspot.y}%; --hotspot-radius: ${hotspot.radius || 5};" title="${T.escapeHtml(title)}" aria-label="${T.escapeHtml(`热区：${hotspot.label}`)}">
+        <span class="hotspot-dot" aria-hidden="true"></span>
+        <span class="hotspot-label">${T.escapeHtml(hotspot.label)}</span>
+      </button>
+    `;
+  }
+
+  function renderHotspots(options = {}) {
+    const hotspots = T.townStage?.hotspots || [];
+    return hotspots.map((hotspot) => renderHotspotButton(hotspot, options)).join("");
+  }
+
+  function residentNamesNear(engine, activeStage, hotspot) {
+    const byId = new Map(engine.state.villagers.map((villager) => [villager.id, villager]));
+    const staged = (activeStage?.events || [])
+      .filter((event) => event.hotspotId === hotspot.id)
+      .map((event) => byId.get(event.residentId)?.name || event.residentName || event.residentId);
+    if (staged.length) return staged.slice(0, 6);
+    return engine.state.villagers
+      .filter((villager) => villager.zone === hotspot.zoneId)
+      .slice(0, 6)
+      .map((villager) => villager.name);
+  }
+
+  function renderHotspotInspector(engine, activeStage, selectedHotspotId) {
+    const hotspot = T.townStage?.byId?.get(selectedHotspotId);
+    if (!hotspot) return "";
+    const activities = activityNames(hotspot);
+    const residents = residentNamesNear(engine, activeStage, hotspot);
+    return `
+      <aside class="map-hotspot-inspector" aria-live="polite">
+        <div class="inspector-kicker">${T.escapeHtml(engine.zoneName(hotspot.zoneId))} · ${T.escapeHtml(hotspot.kind)}</div>
+        <h3>${T.escapeHtml(hotspot.label)}</h3>
+        <p>${T.escapeHtml(hotspot.description || "本地已审核活动的地图锚点。")}</p>
+        <div class="inspector-list">
+          <span>活动</span>
+          <strong>${T.escapeHtml(activities.join(" / ") || "待绑定")}</strong>
+        </div>
+        <div class="inspector-list">
+          <span>附近</span>
+          <strong>${T.escapeHtml(residents.join("、") || "暂时没人停在这里")}</strong>
+        </div>
+      </aside>
+    `;
+  }
+
+  function renderDialogues(activeStage) {
+    return (activeStage?.encounters || []).slice(0, 3).map((encounter) => {
+      const text = (encounter.lines || [])
+        .map((line) => `${line.speakerName || line.speakerId}：${line.text}`)
+        .join(" / ");
+      return `
+        <div class="stage-dialogue" style="left: ${encounter.x}%; top: ${encounter.y}%;">
+          <span>${T.escapeHtml(encounter.hotspotLabel || "相遇")}</span>
+          <p>${T.escapeHtml(text)}</p>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderActionCue(event) {
+    if (!event) return "";
+    const animation = T.townStage?.animationForKey?.(event.animationKey) || {};
+    const cueClass = event.animationCueClass || animation.cueClass || "cue-idle";
+    const label = event.animationLabel || animation.label || "行动";
+    const iconKey = String(event.animationKey || "idle").replace(/[^a-z0-9-]/gi, "") || "idle";
+    const sprite = event.animationSprite || animation.sprite || { col: 2, row: 2 };
+    const atlas = T.townStageData?.actionCueAtlas || {};
+    const columns = Math.max(1, Number(atlas.columns) || 4);
+    const rows = Math.max(1, Number(atlas.rows) || 3);
+    const x = columns <= 1 ? 0 : Math.round((T.clamp(Number(sprite.col) || 0, 0, columns - 1) / (columns - 1)) * 10000) / 100;
+    const y = rows <= 1 ? 0 : Math.round((T.clamp(Number(sprite.row) || 0, 0, rows - 1) / (rows - 1)) * 10000) / 100;
+    const iconPath = T.assets.actionCueDir ? `${T.assets.actionCueDir}/action-cue-${iconKey}-v0.1.4.png` : "";
+    const atlasStyle = iconPath
+      ? `--cue-icon: url('${T.escapeHtml(iconPath)}'); --cue-bg-size: contain; --cue-bg-position: center;`
+      : `--cue-atlas: url('${T.escapeHtml(T.assets.actionCueAtlas)}'); --cue-bg-size: 400% 300%; --cue-bg-position: ${x}% ${y}%;`;
+    const iconImage = iconPath ? `<img class="resident-action-icon" src="${T.escapeHtml(iconPath)}" alt="">` : "";
+    return `
+      <span class="resident-action-cue ${iconPath ? "has-icon " : ""}${T.escapeHtml(cueClass)}" style="${atlasStyle}" aria-hidden="true" title="${T.escapeHtml(label)}">
+        ${iconImage}
+        <i></i><i></i><i></i>
+      </span>
+    `;
+  }
+
   function renderMap(container, engine, options = {}) {
     if (!container) return;
     const current = options.current || null;
-    const noticeBoardOpen = Boolean(options.noticeBoardOpen);
-    const noticeBoardAsset = options.noticeBoardAsset || T.assets.noticeBoard || "./assets/runtime/props/notice-board.png";
+    const noticeBoardAsset = options.noticeBoardAsset || T.assets.noticeBoard || "../assets/runtime/maple-creek-notice-board-v0.0.6.svg";
+    const playback = playbackFor(engine, options);
+    const stageIndex = T.clamp(Number(options.stageIndex) || 0, 0, Math.max(0, (playback?.stages?.length || 1) - 1));
+    const activeStage = activeStageFor(playback, stageIndex);
+    const activeEvents = new Map((activeStage?.events || []).map((event) => [event.residentId, event]));
     const byZone = new Map(engine.zones.map((zone) => [zone.id, []]));
     engine.state.villagers.forEach((villager) => {
       const zoneId = byZone.has(villager.zone) ? villager.zone : "townCenter";
@@ -52,29 +235,45 @@
       const residents = byZone.get(zone.id)
         .sort((a, b) => a.id.localeCompare(b.id));
       return residents.map((villager, index) => {
-        const pos = mapTokenPosition(villager, index, residents.length, zone);
+        const event = activeEvents.get(villager.id);
+        const pos = event ? { x: event.x, y: event.y } : mapTokenPosition(villager, index, residents.length, zone);
         const selected = current && current.id === villager.id ? " is-selected" : "";
+        const stageClass = event ? ` is-stage-token action-${event.animationKey || "idle"} tone-${event.animationTone || "quiet"}` : "";
+        const title = event
+          ? `${villager.name} · ${event.hotspotLabel} · ${event.activityTitle} · ${event.animationLabel || "行动"}`
+          : `${villager.name} · ${villager.recentAction?.place || engine.placeName(villager.location)}`;
         return `
-          <button type="button" class="resident-token ${villager.recentAction?.kind || "quiet"}${selected}" data-villager-id="${T.escapeHtml(villager.id)}" style="left: ${pos.x}%; top: ${pos.y}%;" title="${T.escapeHtml(villager.name)} · ${T.escapeHtml(villager.recentAction?.place || engine.placeName(villager.location))}" aria-label="${T.escapeHtml(villager.name)}，${T.escapeHtml(zone.name)}">
+          <button type="button" class="resident-token ${event?.kind || villager.recentAction?.kind || "quiet"}${selected}${stageClass}" data-villager-id="${T.escapeHtml(villager.id)}" data-action-key="${T.escapeHtml(event?.animationKey || "")}" style="left: ${pos.x}%; top: ${pos.y}%;" title="${T.escapeHtml(title)}" aria-label="${T.escapeHtml(villager.name)}，${T.escapeHtml(event?.hotspotLabel || zone.name)}">
             <img src="${T.escapeHtml(villager.avatar || T.residentAvatarPath(villager.id))}" alt="">
+            ${renderActionCue(event)}
           </button>
         `;
       }).join("");
     }).join("");
-    const boardLabel = noticeBoardOpen ? "公告板已打开" : "打开公告板：设施、招标、账务与居民互动";
+    const hotspotOptions = {
+      noticeBoardOpen: Boolean(options.noticeBoardOpen),
+      noticeBoardAsset,
+      selectedHotspotId: options.selectedHotspotId || ""
+    };
 
     container.innerHTML = `
       <div class="map-visual" aria-label="枫溪镇像素地图">
-        <img class="map-image" src="${T.escapeHtml(T.assets.townMap)}" alt="枫溪镇地图">
-        <div class="map-shade" aria-hidden="true"></div>
-        <div class="zone-marker-layer">${labels}</div>
-        <div class="resident-token-layer">${tokens}</div>
-        <div class="map-hotspot-layer">
-          <button type="button" class="notice-board-hotspot${noticeBoardOpen ? " is-open" : ""}" data-notice-board="true" style="left: 52%; top: 61%;" aria-label="${T.escapeHtml(boardLabel)}" title="${T.escapeHtml(boardLabel)}">
-            <img src="${T.escapeHtml(noticeBoardAsset)}" alt="">
-            <span>公告板</span>
-          </button>
+        ${renderMapControls(options.viewport)}
+        ${renderStageHud(engine, playback, activeStage)}
+        ${renderActionLegend(activeStage)}
+        <div class="map-stage-viewport">
+          <div class="map-stage-surface" style="${viewportStyle(options.viewport)}">
+            <img class="map-image" src="${T.escapeHtml(T.assets.townMap)}" alt="枫溪镇 2D 小镇地图">
+            <div class="map-shade" aria-hidden="true"></div>
+            ${renderWeatherLayer(engine, options)}
+            <div class="zone-marker-layer">${labels}</div>
+            <div class="map-hotspot-layer">${renderHotspots(hotspotOptions)}</div>
+            <div class="resident-token-layer">${tokens}</div>
+            <div class="stage-dialogue-layer">${renderDialogues(activeStage)}</div>
+          </div>
         </div>
+        ${renderStageControls(playback, stageIndex)}
+        ${renderHotspotInspector(engine, activeStage, options.selectedHotspotId)}
       </div>
     `;
   }

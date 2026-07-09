@@ -125,7 +125,7 @@
       if (/加工|包装/.test(activity.title) && lot) {
         return T.pick([
           `${name}把${lot.cropName} ${lot.quantity} 单位搬到包装台，先处理快到损耗日的那批。谷仓清单旁边多了一条小记号。`,
-          `${name}拆开${lot.cropName}的旧标签，按品质${qualityText(lot.quality)}重分一遍，留给${contract?.buyer || "街口货架"}的箱子放在最外侧。`
+          `${name}拆开${lot.cropName}的旧标签，按品质${qualityText(lot.quality)}重分一遍，留给${contract?.buyer || "镇中心货架"}的箱子放在最外侧。`
         ]);
       }
       if (/清点谷仓/.test(activity.title)) {
@@ -163,10 +163,10 @@
         return `${zone}里先念${contract?.label || "明日农活"}，${name}把“谁负责交付、谁负责留守”分成两列，声音不高但每个人都听见了。`;
       }
       if (/张贴|公告|公示/.test(activity.title)) {
-        return `${name}把${contract?.buyer || "公共屋"}那张单子贴到公告板左上角，旁边写清楚还差几单位、哪天到期。`;
+        return `${name}把${contract?.buyer || "会堂"}那张单子贴到公告板左上角，旁边写清楚还差几单位、哪天到期。`;
       }
       return T.pick([
-        `${name}在${zone}把任务表摊开，最先圈出${contract?.buyer || "公共屋"}那一栏。椅子还没坐满，谁明天去谷仓已经写上去了。`,
+        `${name}在${zone}把任务表摊开，最先圈出${contract?.buyer || "会堂"}那一栏。椅子还没坐满，谁明天去谷仓已经写上去了。`,
         `${zone}的长桌上，${name}把${contract?.label || "明日农活"}写到最上面，旁边留了两格给迟到的人补名字。`
       ]);
     }
@@ -176,13 +176,13 @@
       if (activity.zoneCode === "RW") {
         return T.pick([
           `${name}在${zone}蹲下看水边的泥线，${weather}留下的水印还在。照片贴到水位记录旁，先标出哪条沟会影响明天的田。`,
-          `${zone}的木桩湿了一半，${name}把水位、路面和河湾风向记在同一页。田地风险表上农业一栏是 ${risk}。`
+          `${zone}的木桩湿了一半，${name}把水位、路面和河湾风向记在同一页。农场风险表上农业一栏是 ${risk}。`
         ]);
       }
       if (activity.zoneCode === "OM") {
         return `${name}去了${zone}，先看支架、碎石和${weather}后的路面。工具清单旁边写着农业风险 ${risk}，这趟先确认材料能不能安全运回。`;
       }
-      return `${name}去了${zone}，沿林缘看风折枝和湿泥印。田地风险表上农业一栏是 ${risk}，明天要不要派人巡田就看这几处。`;
+      return `${name}去了${zone}，沿林缘看风折枝和湿泥印。农场风险表上农业一栏是 ${risk}，明天要不要派人巡田就看这几处。`;
     }
 
     if (activity.zoneCode === "TC") {
@@ -190,11 +190,11 @@
         return `${name}在餐馆门边听了两句，话题落到${contract?.cropName || "明天的菜"}和${marketText(townState)}。桌上没有账本，只有一张被油渍压住的小纸条。`;
       }
       if (/邮局|传真|电话/.test(activity.title)) {
-        return `${name}在${zone}把传真纸夹进信封，写的是${contract?.buyer || "买方"}那边的确认回话，不是田地当天账页。`;
+        return `${name}在${zone}把传真纸夹进信封，写的是${contract?.buyer || "买方"}那边的确认回话，不是农场当天账页。`;
       }
       return T.pick([
         `${name}在${zone}把${contract?.cropName || "明天要卖的菜"}问了一圈。${marketText(townState)}，摊主给的价差被记在纸边。`,
-        `${zone}的柜台边，${name}先问谁还要${contract?.cropName || "货架货"}，再看路单和传真纸。今天这趟更像把消息带回田地。`
+        `${zone}的柜台边，${name}先问谁还要${contract?.cropName || "货架货"}，再看路单和传真纸。今天这趟更像把消息带回农场。`
       ]);
     }
 

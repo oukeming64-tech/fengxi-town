@@ -2,35 +2,34 @@
   const T = window.MorningTown;
   T.registerVillager(function (name) {
     return T.makeVillager({
-      name, tag: "Cercle", home: "27号",
-      storage: { seeds: 0, crop: 0, wood: 1, stone: 0, ore: 0, fish: 0, meal: 3 },
-      coins: 126, energy: 96, renown: 18, help: 5, favor: 6, standing: 12,
-      traits: { work: 0.54, talk: 1.72, trade: 0.82, risk: 0.78, quiet: 0.35, order: 0.5 },
+      name, tag: "望灯", home: "27号",
+      storage: { seeds: 1, crop: 1, wood: 2, stone: 0, ore: 0, fish: 0, meal: 2 },
+      coins: 114, energy: 78, renown: 20, help: 6, favor: 4, standing: 13,
+      traits: { work: 0.62, talk: 1.65, trade: 0.95, risk: 0.5, quiet: 0.45, order: 0.55 },
       decide(ctx, self) {
-        if (self.energy < 16) return "home";
-        const audiencePull = 1 + (self.favor * 0.18) + (self.renown * 0.018);
-        const sunnyPull = ctx.weather?.type === "sunny" ? 1.35 : 1;
+        if (self.energy < 18) return "home";
+        const seenPull = 1 + (self.favor * 0.16) + (self.renown * 0.02);
         return T.chooseWeighted([
-          { value: "river", weight: 2.4 * sunnyPull },
-          { value: "market", weight: 1.9 * audiencePull },
-          { value: "inn", weight: 1.75 * audiencePull },
-          { value: "notice", weight: 1.5 },
-          { value: "bridge", weight: ctx.scene.bridge * 0.45 },
-          { value: "farm", weight: 0.35 },
-          { value: "home", weight: 0.2 }
+          { value: "inn", weight: 2.1 * seenPull },
+          { value: "notice", weight: 1.8 * seenPull },
+          { value: "market", weight: 1.35 },
+          { value: "bridge", weight: ctx.scene.bridge * 0.65 },
+          { value: "farm", weight: 0.5 },
+          { value: "river", weight: 0.45 },
+          { value: "home", weight: 0.35 }
         ]);
       },
       line(action, ctx) {
         const lines = {
-          river: ["{name}沿着小溪环线跑了三圈，停下第一句先问旁边的人忙不忙，汗顺着下巴滴到短袖领口。", "{name}把晨跑路线绕到人多的人行小桥，喘匀后说自己其实也很懂配速，脚尖还在原地小跳。"],
-          market: ["{name}在农夫市集摊前慢跑停步，问摊主忙不忙，又说自己对买卖节奏很有心得，手里的帆布袋只接过半边。", "{name}帮人递了半篮番茄，话头很快拐到自己跑步拿过小镇好成绩。"],
-          inn: ["{name}在小餐馆门口做拉伸，听见有人聊账本，就说自己在算配速这件事上也算有成就。", "{name}端着冰水凑到热闹桌边，先问大家忙不忙，再讲今天跑了多远，杯里的水一口没少。"],
-          notice: ["{name}在社区公告栏旁贴了晨跑路线，纸上弯弯绕绕一圈，旁边又补了一句：有空的人可以一起练。", "{name}看见有人读传单，立刻问人家忙不忙，说自己对这类安排也挺专业。"],
-          bridge: ["{name}绕旧木桥跑了两趟，最后只搬了一根木板，却把桥面坡度讲得很认真，连哪一步容易绊脚都指出来。"],
-          farm: ["{name}从社区菜园边跑过，问正在浇水的人忙不忙，脚步没停，建议倒是留了三条。"],
-          home: ["{name}回到门前台阶擦跑鞋，把鞋带重新系了两遍，鞋尖朝着门口，像是在等下一次有人问起晨跑。"]
+          inn: ["{name}在酒馆门口站了一会儿，等窗边那桌有人招手，才像刚好路过似的坐下。", "{name}把杯子往热闹的一桌挪近，听见有人夸菜摆得齐，话一下多起来。"],
+          notice: ["{name}在告示牌下把字念给旁人听，念完先看人群里有没有人点头。", "{name}把自己的名字写在捐料后面，笔尖停了停，又往旁边多让出一点空。"],
+          market: ["{name}在集市帮人递篮子，眼睛却总往有人笑的摊位那边跑。"],
+          bridge: ["{name}给老桥送来两块木板，放下后没有马上走，等有人看见才拍拍手。"],
+          farm: ["{name}在田边插了几根竹签，听见镇中心有人喊名字，水瓢还没放稳就转身。"],
+          river: ["{name}在河边洗了半只篮子，看见倒影里有人经过，又把头发理了一遍。"],
+          home: ["{name}回住处把门开着，屋里的灯亮得比天色还早。"]
         };
-        return T.pick(lines[action] || lines.river).replace("{name}", name).replace("{task}", ctx.scene.task);
+        return T.pick(lines[action] || lines.inn).replace("{name}", name).replace("{task}", ctx.scene.task);
       }
     });
   });

@@ -2,7 +2,7 @@
   const T = window.MorningTown;
   T.registerVillager(function (name) {
     return T.makeVillager({
-      name, tag: "Nasse", home: "03号",
+      name, tag: "鱼篓", home: "03号",
       storage: { seeds: 1, crop: 0, wood: 1, stone: 1, ore: 0, fish: 5, meal: 1 },
       coins: 116, energy: 82, renown: 14, help: 9, favor: 1, standing: 17,
       traits: { work: 0.75, talk: 0.9, trade: 0.9, risk: 0.65, quiet: 1.55, order: 0.75 },

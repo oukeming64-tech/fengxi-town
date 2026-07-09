@@ -26,7 +26,7 @@
           day: state.day,
           type: "expense",
           account: "寄售复核",
-          source: "街口寄售货架",
+          source: "镇中心寄售货架",
           detail: dispute.detail,
           amountYsc: fee
         });

@@ -232,7 +232,7 @@
       day: 1,
       type: "income",
       account: "期初现金",
-      source: "田地旧账",
+      source: "黄石农场旧账",
       detail: "期初可用现金登记",
       amountYsc: 0,
       affectsCash: false

@@ -47,6 +47,7 @@
     currentWeekStartSnapshot: null,
     lastWeeklyDebtSettlement: null,
     stageEvaluations: [],
+    lastStagePlayback: null,
     modelActionControl: null,
     residentCognition: null,
     bonds: new Map(),
@@ -200,7 +201,7 @@
   function logScore(villager, action, delta) {
     let score = Math.abs(delta.renown) + Math.abs(delta.help) + Math.abs(delta.favor) * 2 + Math.abs(delta.standing) * 2 + Math.abs(delta.distance);
     if (["bridge", "notice", "inn", "market"].includes(action)) score += 3;
-    if (!["Sac de Fèves"].includes(villager.tag)) score += 2;
+    if (villager.tag !== "草帽" && villager.tag !== "豆袋") score += 2;
     return score + Math.random() * 4;
   }
 
@@ -283,6 +284,7 @@
     state.currentWeekStartSnapshot = timeline.boundarySnapshot(1, "week-start");
     state.lastWeeklyDebtSettlement = null;
     state.stageEvaluations = [];
+    state.lastStagePlayback = null;
     state.modelActionControl = null;
     state.residentCognition = null;
     state.bonds = new Map();
@@ -291,7 +293,7 @@
     actionRunner.refreshDailyPlans();
     systemLog("枫溪镇重新醒来。30 位居民各自散开，清晨第一批动静已经落在地图上。");
     if (state.currentWeather) {
-      systemLog(weatherSystem.summarize ? weatherSystem.summarize(state.currentWeather) : `${state.currentWeather.label}压在镇上，田地先看天气再开工。`);
+      systemLog(weatherSystem.summarize ? weatherSystem.summarize(state.currentWeather) : `${state.currentWeather.label}压在镇上，农场先看天气再开工。`);
     }
   }
 

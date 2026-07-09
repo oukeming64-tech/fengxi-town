@@ -1,7 +1,7 @@
 (function () {
   const T = window.MorningTown || (window.MorningTown = {});
 
-  const version = "town-ledger-economy-data-v0.0.7-public-balance";
+  const version = "town-ledger-economy-data-v0.0.6-local";
 
   const contractTemplates = {
     goldkin_bulk: {
@@ -13,7 +13,7 @@
       quantity: 9,
       dueInDays: 6,
       marketChannel: "goldkin_station",
-      channelMultiplier: 0.94,
+      channelMultiplier: 0.88,
       advanceYsc: 120,
       penaltyYsc: 160,
       paymentLagDays: 0,
@@ -26,12 +26,12 @@
       templateId: "city_restaurant",
       label: "城市餐厅精品订单",
       buyer: "城市餐厅",
-      channel: "南路口冷链",
+      channel: "南部公路冷链",
       minQuality: "A",
       quantity: 4,
       dueInDays: 5,
       marketChannel: "city_cold_chain",
-      channelMultiplier: 1.55,
+      channelMultiplier: 1.45,
       advanceYsc: 50,
       penaltyYsc: 120,
       paymentLagDays: 1,
@@ -49,7 +49,7 @@
       quantity: 7,
       dueInDays: 7,
       marketChannel: "school_board",
-      channelMultiplier: 1.06,
+      channelMultiplier: 0.98,
       advanceYsc: 0,
       penaltyYsc: 90,
       paymentLagDays: 0,
@@ -67,7 +67,7 @@
       quantity: 6,
       dueInDays: 8,
       marketChannel: "cooperative_pantry",
-      channelMultiplier: 1.1,
+      channelMultiplier: 1.02,
       advanceYsc: 0,
       penaltyYsc: 70,
       paymentLagDays: 0,
@@ -79,13 +79,13 @@
     festival_stall: {
       templateId: "festival_stall",
       label: "节日摊位备货",
-      buyer: "公共屋节日摊",
-      channel: "公共屋临时摊位",
+      buyer: "会堂节日摊",
+      channel: "会堂临时摊位",
       minQuality: "B",
       quantity: 5,
       dueInDays: 4,
       marketChannel: "festival_stall",
-      channelMultiplier: 1.28,
+      channelMultiplier: 1.18,
       advanceYsc: 0,
       penaltyYsc: 60,
       paymentLagDays: 0,
@@ -98,12 +98,12 @@
       templateId: "preserves_shelf",
       label: "小镇货架加工品",
       buyer: "枫溪杂货铺",
-      channel: "街口寄售货架",
+      channel: "镇中心寄售货架",
       minQuality: "B",
       quantity: 4,
       dueInDays: 9,
       marketChannel: "preserve_shop",
-      channelMultiplier: 1.32,
+      channelMultiplier: 1.22,
       advanceYsc: 0,
       penaltyYsc: 50,
       paymentLagDays: 1,
@@ -150,15 +150,15 @@
     goldkin_station: {
       id: "goldkin_station",
       label: "高金采购站",
-      baseMultiplier: 0.98,
+      baseMultiplier: 0.92,
       volatility: 0.04,
       paymentLagDays: 0,
       pressureNote: "现金快，议价权偏弱。"
     },
     city_cold_chain: {
       id: "city_cold_chain",
-      label: "南路口冷链",
-      baseMultiplier: 1.38,
+      label: "南部公路冷链",
+      baseMultiplier: 1.28,
       volatility: 0.07,
       paymentLagDays: 1,
       logisticsSensitive: true,
@@ -167,7 +167,7 @@
     school_board: {
       id: "school_board",
       label: "学校午餐账本",
-      baseMultiplier: 1.05,
+      baseMultiplier: 0.98,
       volatility: 0.02,
       paymentLagDays: 0,
       pressureNote: "利润平，但社区信任稳定。"
@@ -175,15 +175,15 @@
     cooperative_pantry: {
       id: "cooperative_pantry",
       label: "合作社粮架",
-      baseMultiplier: 1.12,
+      baseMultiplier: 1.04,
       volatility: 0.03,
       paymentLagDays: 0,
       pressureNote: "适合压仓和分散买方。"
     },
     festival_stall: {
       id: "festival_stall",
-      label: "公共屋临时摊位",
-      baseMultiplier: 1.26,
+      label: "会堂临时摊位",
+      baseMultiplier: 1.16,
       volatility: 0.08,
       paymentLagDays: 0,
       festivalSensitive: true,
@@ -191,8 +191,8 @@
     },
     preserve_shop: {
       id: "preserve_shop",
-      label: "街口寄售货架",
-      baseMultiplier: 1.24,
+      label: "镇中心寄售货架",
+      baseMultiplier: 1.14,
       volatility: 0.04,
       paymentLagDays: 1,
       processedOnly: true,
@@ -209,7 +209,7 @@
 
   const festivalCalendar = {
     spring: [
-      { id: "seed_swap", name: "换种日", startDay: 3, endDay: 4, demandFamilies: ["root", "legume", "leaf"], commercialPressure: 1, accountingPressure: 0, note: "公共屋换种，合作社和学校午餐都会多看新鲜菜。" },
+      { id: "seed_swap", name: "换种日", startDay: 3, endDay: 4, demandFamilies: ["root", "legume", "leaf"], commercialPressure: 1, accountingPressure: 0, note: "会堂换种，合作社和学校午餐都会多看新鲜菜。" },
       { id: "rain_gutter_day", name: "清沟义工日", startDay: 10, endDay: 10, demandFamilies: ["grain", "processed"], commercialPressure: 0, accountingPressure: 1, note: "雨季前查沟渠，账本会被顺手翻一遍。" }
     ],
     summer: [
