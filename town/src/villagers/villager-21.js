@@ -21,12 +21,12 @@
       },
       line(action, ctx) {
         const lines = {
-          market: ["{name}在 farmers' market stand 前摊开一页收益账，纸角用 paper coffee cup 压着，说去年那只 shared shelf 翻得漂亮；真正盘货的人还在后排低头算数。", "{name}把几张旧账页压在 apple crate 上，讲得像每个 quarter 都是自己亲手拨回来的，指甲里却干干净净。"],
-          notice: ["{name}在 community board 边把自己的 co-op shelf 写得很亮，旁边小字全留给会计桌，风一吹小字先卷起来。", "{name}把今日成绩贴在最醒目的位置，问到谁在管账时，只说小镇分工本来就要专业。"],
-          inn: ["{name}在 diner 举杯讲收益曲线，讲到真正管账的人时，笑着把话题绕到下一轮 coffee refill。", "{name}端着杯子凑到热闹桌边，说 shared shelf 又涨了，手里的杯沿倒先碰了三回。"],
-          farm: ["{name}到 community garden 看了一圈，说这季投入要看长线，喷壶刚提起来就被别人顺手接过去。"],
-          bridge: ["{name}在木桥边说修好以后 Main Street 客流会涨，plank 刚抬起，就有人替他接了手，他只把袖口又往上卷了一点。"],
-          home: ["{name}回到 kitchen counter 擦杯子，账页压在最上面，鞋底倒没沾多少 mulch。"]
+          market: ["{name}在农夫市集摊前摊开一页收益账，纸角用纸咖啡杯压着，说去年那只共享货架翻得漂亮；真正盘货的人还在后排低头算数。", "{name}把几张旧账页压在苹果木箱上，讲得像每个二十五美分硬币都是自己亲手拨回来的，指甲里却干干净净。"],
+          notice: ["{name}在社区公告栏边把自己的合作货架写得很亮，旁边小字全留给会计桌，风一吹小字先卷起来。", "{name}把今日成绩贴在最醒目的位置，问到谁在管账时，只说小镇分工本来就要专业。"],
+          inn: ["{name}在小餐馆举杯讲收益曲线，讲到真正管账的人时，笑着把话题绕到下一轮续咖啡。", "{name}端着杯子凑到热闹桌边，说共享货架又涨了，手里的杯沿倒先碰了三回。"],
+          farm: ["{name}到社区菜园看了一圈，说这季投入要看长线，喷壶刚提起来就被别人顺手接过去。"],
+          bridge: ["{name}在木桥边说修好以后主街客流会涨，木板刚抬起，就有人替他接了手，他只把袖口又往上卷了一点。"],
+          home: ["{name}回到厨房台面前擦杯子，账页压在最上面，鞋底倒没沾多少覆土木屑。"]
         };
         return T.pick(lines[action] || lines.market).replace("{name}", name).replace("{task}", ctx.scene.task);
       }
