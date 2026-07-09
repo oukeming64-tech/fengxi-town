@@ -193,7 +193,6 @@
 }
 
 .map-visual.is-map-zoomed .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) {
-  transform: translate(-50%, -50%) scale(var(--hotspot-fade-scale, 0.72));
   border-color: rgba(32, 37, 31, 0.08);
   background: rgba(255, 254, 249, 0.18);
   box-shadow: none;
@@ -201,7 +200,6 @@
 }
 
 .map-visual.is-map-deep-zoom .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) {
-  transform: translate(-50%, -50%) scale(var(--hotspot-fade-scale, 0.54));
   opacity: var(--hotspot-fade-opacity, 0.08);
 }
 

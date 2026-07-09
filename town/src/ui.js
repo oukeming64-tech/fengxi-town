@@ -249,7 +249,6 @@
     const fadeValue = (start, end) => Math.round((start + (end - start) * fade) * 100) / 100;
     visual.style.setProperty("--map-scale", mapViewport.scale);
     visual.style.setProperty("--hotspot-fade-opacity", fadeValue(0.72, 0.08));
-    visual.style.setProperty("--hotspot-fade-scale", fadeValue(1, 0.54));
     visual.style.setProperty("--hotspot-dot-fade-opacity", fadeValue(1, 0.18));
     visual.style.setProperty("--zone-fade-opacity", fadeValue(1, 0.18));
     visual.classList.toggle("is-map-zoomed", mapViewport.scale >= 1.18);
