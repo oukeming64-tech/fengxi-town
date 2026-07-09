@@ -12,6 +12,7 @@
   background: rgba(255, 254, 249, 0.78);
   box-shadow: 0 5px 12px rgba(31, 39, 33, 0.16);
   backdrop-filter: blur(3px);
+  transition: opacity 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
 .map-zone {
@@ -120,16 +121,18 @@
   z-index: 6;
   display: grid;
   place-items: center;
-  width: calc(var(--hotspot-radius, 5) * 9px);
-  height: calc(var(--hotspot-radius, 5) * 9px);
+  width: calc(var(--hotspot-radius, 5) * 7px);
+  height: calc(var(--hotspot-radius, 5) * 7px);
   min-height: 0;
   transform: translate(-50%, -50%);
-  border: 1px solid rgba(32, 37, 31, 0.28);
+  border: 1px solid rgba(32, 37, 31, 0.16);
   border-radius: 50%;
   padding: 0;
-  background: rgba(255, 254, 249, 0.82);
-  box-shadow: 0 7px 15px rgba(31, 39, 33, 0.18);
+  background: rgba(255, 254, 249, 0.36);
+  box-shadow: 0 4px 10px rgba(31, 39, 33, 0.1);
+  opacity: 0.72;
   pointer-events: auto;
+  transition: opacity 160ms ease, transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .map-feature-hotspot:hover,
@@ -138,15 +141,18 @@
   z-index: 9;
   border-color: #20251f;
   background: rgba(255, 254, 249, 0.95);
+  box-shadow: 0 7px 15px rgba(31, 39, 33, 0.18);
+  opacity: 1;
   outline: none;
 }
 
 .hotspot-dot {
-  width: 13px;
-  height: 13px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--blue);
-  box-shadow: 0 0 0 7px rgba(47, 111, 146, 0.15);
+  box-shadow: 0 0 0 4px rgba(47, 111, 146, 0.12);
+  transition: opacity 160ms ease, box-shadow 160ms ease;
 }
 
 .hotspot-label {
@@ -176,36 +182,68 @@
   opacity: 1;
 }
 
+.map-visual.is-map-zoomed .zone-marker {
+  background: rgba(255, 254, 249, 0.44);
+  box-shadow: none;
+  opacity: var(--zone-fade-opacity, 0.42);
+}
+
+.map-visual.is-map-deep-zoom .zone-marker {
+  opacity: 0.18;
+}
+
+.map-visual.is-map-zoomed .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) {
+  transform: translate(-50%, -50%) scale(var(--hotspot-fade-scale, 0.72));
+  border-color: rgba(32, 37, 31, 0.08);
+  background: rgba(255, 254, 249, 0.18);
+  box-shadow: none;
+  opacity: var(--hotspot-fade-opacity, 0.26);
+}
+
+.map-visual.is-map-deep-zoom .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) {
+  transform: translate(-50%, -50%) scale(var(--hotspot-fade-scale, 0.54));
+  opacity: var(--hotspot-fade-opacity, 0.08);
+}
+
+.map-visual.is-map-zoomed .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) .hotspot-dot {
+  box-shadow: none;
+  opacity: var(--hotspot-dot-fade-opacity, 0.45);
+}
+
+.map-visual.is-map-deep-zoom .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) .hotspot-dot {
+  opacity: var(--hotspot-dot-fade-opacity, 0.18);
+}
+
 .kind-farm .hotspot-dot {
   background: var(--green);
-  box-shadow: 0 0 0 7px rgba(47, 123, 79, 0.16);
+  box-shadow: 0 0 0 4px rgba(47, 123, 79, 0.12);
 }
 
 .kind-repair .hotspot-dot {
   background: var(--slate);
-  box-shadow: 0 0 0 7px rgba(67, 82, 98, 0.16);
+  box-shadow: 0 0 0 4px rgba(67, 82, 98, 0.12);
 }
 
 .kind-buy .hotspot-dot,
 .kind-sell .hotspot-dot {
   background: var(--amber);
-  box-shadow: 0 0 0 7px rgba(169, 118, 34, 0.18);
+  box-shadow: 0 0 0 4px rgba(169, 118, 34, 0.13);
 }
 
 .kind-notice .hotspot-dot,
 .kind-stock .hotspot-dot {
   background: var(--violet);
-  box-shadow: 0 0 0 7px rgba(103, 85, 138, 0.16);
+  box-shadow: 0 0 0 4px rgba(103, 85, 138, 0.12);
 }
 
 .kind-social .hotspot-dot {
   background: var(--red);
-  box-shadow: 0 0 0 7px rgba(155, 77, 66, 0.14);
+  box-shadow: 0 0 0 4px rgba(155, 77, 66, 0.11);
 }
 
 .kind-home .hotspot-dot {
   background: #6d6b52;
-  box-shadow: 0 0 0 7px rgba(109, 107, 82, 0.14);
+  box-shadow: 0 0 0 4px rgba(109, 107, 82, 0.11);
 }
 
 @media (max-width: 720px) {

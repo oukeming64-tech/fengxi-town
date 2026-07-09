@@ -99,6 +99,7 @@
       stageIndex: mapViewport.stageIndex,
       playback
     });
+    applyMapTransform();
   }
 
   function renderResidentCard() {
@@ -241,7 +242,18 @@
     clampMapViewport();
     const surface = el.townMap.querySelector?.(".map-stage-surface");
     if (!surface) return;
+    const visual = el.townMap.querySelector?.(".map-visual");
     surface.style.transform = `translate(${Math.round(mapViewport.x * 10) / 10}px, ${Math.round(mapViewport.y * 10) / 10}px) scale(${mapViewport.scale})`;
+    if (!visual) return;
+    const fade = T.clamp((mapViewport.scale - 1) / 0.9, 0, 1);
+    const fadeValue = (start, end) => Math.round((start + (end - start) * fade) * 100) / 100;
+    visual.style.setProperty("--map-scale", mapViewport.scale);
+    visual.style.setProperty("--hotspot-fade-opacity", fadeValue(0.72, 0.08));
+    visual.style.setProperty("--hotspot-fade-scale", fadeValue(1, 0.54));
+    visual.style.setProperty("--hotspot-dot-fade-opacity", fadeValue(1, 0.18));
+    visual.style.setProperty("--zone-fade-opacity", fadeValue(1, 0.18));
+    visual.classList.toggle("is-map-zoomed", mapViewport.scale >= 1.18);
+    visual.classList.toggle("is-map-deep-zoom", mapViewport.scale >= 1.85);
   }
 
   function zoomMap(delta) {
@@ -328,7 +340,15 @@
       renderMap();
       return;
     }
-    handleResidentPointer(event);
+    const resident = event.target.closest("[data-villager-id]");
+    if (resident) {
+      handleResidentPointer(event);
+      return;
+    }
+    if (mapViewport.selectedHotspotId) {
+      mapViewport.selectedHotspotId = "";
+      renderMap();
+    }
   }
 
   function handleMapPointerDown(event) {

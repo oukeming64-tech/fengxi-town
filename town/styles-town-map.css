@@ -340,11 +340,25 @@
   position: absolute;
   max-width: 210px;
   transform: translate(-50%, -118%);
-  border: 1px solid rgba(32, 37, 31, 0.24);
+  border: 1px solid rgba(32, 37, 31, 0.14);
   border-radius: 8px;
   padding: 7px 9px;
+  background: rgba(255, 254, 249, 0.62);
+  box-shadow: 0 5px 14px rgba(31, 39, 33, 0.1);
+  opacity: 0.5;
+  backdrop-filter: blur(3px);
+  transition: opacity 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.map-visual.has-selected-hotspot .stage-dialogue,
+.map-visual:has(.resident-token:hover) .stage-dialogue,
+.map-visual:has(.resident-token:focus-visible) .stage-dialogue,
+.map-visual:has(.map-feature-hotspot:hover) .stage-dialogue,
+.map-visual:has(.map-feature-hotspot:focus-visible) .stage-dialogue {
+  border-color: rgba(32, 37, 31, 0.24);
   background: rgba(255, 254, 249, 0.92);
   box-shadow: 0 8px 20px rgba(31, 39, 33, 0.18);
+  opacity: 0.94;
 }
 
 .stage-dialogue span {

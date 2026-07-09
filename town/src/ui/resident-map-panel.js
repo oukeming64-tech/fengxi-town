@@ -34,8 +34,17 @@
     return T.townStage?.stageAt?.(playback, stageIndex) || null;
   }
 
+  function viewportScale(viewport = {}) {
+    return T.clamp(Number(viewport.scale) || 1, 1, 2.8);
+  }
+
+  function mapZoomClass(viewport = {}) {
+    const scale = viewportScale(viewport);
+    return `${scale >= 1.18 ? " is-map-zoomed" : ""}${scale >= 1.85 ? " is-map-deep-zoom" : ""}`;
+  }
+
   function viewportStyle(viewport = {}) {
-    const scale = T.clamp(Number(viewport.scale) || 1, 1, 2.8);
+    const scale = viewportScale(viewport);
     const x = Math.round((Number(viewport.x) || 0) * 10) / 10;
     const y = Math.round((Number(viewport.y) || 0) * 10) / 10;
     return `transform: translate(${x}px, ${y}px) scale(${scale});`;
@@ -255,9 +264,15 @@
       noticeBoardAsset,
       selectedHotspotId: options.selectedHotspotId || ""
     };
+    const mapClasses = [
+      "map-visual",
+      mapZoomClass(options.viewport),
+      options.selectedHotspotId ? " has-selected-hotspot" : ""
+    ].join("").trim();
+    const mapScale = viewportScale(options.viewport);
 
     container.innerHTML = `
-      <div class="map-visual" aria-label="枫溪镇像素地图">
+      <div class="${mapClasses}" style="--map-scale: ${mapScale};" aria-label="枫溪镇像素地图">
         ${renderMapControls(options.viewport)}
         ${renderStageHud(engine, playback, activeStage)}
         ${renderActionLegend(activeStage)}

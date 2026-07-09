@@ -92,17 +92,19 @@
 
 .resident-action-cue {
   position: absolute;
-  right: -24px;
-  bottom: -18px;
+  right: -18px;
+  bottom: -15px;
   z-index: 12;
-  width: 44px;
-  height: 44px;
-  border: 2px solid rgba(255, 254, 249, 0.98);
-  border-radius: 12px;
-  background: rgba(42, 48, 39, 0.78);
-  box-shadow: 0 7px 15px rgba(31, 39, 33, 0.38);
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 254, 249, 0.64);
+  border-radius: 999px;
+  background: rgba(255, 254, 249, 0.4);
+  box-shadow: 0 4px 9px rgba(31, 39, 33, 0.16);
+  opacity: 0.78;
   pointer-events: none;
   overflow: hidden;
+  transition: opacity 160ms ease, transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .resident-action-cue::before {
@@ -113,7 +115,7 @@
   background-position: var(--cue-bg-position, center);
   background-repeat: no-repeat;
   background-size: var(--cue-bg-size, 400% 300%);
-  filter: drop-shadow(0 3px 3px rgba(31, 39, 33, 0.34));
+  filter: drop-shadow(0 2px 2px rgba(31, 39, 33, 0.2));
   image-rendering: auto;
   animation: cue-sprite-bob 1.35s ease-in-out infinite;
 }
@@ -128,8 +130,18 @@
   width: calc(100% - 4px);
   height: calc(100% - 4px);
   object-fit: contain;
-  filter: drop-shadow(0 3px 3px rgba(31, 39, 33, 0.34));
+  filter: drop-shadow(0 2px 2px rgba(31, 39, 33, 0.2));
   animation: cue-sprite-bob 1.35s ease-in-out infinite;
+}
+
+.resident-token:hover .resident-action-cue,
+.resident-token:focus-visible .resident-action-cue,
+.resident-token.is-selected .resident-action-cue {
+  transform: scale(1.08);
+  border-color: rgba(255, 254, 249, 0.92);
+  background: rgba(255, 254, 249, 0.78);
+  box-shadow: 0 7px 15px rgba(31, 39, 33, 0.24);
+  opacity: 1;
 }
 
 .resident-action-cue i {
