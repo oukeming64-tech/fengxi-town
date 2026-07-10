@@ -207,6 +207,19 @@
   color: #fffef9;
 }
 
+.map-stage-controls .stage-playback-toggle {
+  min-width: 46px;
+  border-color: rgba(47, 111, 146, 0.34);
+  background: rgba(216, 237, 244, 0.9);
+  color: #214b64;
+}
+
+.map-stage-controls .stage-playback-toggle.is-playing {
+  border-color: rgba(47, 123, 79, 0.42);
+  background: rgba(219, 238, 212, 0.92);
+  color: #225c3c;
+}
+
 .map-hotspot-inspector {
   right: 70px;
   bottom: 12px;

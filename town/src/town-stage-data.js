@@ -308,9 +308,16 @@
   };
 
   T.townStageData = {
-    version: "town-stage-data-v0.1.4-local",
+    version: "town-stage-data-v0.1.5-local",
     mapHotspots,
     actionAnimations,
+    residentSpriteAtlas: {
+      columns: 6,
+      rows: 5,
+      residents: 30,
+      source: "04_AI班级小镇/assets/runtime/resident-sprites/resident-sprite-sheet-v0.1.5.png",
+      generatedWith: "imagegen-chroma-key-preserved-resident-grid"
+    },
     actionCueAtlas: {
       columns: 4,
       rows: 3,

@@ -62,11 +62,14 @@
     `;
   }
 
-  function renderStageControls(playback, stageIndex) {
+  function renderStageControls(playback, stageIndex, playbackPlaying) {
     if (!playback?.stages?.length) return "";
     return `
       <div class="map-stage-controls" aria-label="居民行动分幕">
         <span>第 ${playback.day} 天</span>
+        <button type="button" class="stage-playback-toggle${playbackPlaying ? " is-playing" : ""}" data-stage-playback-action="toggle" aria-pressed="${playbackPlaying ? "true" : "false"}" title="${playbackPlaying ? "暂停分幕自动播放" : "继续分幕自动播放"}">
+          ${playbackPlaying ? "暂停" : "播放"}
+        </button>
         ${playback.stages.map((stage, index) => `
           <button type="button" class="${index === stageIndex ? "is-active" : ""}" data-stage-index="${index}" title="${T.escapeHtml(stage.label)}">
             ${T.escapeHtml(stage.label)}
@@ -223,6 +226,8 @@
     const stageIndex = T.clamp(Number(options.stageIndex) || 0, 0, Math.max(0, (playback?.stages?.length || 1) - 1));
     const activeStage = activeStageFor(playback, stageIndex);
     const activeEvents = new Map((activeStage?.events || []).map((event) => [event.residentId, event]));
+    const animateStageMove = Boolean(options.animateStageMove);
+    const previousStageIndex = Number.isInteger(options.previousStageIndex) ? options.previousStageIndex : stageIndex;
     const byZone = new Map(engine.zones.map((zone) => [zone.id, []]));
     engine.state.villagers.forEach((villager) => {
       const zoneId = byZone.has(villager.zone) ? villager.zone : "townCenter";
@@ -246,17 +251,27 @@
       return residents.map((villager, index) => {
         const event = activeEvents.get(villager.id);
         const pos = event ? { x: event.x, y: event.y } : mapTokenPosition(villager, index, residents.length, zone);
-        const selected = current && current.id === villager.id ? " is-selected" : "";
-        const stageClass = event ? ` is-stage-token action-${event.animationKey || "idle"} tone-${event.animationTone || "quiet"}` : "";
+        const selected = Boolean(current && current.id === villager.id);
         const title = event
           ? `${villager.name} · ${event.hotspotLabel} · ${event.activityTitle} · ${event.animationLabel || "行动"}`
           : `${villager.name} · ${villager.recentAction?.place || engine.placeName(villager.location)}`;
-        return `
-          <button type="button" class="resident-token ${event?.kind || villager.recentAction?.kind || "quiet"}${selected}${stageClass}" data-villager-id="${T.escapeHtml(villager.id)}" data-action-key="${T.escapeHtml(event?.animationKey || "")}" style="left: ${pos.x}%; top: ${pos.y}%;" title="${T.escapeHtml(title)}" aria-label="${T.escapeHtml(villager.name)}，${T.escapeHtml(event?.hotspotLabel || zone.name)}">
-            <img src="${T.escapeHtml(villager.avatar || T.residentAvatarPath(villager.id))}" alt="">
-            ${renderActionCue(event)}
-          </button>
-        `;
+        const movement = animateStageMove && event
+          ? T.townStage?.movementBetween?.(playback, previousStageIndex, stageIndex, villager.id)
+          : null;
+        if (T.residentSpriteLayer?.renderToken) {
+          return T.residentSpriteLayer.renderToken({
+            villager,
+            event,
+            position: pos,
+            movement,
+            selected,
+            kind: event?.kind || villager.recentAction?.kind || "quiet",
+            title,
+            ariaLabel: `${villager.name}，${event?.hotspotLabel || zone.name}`,
+            actionCueHtml: renderActionCue(event)
+          });
+        }
+        return `<button type="button" class="resident-token ${event?.kind || "quiet"}${selected ? " is-selected" : ""}" data-villager-id="${T.escapeHtml(villager.id)}" style="left: ${pos.x}%; top: ${pos.y}%;" title="${T.escapeHtml(title)}"><img src="${T.escapeHtml(villager.avatar || T.residentAvatarPath(villager.id))}" alt=""></button>`;
       }).join("");
     }).join("");
     const hotspotOptions = {
@@ -270,9 +285,10 @@
       options.selectedHotspotId ? " has-selected-hotspot" : ""
     ].join("").trim();
     const mapScale = viewportScale(options.viewport);
+    const residentSpriteSheet = T.escapeHtml(T.assets.residentSpriteSheet || "");
 
     container.innerHTML = `
-      <div class="${mapClasses}" style="--map-scale: ${mapScale};" aria-label="枫溪镇像素地图">
+      <div class="${mapClasses}" style="--map-scale: ${mapScale}; --resident-sprite-sheet: url('${residentSpriteSheet}');" aria-label="枫溪镇像素地图">
         ${renderMapControls(options.viewport)}
         ${renderStageHud(engine, playback, activeStage)}
         ${renderActionLegend(activeStage)}
@@ -287,7 +303,7 @@
             <div class="stage-dialogue-layer">${renderDialogues(activeStage)}</div>
           </div>
         </div>
-        ${renderStageControls(playback, stageIndex)}
+        ${renderStageControls(playback, stageIndex, options.playbackPlaying !== false)}
         ${renderHotspotInspector(engine, activeStage, options.selectedHotspotId)}
       </div>
     `;

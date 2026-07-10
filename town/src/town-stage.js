@@ -216,7 +216,7 @@
     stages.push(buildHomeStage(state));
     return {
       id: `stage-d${day}-${logs.length}-${state.villagers?.length || 0}`,
-      version: "town-stage-v0.1.4-local",
+      version: "town-stage-v0.1.5-local",
       day,
       source: logs.length ? "audited-action-logs" : "today-plan-preview",
       weatherType: state.currentWeather?.type || state.currentWeather?.key || "cloudy",
@@ -238,6 +238,25 @@
     return playback.stages[T.clamp(Number(index) || 0, 0, playback.stages.length - 1)] || playback.stages[0];
   }
 
+  function movementBetween(playback, fromStageIndex, toStageIndex, residentId) {
+    if (!playback?.stages?.length || !residentId) return null;
+    const fromStage = stageAt(playback, fromStageIndex);
+    const toStage = stageAt(playback, toStageIndex);
+    const fromEvent = fromStage?.events?.find((event) => event.residentId === residentId);
+    const toEvent = toStage?.events?.find((event) => event.residentId === residentId);
+    if (!fromEvent || !toEvent) return null;
+    return {
+      residentId,
+      fromStageIndex: T.clamp(Number(fromStageIndex) || 0, 0, playback.stages.length - 1),
+      toStageIndex: T.clamp(Number(toStageIndex) || 0, 0, playback.stages.length - 1),
+      from: { x: Number(fromEvent.x), y: Number(fromEvent.y) },
+      to: { x: Number(toEvent.x), y: Number(toEvent.y) },
+      animationKey: toEvent.animationKey || "idle",
+      durationMs: T.clamp(Math.round((Number(toStage.durationSeconds) || 9) * 170), 1200, 2200),
+      source: "local-audited-stage-events"
+    };
+  }
+
   function weatherView(weather) {
     const raw = weather?.type || weather?.key || weather?.label || "cloudy";
     const type = T.weatherSystemUtils?.normalizeWeatherType?.(raw) || raw || "cloudy";
@@ -254,7 +273,7 @@
   }
 
   T.townStage = {
-    version: "town-stage-v0.1.4-local",
+    version: "town-stage-v0.1.5-local",
     hotspots,
     animationAssets,
     byId,
@@ -266,6 +285,7 @@
     buildPlayback,
     currentPlayback,
     stageAt,
+    movementBetween,
     weatherView,
     activitiesForHotspot
   };

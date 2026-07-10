@@ -60,9 +60,14 @@
     reducedWeatherMotion: false,
     selectedHotspotId: "",
     stageIndex: 0,
-    playbackId: ""
+    playbackId: "",
+    playbackPlaying: true,
+    renderedStageIndex: null,
+    renderedPlaybackId: ""
   };
   let mapDrag = null;
+  let stagePlaybackTimer = null;
+  let stagePlaybackTimerKey = "";
 
   function selectedVillager() {
     const villagers = engine.state.villagers;
@@ -84,22 +89,67 @@
     return engine.state.villagers.find((villager) => villager.id === id)?.name || id;
   }
 
+  function clearStagePlaybackTimer() {
+    if (stagePlaybackTimer !== null) window.clearTimeout?.(stagePlaybackTimer);
+    stagePlaybackTimer = null;
+    stagePlaybackTimerKey = "";
+  }
+
+  function scheduleStagePlayback(playback) {
+    if (!mapViewport.playbackPlaying || !playback?.stages?.length || document.hidden) {
+      clearStagePlaybackTimer();
+      return;
+    }
+    const index = T.clamp(Number(mapViewport.stageIndex) || 0, 0, playback.stages.length - 1);
+    const timerKey = `${playback.id}:${index}`;
+    if (stagePlaybackTimer !== null && stagePlaybackTimerKey === timerKey) return;
+    clearStagePlaybackTimer();
+    stagePlaybackTimerKey = timerKey;
+    const delayMs = Math.max(4000, Math.round((Number(playback.stages[index]?.durationSeconds) || 9) * 1000));
+    stagePlaybackTimer = window.setTimeout(() => {
+      stagePlaybackTimer = null;
+      stagePlaybackTimerKey = "";
+      const latest = T.townStage?.currentPlayback?.(engine) || null;
+      if (!mapViewport.playbackPlaying || !latest?.stages?.length) return;
+      if (latest.id !== playback.id) {
+        renderMap();
+        return;
+      }
+      mapViewport.stageIndex = (index + 1) % latest.stages.length;
+      renderMap();
+    }, delayMs);
+  }
+
   function renderMap() {
     const playback = T.townStage?.currentPlayback?.(engine) || null;
+    const previousStageIndex = mapViewport.renderedPlaybackId === playback?.id
+      ? mapViewport.renderedStageIndex
+      : null;
     if (playback?.id && playback.id !== mapViewport.playbackId) {
       mapViewport.playbackId = playback.id;
       mapViewport.stageIndex = 0;
     }
+    const stageIndex = playback?.stages?.length
+      ? T.clamp(Number(mapViewport.stageIndex) || 0, 0, playback.stages.length - 1)
+      : 0;
+    const animateStageMove = Number.isInteger(previousStageIndex) && previousStageIndex !== stageIndex;
     T.residentMapPanel?.renderMap(el.townMap, engine, {
       current: selectedVillager(),
       noticeBoardOpen,
       noticeBoardAsset,
       viewport: mapViewport,
       selectedHotspotId: mapViewport.selectedHotspotId,
-      stageIndex: mapViewport.stageIndex,
-      playback
+      stageIndex,
+      playback,
+      previousStageIndex,
+      animateStageMove,
+      playbackPlaying: mapViewport.playbackPlaying
     });
+    mapViewport.stageIndex = stageIndex;
+    mapViewport.renderedStageIndex = stageIndex;
+    mapViewport.renderedPlaybackId = playback?.id || "";
     applyMapTransform();
+    scheduleStagePlayback(playback);
   }
 
   function renderResidentCard() {
@@ -334,6 +384,13 @@
       handleMapAction(action.dataset.mapAction);
       return;
     }
+    const playbackAction = event.target.closest("[data-stage-playback-action]");
+    if (playbackAction?.dataset.stagePlaybackAction === "toggle") {
+      mapViewport.playbackPlaying = !mapViewport.playbackPlaying;
+      clearStagePlaybackTimer();
+      renderMap();
+      return;
+    }
     const stage = event.target.closest("[data-stage-index]");
     if (stage) {
       mapViewport.stageIndex = Number(stage.dataset.stageIndex) || 0;
@@ -396,6 +453,13 @@
     zoomMap(event.deltaY < 0 ? 0.12 : -0.12);
   }
 
+  function handleMapAnimationEnd(event) {
+    if (event.animationName !== "resident-travel") return;
+    const resident = event.target.closest?.(".resident-token.is-travelling");
+    if (!resident) return;
+    resident.classList.remove("is-travelling");
+  }
+
   function handleWeekClick(event) {
     T.weeklyTimelinePanel?.handleClick(event, render);
   }
@@ -403,9 +467,14 @@
   el.townMap.addEventListener("click", handleMapClick);
   el.townMap.addEventListener("pointerdown", handleMapPointerDown);
   el.townMap.addEventListener("wheel", handleMapWheel, { passive: false });
+  el.townMap.addEventListener("animationend", handleMapAnimationEnd);
   document.addEventListener("pointermove", handleMapPointerMove);
   document.addEventListener("pointerup", finishMapDrag);
   document.addEventListener("pointercancel", finishMapDrag);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) clearStagePlaybackTimer();
+    else renderMap();
+  });
   el.townMap.addEventListener("mouseover", handleResidentPointer);
   el.townMap.addEventListener("focusin", handleResidentPointer);
   el.villagerList.addEventListener("click", handleResidentPointer);
@@ -421,5 +490,15 @@
     if (event.key === "Escape" && stageDrawerOpen) closeStageDrawer();
   });
 
-  T.ui = { el, render, openModelConfig, closeModelConfig };
+  T.ui = {
+    el,
+    render,
+    openModelConfig,
+    closeModelConfig,
+    stagePlaybackState: () => ({
+      playing: mapViewport.playbackPlaying,
+      stageIndex: mapViewport.stageIndex,
+      playbackId: mapViewport.playbackId
+    })
+  };
 }());

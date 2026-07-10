@@ -1,13 +1,13 @@
 (function () {
   const town = {
     version: {
-      code: "v0.1.4-patch4",
+      code: "v0.1.5",
       name: "枫溪镇",
-      status: "舞台显示修补"
+      status: "居民小人行动舞台"
     },
     assets: {
       townMap: "./assets/concept/map.png",
-      residentSpriteSheet: "./assets/concept/residents.png",
+      residentSpriteSheet: "./assets/runtime/resident-sprites/resident-sprite-sheet-v0.1.5.png",
       residentAvatarDir: "./assets/runtime/residents",
       actionCueAtlas: "./assets/runtime/action-cues/action-cue-atlas-v0.1.4.png",
       actionCueDir: "./assets/runtime/action-cues",
