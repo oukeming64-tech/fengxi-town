@@ -37,6 +37,7 @@
 }
 
 .map-stage-viewport {
+  container-type: size;
   overflow: hidden;
   cursor: grab;
 }
@@ -46,6 +47,12 @@
 }
 
 .map-stage-surface {
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  width: min(100%, calc(100cqh * 1.5));
+  height: min(100%, calc(100cqw / 1.5));
+  transform: translate(calc(-50% + var(--map-pan-x, 0px)), calc(-50% + var(--map-pan-y, 0px))) scale(var(--map-zoom, 1));
   transform-origin: 50% 50%;
   transition: transform 180ms ease;
   will-change: transform;

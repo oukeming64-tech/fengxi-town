@@ -47,7 +47,7 @@
     const scale = viewportScale(viewport);
     const x = Math.round((Number(viewport.x) || 0) * 10) / 10;
     const y = Math.round((Number(viewport.y) || 0) * 10) / 10;
-    return `transform: translate(${x}px, ${y}px) scale(${scale});`;
+    return `--map-pan-x: ${x}px; --map-pan-y: ${y}px; --map-zoom: ${scale};`;
   }
 
   function renderMapControls(viewport = {}) {

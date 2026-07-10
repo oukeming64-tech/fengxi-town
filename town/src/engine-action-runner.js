@@ -170,9 +170,14 @@
       return `${plan.slot}去${plan.zoneName}，${plan.intention}。`;
     }
 
-    function makeDailyPlan(villager) {
+    function makeDailyPlan(villager, planningCounts = []) {
       const preferredIds = scenePlanIds[currentSceneKey()] || scenePlanIds.daily;
       const slots = timeSlots.map((slot, index) => {
+        const counts = planningCounts[index] || {
+          activities: new Map(),
+          zones: new Map()
+        };
+        planningCounts[index] = counts;
         const preferredActivityId = villager.energy < 20 && index > 0 ? "REST-01" : preferredIds[index] || preferredIds[0];
         const plan = actionPolicy.chooseActivity
           ? actionPolicy.chooseActivity(villager, {
@@ -182,20 +187,23 @@
             seasonKey: currentSeasonKey(),
             slot,
             preferredActivityId,
-            activityCounts: new Map(),
-            activityZoneCounts: new Map(),
+            activityCounts: counts.activities,
+            activityZoneCounts: counts.zones,
             weather: state.currentWeather,
             townState: state.townState,
             state
           })
           : normalizePlan(villager, chooseFallback(villager));
+        const zoneId = plan.activity?.zoneId || zoneForActivity(villager, plan);
+        counts.activities.set(plan.activityId, (counts.activities.get(plan.activityId) || 0) + 1);
+        counts.zones.set(zoneId, (counts.zones.get(zoneId) || 0) + 1);
         return {
           slot,
           activityId: plan.activityId,
           title: plan.activity?.title || placeName(plan.legacyAction),
           shortTitle: plan.activity?.shortTitle || plan.activity?.title || placeName(plan.legacyAction),
-          zoneId: plan.activity?.zoneId || zoneForActivity(villager, plan),
-          zoneName: zoneName(plan.activity?.zoneId || zoneForActivity(villager, plan)),
+          zoneId,
+          zoneName: zoneName(zoneId),
           intention: plan.activity?.outputs?.[0] || "把今天的事稳住",
           risk: plan.activity?.risks?.[0] || "临时变化"
         };
@@ -210,8 +218,9 @@
     }
 
     function refreshDailyPlans() {
+      const planningCounts = timeSlots.map(() => ({ activities: new Map(), zones: new Map() }));
       state.villagers.forEach((villager) => {
-        villager.todayPlan = makeDailyPlan(villager);
+        villager.todayPlan = makeDailyPlan(villager, planningCounts);
       });
     }
 

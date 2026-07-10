@@ -385,8 +385,8 @@
 }
 
 @keyframes cue-sprite-bob {
-  0%, 100% { opacity: 0.92; transform: translateX(-50%) translateY(0) scale(0.96); }
-  50% { opacity: 1; transform: translateX(-50%) translateY(-4px) scale(1.04); }
+  0%, 100% { opacity: 0.92; transform: translateY(0) scale(0.96); }
+  50% { opacity: 1; transform: translateY(-4px) scale(1.04); }
 }
 
 @keyframes cue-water-fall {

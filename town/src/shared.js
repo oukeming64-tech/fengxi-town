@@ -1,9 +1,9 @@
 (function () {
   const town = {
     version: {
-      code: "v0.1.4-patch3",
+      code: "v0.1.4-patch4",
       name: "枫溪镇",
-      status: "舞台可读性修补"
+      status: "舞台显示修补"
     },
     assets: {
       townMap: "./assets/concept/map.png",

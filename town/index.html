@@ -4,21 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==">
-  <link rel="stylesheet" href="./styles.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-town-map.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-town-map-zones.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-town-map-residents.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-town-map-notice.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-town-panels.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-town-resident-panel.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-town-state-panel.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-town-facility-notice.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-daily-panels.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-daily-resident-list.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-daily-log-report.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-conversation-panel.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-weekly-timeline.css?v=0.1.4-patch3">
-  <link rel="stylesheet" href="./styles-model-config.css?v=0.1.4-patch3">
+  <link rel="stylesheet" href="./styles.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-town-map.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-town-map-zones.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-town-map-residents.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-town-map-notice.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-town-panels.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-town-resident-panel.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-town-state-panel.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-town-facility-notice.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-daily-panels.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-daily-resident-list.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-daily-log-report.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-conversation-panel.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-weekly-timeline.css?v=0.1.4-patch4">
+  <link rel="stylesheet" href="./styles-model-config.css?v=0.1.4-patch4">
   <title>枫溪镇</title>
 </head>
 <body>
@@ -27,7 +27,7 @@
       <div class="title-block">
         <h1>枫溪镇</h1>
         <div class="status-strip" aria-live="polite">
-          <span class="pill stage-detail-pill">版本 <strong id="versionLabel">v0.1.4-patch3 · 舞台可读性修补</strong></span>
+          <span class="pill stage-detail-pill">版本 <strong id="versionLabel">v0.1.4-patch4 · 舞台显示修补</strong></span>
           <span class="pill stage-primary-pill">日子 <strong id="dayLabel">第 1 天</strong></span>
           <span class="pill stage-primary-pill">季节 <strong id="seasonLabel">春季</strong></span>
           <span class="pill stage-primary-pill">天气 <strong id="weatherLabel">阴天</strong></span>
@@ -105,7 +105,7 @@
           <button type="button" data-stage-drawer-target="state" aria-controls="drawerState" title="状态">状态</button>
           <button type="button" data-stage-drawer-action="close" title="收起">收起</button>
         </nav>
-        <div class="stage-drawer-panels">
+        <div class="stage-drawer-panels" aria-hidden="true" inert>
           <section class="pane roster-pane" id="drawerResidents" data-stage-drawer-panel="residents" aria-labelledby="villagersTitle">
             <div class="pane-header">
               <div>
@@ -238,108 +238,108 @@
     </aside>
   </div>
 
-  <script src="./src/shared.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/world-config.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/model-contract.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weather-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weather-system-utils.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weather-system-inertia.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weather-system-output.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weather-system.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-crop-root-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-crop-leaf-grain-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-crop-fruit-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-crop-specialty-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-crop-plan-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-crop-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-economy-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-facility-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-weather-compat-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-core.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger-initial-state.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-facility-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-market-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-crop-field-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-crop-inventory-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-crop-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-contract-bids-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-consignment-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-contract-report-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-contract-delivery-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-surplus-sales-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-contract-accounting-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-contract-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-debt-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-relationship-rules.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-relationship-interactions.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-relationship-public.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-relationship-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/town-ledger.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weekly-timeline-utils.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weekly-timeline-snapshots.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weekly-timeline-reports.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weekly-timeline-stage.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/weekly-timeline.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/activity-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/activity-effects.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/activity-copy.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/activity-rules.js?v=0.1.4-patch3"></script>
-  <script src="./src/town-stage-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/town-stage.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/action-policy-town-needs.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/action-policy.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/resident-memory-stream.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/resident-cognition-payload.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/resident-cognition.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/model-action-audit.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/model-action-proposals.js?v=0.1.4-patch3"></script>
-  <script src="./src/world/prompt-context.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-01.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-02.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-03.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-04.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-05.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-06.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-07.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-08.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-09.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-10.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-11.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-12.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-13.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-14.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-15.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-16.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-17.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-18.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-19.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-20.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-21.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-22.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-23.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-24.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-25.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-26.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-27.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-28.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-29.js?v=0.1.4-patch3"></script>
-  <script src="./src/villagers/villager-30.js?v=0.1.4-patch3"></script>
-  <script src="./src/engine-static-data.js?v=0.1.4-patch3"></script>
-  <script src="./src/engine-daily-report.js?v=0.1.4-patch3"></script>
-  <script src="./src/engine-action-runner.js?v=0.1.4-patch3"></script>
-  <script src="./src/engine-timeline.js?v=0.1.4-patch3"></script>
-  <script src="./src/engine-day-cycle.js?v=0.1.4-patch3"></script>
-  <script src="./src/engine.js?v=0.1.4-patch3"></script>
-  <script src="./src/ui/weekly-timeline-panel.js?v=0.1.4-patch3"></script>
-  <script src="./src/ui/facility-notice-panel.js?v=0.1.4-patch3"></script>
-  <script src="./src/ui/resident-map-panel.js?v=0.1.4-patch3"></script>
-  <script src="./src/ui/daily-panels.js?v=0.1.4-patch3"></script>
-  <script src="./src/ui/town-state-panel.js?v=0.1.4-patch3"></script>
-  <script src="./src/ui/conversation-panel.js?v=0.1.4-patch3"></script>
-  <script src="./src/ui.js?v=0.1.4-patch3"></script>
-  <script src="./src/llm-payloads.js?v=0.1.4-patch3"></script>
-  <script src="./src/llm.js?v=0.1.4-patch3"></script>
-  <script src="./src/main.js?v=0.1.4-patch3"></script>
+  <script src="./src/shared.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/world-config.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/model-contract.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weather-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weather-system-utils.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weather-system-inertia.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weather-system-output.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weather-system.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-crop-root-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-crop-leaf-grain-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-crop-fruit-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-crop-specialty-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-crop-plan-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-crop-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-economy-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-facility-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-weather-compat-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-core.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger-initial-state.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-facility-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-market-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-crop-field-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-crop-inventory-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-crop-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-contract-bids-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-consignment-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-contract-report-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-contract-delivery-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-surplus-sales-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-contract-accounting-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-contract-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-debt-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-relationship-rules.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-relationship-interactions.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-relationship-public.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-relationship-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/town-ledger.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weekly-timeline-utils.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weekly-timeline-snapshots.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weekly-timeline-reports.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weekly-timeline-stage.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/weekly-timeline.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/activity-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/activity-effects.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/activity-copy.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/activity-rules.js?v=0.1.4-patch4"></script>
+  <script src="./src/town-stage-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/town-stage.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/action-policy-town-needs.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/action-policy.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/resident-memory-stream.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/resident-cognition-payload.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/resident-cognition.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/model-action-audit.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/model-action-proposals.js?v=0.1.4-patch4"></script>
+  <script src="./src/world/prompt-context.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-01.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-02.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-03.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-04.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-05.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-06.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-07.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-08.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-09.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-10.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-11.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-12.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-13.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-14.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-15.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-16.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-17.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-18.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-19.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-20.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-21.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-22.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-23.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-24.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-25.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-26.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-27.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-28.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-29.js?v=0.1.4-patch4"></script>
+  <script src="./src/villagers/villager-30.js?v=0.1.4-patch4"></script>
+  <script src="./src/engine-static-data.js?v=0.1.4-patch4"></script>
+  <script src="./src/engine-daily-report.js?v=0.1.4-patch4"></script>
+  <script src="./src/engine-action-runner.js?v=0.1.4-patch4"></script>
+  <script src="./src/engine-timeline.js?v=0.1.4-patch4"></script>
+  <script src="./src/engine-day-cycle.js?v=0.1.4-patch4"></script>
+  <script src="./src/engine.js?v=0.1.4-patch4"></script>
+  <script src="./src/ui/weekly-timeline-panel.js?v=0.1.4-patch4"></script>
+  <script src="./src/ui/facility-notice-panel.js?v=0.1.4-patch4"></script>
+  <script src="./src/ui/resident-map-panel.js?v=0.1.4-patch4"></script>
+  <script src="./src/ui/daily-panels.js?v=0.1.4-patch4"></script>
+  <script src="./src/ui/town-state-panel.js?v=0.1.4-patch4"></script>
+  <script src="./src/ui/conversation-panel.js?v=0.1.4-patch4"></script>
+  <script src="./src/ui.js?v=0.1.4-patch4"></script>
+  <script src="./src/llm-payloads.js?v=0.1.4-patch4"></script>
+  <script src="./src/llm.js?v=0.1.4-patch4"></script>
+  <script src="./src/main.js?v=0.1.4-patch4"></script>
 </body>
 </html>

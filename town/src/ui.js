@@ -175,6 +175,10 @@
     if (!drawer) return;
     drawer.classList?.toggle("is-open", stageDrawerOpen);
     drawer.setAttribute?.("aria-expanded", stageDrawerOpen ? "true" : "false");
+    const panelContainer = drawer.querySelector?.(".stage-drawer-panels");
+    panelContainer?.setAttribute?.("aria-hidden", stageDrawerOpen ? "false" : "true");
+    if (stageDrawerOpen) panelContainer?.removeAttribute?.("inert");
+    else panelContainer?.setAttribute?.("inert", "");
     const buttons = drawer.querySelectorAll?.("[data-stage-drawer-target]") || [];
     buttons.forEach((button) => {
       const active = button.dataset.stageDrawerTarget === stageDrawerPanel;
@@ -232,8 +236,14 @@
 
   function clampMapViewport() {
     mapViewport.scale = T.clamp(Number(mapViewport.scale) || 1, 1, 2.8);
-    const maxX = Math.round(220 * (mapViewport.scale - 1));
-    const maxY = Math.round(150 * (mapViewport.scale - 1));
+    const viewport = el.townMap.querySelector?.(".map-stage-viewport");
+    const surface = el.townMap.querySelector?.(".map-stage-surface");
+    const maxX = viewport && surface
+      ? Math.max(0, Math.round((surface.offsetWidth * mapViewport.scale - viewport.clientWidth) / 2))
+      : Math.round(220 * (mapViewport.scale - 1));
+    const maxY = viewport && surface
+      ? Math.max(0, Math.round((surface.offsetHeight * mapViewport.scale - viewport.clientHeight) / 2))
+      : Math.round(150 * (mapViewport.scale - 1));
     mapViewport.x = T.clamp(Number(mapViewport.x) || 0, -maxX, maxX);
     mapViewport.y = T.clamp(Number(mapViewport.y) || 0, -maxY, maxY);
   }
@@ -243,7 +253,9 @@
     const surface = el.townMap.querySelector?.(".map-stage-surface");
     if (!surface) return;
     const visual = el.townMap.querySelector?.(".map-visual");
-    surface.style.transform = `translate(${Math.round(mapViewport.x * 10) / 10}px, ${Math.round(mapViewport.y * 10) / 10}px) scale(${mapViewport.scale})`;
+    surface.style.setProperty("--map-pan-x", `${Math.round(mapViewport.x * 10) / 10}px`);
+    surface.style.setProperty("--map-pan-y", `${Math.round(mapViewport.y * 10) / 10}px`);
+    surface.style.setProperty("--map-zoom", mapViewport.scale);
     if (!visual) return;
     const fade = T.clamp((mapViewport.scale - 1) / 0.9, 0, 1);
     const fadeValue = (start, end) => Math.round((start + (end - start) * fade) * 100) / 100;
