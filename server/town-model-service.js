@@ -1,4 +1,5 @@
 const { createModelActionShardRunner } = require("./model-action-shard-runner");
+const { createModelInteractionLaneRunner } = require("./model-interaction-lane-runner");
 
 function createTownModelService({
   mockModel,
@@ -33,6 +34,11 @@ function createTownModelService({
     runtime,
     providerClient,
     actionGuards
+  });
+  const interactionLaneRunner = createModelInteractionLaneRunner({
+    runtime,
+    providerClient,
+    guards
   });
 
   async function generateTownText(payload) {
@@ -88,6 +94,21 @@ function createTownModelService({
   }
 
   async function generateTownInteractions(payload) {
+    const config = runtime.activeConfig();
+    const provider = runtime.providerDefaults(config.provider);
+    const keyPool = runtime.activeKeyPool(provider.id);
+    if (!mockModel && keyPool.keys.length > 1) {
+      const output = await interactionLaneRunner.generate(payload);
+      if (!output.shadow.conversations.length) {
+        const fallbackConversation = makeCognitionIntentConversation(payload);
+        if (fallbackConversation) {
+          output.shadow.conversations = [fallbackConversation];
+          output.audit.accepted.conversations += 1;
+          output.audit.localFallback = "cognition_intent_conversation";
+        }
+      }
+      return output;
+    }
     let raw = {};
     let parseError = "";
     try {

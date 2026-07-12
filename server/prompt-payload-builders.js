@@ -209,7 +209,8 @@ function createPromptPayloadBuilders({ compactCognition } = {}) {
           } : null,
           relationships: payload.stateLayer.snapshot.relationships ? {
             summary: payload.stateLayer.snapshot.relationships.summary,
-            summaryLines: (payload.stateLayer.snapshot.relationships.summaryLines || []).slice(0, 3)
+            summaryLines: (payload.stateLayer.snapshot.relationships.summaryLines || []).slice(0, 3),
+            recentInteractions: (payload.stateLayer.snapshot.relationships.recentInteractions || []).slice(0, 6)
           } : null
         } : null
       } : null,
@@ -217,6 +218,7 @@ function createPromptPayloadBuilders({ compactCognition } = {}) {
       cognition: payload.cognition ? {
         acceptedInteractionIntents: (payload.cognition.acceptedInteractionIntents || []).slice(0, 8)
       } : null,
+      interactionLane: payload.interactionLane || null,
       weekly: {
         weekId: payload.weekly?.weekId || "",
         range: payload.weekly?.range || "",

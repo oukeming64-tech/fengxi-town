@@ -166,6 +166,7 @@
 
   function buildInteractionPayload(engine) {
     const payload = buildShadowPayload(engine);
+    const snapshot = payload.stateLayer?.snapshot || null;
     const acceptedInteractionIntents = (engine.state.modelActionControl?.interactionIntents || [])
       .filter((intent) => intent.accepted)
       .slice(0, 8)
@@ -187,6 +188,19 @@
         || /互动|送礼|表达好感|致谢|表彰|结盟|排挤|调停|公告|账|桥|争议|问价|帮|谈|TC-07|CH-06/.test(`${log.text || ""} ${log.activityTitle || ""} ${log.activityId || ""}`)
       ))
       .slice(-12);
+    const relationshipEvents = (snapshot?.relationships?.recentInteractions || []).slice(0, 4);
+    const relationshipLogs = relationshipEvents.map((item, index) => ({
+      id: `relationship-${item.id || `${item.day || engine.state.day}-${index + 1}`}-${index + 1}`,
+      day: Number(item.day || Math.max(1, engine.state.day - 1)),
+      slot: item.slot || "清晨",
+      place: item.place || "镇上",
+      kind: item.type || "relationship",
+      residentId: item.actorId || item.residentIds?.[0] || "",
+      zoneId: item.zoneId || "",
+      activityId: item.activityId || "",
+      activityTitle: item.activityTitle || item.label || "居民互动",
+      text: item.summary || ""
+    })).filter((log) => log.residentId && log.text);
     const availableLogs = uniqueById([...engine.state.allLogs, ...engine.state.displayLogs].map(logPayload));
     const perIntentLogs = acceptedInteractionIntents
       .map((intent) => {
@@ -197,8 +211,8 @@
     const intentLogs = availableLogs
       .filter((log) => intentResidentIds.has(log.residentId))
       .slice(-8);
-    const requiredLogIds = new Set(perIntentLogs.map((log) => log.id).filter(Boolean));
-    const candidateLogs = [...payload.logs.slice(-12), ...interactionLogs, ...intentLogs, ...perIntentLogs]
+    const requiredLogIds = new Set([...perIntentLogs, ...relationshipLogs].map((log) => log.id).filter(Boolean));
+    const candidateLogs = [...payload.logs.slice(-12), ...interactionLogs, ...intentLogs, ...perIntentLogs, ...relationshipLogs]
       .filter((log, index, list) => log?.id && list.findIndex((item) => item.id === log.id) === index);
     let logs = candidateLogs;
     if (logs.length > 12) {
@@ -209,12 +223,15 @@
       const selectedIds = new Set([...selectedOptionalLogs, ...requiredLogs].map((log) => log.id));
       logs = logs.filter((log) => selectedIds.has(log.id));
     }
-    const involvedIds = [...new Set(logs.map((log) => log.residentId).filter(Boolean))];
+    const relationshipResidentIds = relationshipEvents.flatMap((item) => item.residentIds || []);
+    const involvedIds = [...new Set([
+      ...logs.map((log) => log.residentId),
+      ...relationshipResidentIds
+    ].filter(Boolean))];
     const focusedResidents = payload.residents
       .filter((resident) => involvedIds.includes(resident.id))
       .slice(0, 8);
     const residents = focusedResidents.length >= 2 ? focusedResidents : payload.residents.slice(0, 8);
-    const snapshot = payload.stateLayer?.snapshot || null;
     return {
       mode: "interaction-scenes",
       world: payload.world,
