@@ -9,6 +9,7 @@ function attachShardAudit(output, summary, attempts) {
   output.actionAudit.shard = {
     index: summary.index,
     count: summary.count,
+    groupIds: summary.groupIds || [],
     requestedResidents: summary.requestedResidents,
     returnedResidentPlans: summary.returnedResidentPlans,
     acceptedSlotPlans: summary.acceptedSlotPlans,
@@ -65,7 +66,8 @@ function summarizeAttempt({
   status,
   elapsedMs,
   inputBytes,
-  quality
+  quality,
+  groupIds = []
 }) {
   const missing = missingResidentIds(output, requestedIds);
   const returnedPlans = output.actionPlan?.plans?.length || 0;
@@ -76,6 +78,7 @@ function summarizeAttempt({
     attempt,
     index: index + 1,
     count,
+    groupIds,
     requestedResidents: requestedIds.length,
     returnedResidentPlans: returnedPlans,
     acceptedSlotPlans: acceptedSlots,

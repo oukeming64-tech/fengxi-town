@@ -41,7 +41,15 @@ function compactCognition(cognition) {
       publicEvents: packet.publicEvents,
       retrievedMemoryIds: packet.retrievedMemoryIds,
       relationshipHints: packet.relationshipHints,
-      systemPressure: packet.systemPressure
+      systemPressure: packet.systemPressure,
+      groupContext: packet.groupContext || null
+    })),
+    groupProfiles: (cognition.groupProfiles || []).slice(0, 6).map((group) => ({
+      id: group.id,
+      centerResidentId: group.centerResidentId,
+      memberResidentIds: group.memberResidentIds,
+      roles: group.roles,
+      behaviorRules: group.behaviorRules
     }))
   };
 }

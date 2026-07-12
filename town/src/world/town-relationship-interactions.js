@@ -5,6 +5,7 @@
   const version = "town-relationship-interactions-v0.0.1-local";
   const typeLabels = rules.typeLabels || {};
   const typeEffects = rules.typeEffects || {};
+  const groupProfiles = T.residentGroupProfiles || {};
 
   function residentsById(context) {
     const map = new Map();
@@ -75,6 +76,11 @@
   function chooseType(log, otherLog, pair, context) {
     const seed = rules.stableHash(`${context.day || ""}:${log.id}:${otherLog.id}:${pair.pairId}`);
     const text = `${log.activityId} ${otherLog.activityId} ${log.activityTitle} ${otherLog.activityTitle} ${log.kind} ${otherLog.kind} ${log.place}`;
+    if (groupProfiles.sameGroup?.(log.residentId, otherLog.residentId)) {
+      return seed % 3 === 0 ? "alliance" : "help";
+    }
+    const outsideHelp = groupProfiles.evaluateHelp?.(log.residentId, otherLog.residentId, { evidenceTexts: [text] });
+    if (outsideHelp?.decision === "deprioritize" && (log.kind === "work" || /修|搬|巡|浇|除草|加工/.test(text))) return "exclusion";
     if (/TC-08|CH-03|抱怨|争议|投诉|排队/.test(text)) return "exclusion";
     if ((pair.friction >= 14 || pair.exclusion >= 10) && /CH-|AC-|TC-|会堂|账|餐馆|市场/.test(text)) return "mediation";
     if (/CH-01|CH-05|CH-09|AC-10|GG-03|SR-06|公告|会堂|计划|报价/.test(text)) return "alliance";
@@ -183,6 +189,17 @@
 
     groups.forEach((items) => {
       const sorted = [...items].sort((a, b) => b.score - a.score || a.residentId.localeCompare(b.residentId));
+      const grouped = sorted.filter((item) => groupProfiles.profileFor?.(item.residentId));
+      const centers = grouped.filter((item) => groupProfiles.roleFor?.(item.residentId) === "center");
+      centers.forEach((center) => {
+        grouped.filter((item) => item.residentId !== center.residentId).forEach((member) => {
+          if (!groupProfiles.sameGroup?.(center.residentId, member.residentId)) return;
+          const key = `${center.slot}|${rules.pairKey(center.residentId, member.residentId)}`;
+          if (seen.has(key)) return;
+          seen.add(key);
+          candidates.push([center, member]);
+        });
+      });
       for (let i = 0; i < sorted.length - 1; i += 1) {
         const a = sorted[i];
         const b = sorted[i + 1];

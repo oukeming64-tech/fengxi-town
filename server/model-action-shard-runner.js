@@ -29,8 +29,8 @@ function createModelActionShardRunner({
   } = providerClient;
   const actionQuality = createModelActionQuality();
 
-  function splitResidentsForAction(residents) {
-    return splitResidentsForActionBySize(residents, maxActionShardResidents);
+  function splitResidentsForAction(residents, groupProfiles = []) {
+    return splitResidentsForActionBySize(residents, maxActionShardResidents, groupProfiles);
   }
 
   async function generateActionShard({ payload, chunk, index, count, keys, keyStart }) {
@@ -87,7 +87,8 @@ function createModelActionShardRunner({
         status,
         elapsedMs: Date.now() - startedAt,
         inputBytes,
-        quality
+        quality,
+        groupIds: shardPayload.actionShard.groupIds
       });
       attempts.push(summary);
 
@@ -121,7 +122,8 @@ function createModelActionShardRunner({
     if (!keyPool.keys.length) throw new Error(`missing_${provider.id}_key`);
 
     const startedAt = Date.now();
-    const chunks = splitResidentsForAction(residents);
+    const groupProfiles = payload.cognition?.groupProfiles || [];
+    const chunks = splitResidentsForAction(residents, groupProfiles);
     const activeParallelism = Math.min(actionParallelism, keyPool.keys.length, chunks.length);
     const start = Number(runtime.runtimeConfig.keyCursor[provider.id] || 0) % keyPool.keys.length;
     runtime.runtimeConfig.keyCursor[provider.id] = (start + chunks.length) % keyPool.keys.length;
@@ -145,6 +147,8 @@ function createModelActionShardRunner({
       shardCount: chunks.length,
       keyCount: keyPool.keys.length,
       keySource: keyPool.source,
+      groupAware: groupProfiles.length > 0,
+      groupProfileCount: groupProfiles.length,
       elapsedMs: Date.now() - startedAt
     });
   }

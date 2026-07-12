@@ -48,6 +48,7 @@ function createCognitionPayloadCleaner({
     if (!item || typeof item !== "object") return null;
     const residentId = cleanString(item.residentId, 12);
     if (!residentId) return null;
+    const group = item.groupContext && typeof item.groupContext === "object" ? item.groupContext : null;
     return {
       residentId,
       day: Number(item.day || 0),
@@ -56,7 +57,33 @@ function createCognitionPayloadCleaner({
       publicEvents: cleanList(item.publicEvents, 5, 180).map((event) => safeVisibleText(event, 180)).filter(Boolean),
       retrievedMemoryIds: cleanList(item.retrievedMemoryIds, 6, 60),
       relationshipHints: cleanList(item.relationshipHints, 6, 120),
-      systemPressure: cleanList(item.systemPressure, 8, 40)
+      systemPressure: cleanList(item.systemPressure, 8, 40),
+      groupContext: group ? {
+        groupId: cleanString(group.groupId, 40),
+        role: cleanString(group.role, 40),
+        centerResidentId: cleanString(group.centerResidentId, 12),
+        memberResidentIds: cleanList(group.memberResidentIds, 8, 12),
+        behaviorRules: cleanList(group.behaviorRules, 6, 220).map((rule) => safeVisibleText(rule, 220)).filter(Boolean)
+      } : null
+    };
+  }
+
+  function cleanGroupProfile(group) {
+    if (!group || typeof group !== "object") return null;
+    const id = cleanString(group.id, 40);
+    const memberResidentIds = cleanList(group.memberResidentIds, 8, 12);
+    if (!id || memberResidentIds.length < 2) return null;
+    const roles = {};
+    memberResidentIds.forEach((residentId) => {
+      const role = cleanString(group.roles?.[residentId], 40);
+      if (role) roles[residentId] = role;
+    });
+    return {
+      id,
+      centerResidentId: cleanString(group.centerResidentId, 12),
+      memberResidentIds,
+      roles,
+      behaviorRules: cleanList(group.behaviorRules, 6, 220).map((rule) => safeVisibleText(rule, 220)).filter(Boolean)
     };
   }
 
@@ -93,6 +120,9 @@ function createCognitionPayloadCleaner({
         : [],
       perceptionPackets: Array.isArray(cognition.perceptionPackets)
         ? cognition.perceptionPackets.map(cleanPerceptionPacket).filter(Boolean).slice(0, 30)
+        : [],
+      groupProfiles: Array.isArray(cognition.groupProfiles)
+        ? cognition.groupProfiles.map(cleanGroupProfile).filter(Boolean).slice(0, 6)
         : [],
       acceptedInteractionIntents: Array.isArray(cognition.acceptedInteractionIntents)
         ? cognition.acceptedInteractionIntents.slice(0, 12).map(cleanInteractionIntent).filter((intent) => (

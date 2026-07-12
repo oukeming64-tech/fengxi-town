@@ -170,14 +170,17 @@
       return `${plan.slot}去${plan.zoneName}，${plan.intention}。`;
     }
 
-    function makeDailyPlan(villager, planningCounts = []) {
+    function makeDailyPlan(villager, planningCounts = [], groupZonePlans = []) {
       const preferredIds = scenePlanIds[currentSceneKey()] || scenePlanIds.daily;
+      const group = T.residentGroupProfiles?.profileFor?.(villager.id) || null;
       const slots = timeSlots.map((slot, index) => {
         const counts = planningCounts[index] || {
           activities: new Map(),
           zones: new Map()
         };
         planningCounts[index] = counts;
+        const groupZones = groupZonePlans[index] || new Map();
+        groupZonePlans[index] = groupZones;
         const preferredActivityId = villager.energy < 20 && index > 0 ? "REST-01" : preferredIds[index] || preferredIds[0];
         const plan = actionPolicy.chooseActivity
           ? actionPolicy.chooseActivity(villager, {
@@ -191,12 +194,16 @@
             activityZoneCounts: counts.zones,
             weather: state.currentWeather,
             townState: state.townState,
-            state
+            state,
+            groupAnchorZoneId: group ? groupZones.get(group.id) || "" : ""
           })
           : normalizePlan(villager, chooseFallback(villager));
         const zoneId = plan.activity?.zoneId || zoneForActivity(villager, plan);
         counts.activities.set(plan.activityId, (counts.activities.get(plan.activityId) || 0) + 1);
         counts.zones.set(zoneId, (counts.zones.get(zoneId) || 0) + 1);
+        if (group && (!groupZones.has(group.id) || T.residentGroupProfiles.roleFor(villager.id) === "center")) {
+          groupZones.set(group.id, zoneId);
+        }
         return {
           slot,
           activityId: plan.activityId,
@@ -219,8 +226,15 @@
 
     function refreshDailyPlans() {
       const planningCounts = timeSlots.map(() => ({ activities: new Map(), zones: new Map() }));
-      state.villagers.forEach((villager) => {
-        villager.todayPlan = makeDailyPlan(villager, planningCounts);
+      const groupZonePlans = timeSlots.map(() => new Map());
+      const planningOrder = [...state.villagers].sort((a, b) => {
+        const aRole = T.residentGroupProfiles?.roleFor?.(a.id) || "";
+        const bRole = T.residentGroupProfiles?.roleFor?.(b.id) || "";
+        const rank = (role) => role === "center" ? 0 : role ? 1 : 2;
+        return rank(aRole) - rank(bRole) || a.id.localeCompare(b.id);
+      });
+      planningOrder.forEach((villager) => {
+        villager.todayPlan = makeDailyPlan(villager, planningCounts, groupZonePlans);
       });
     }
 

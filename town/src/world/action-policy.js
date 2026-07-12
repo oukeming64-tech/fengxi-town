@@ -106,6 +106,10 @@
     score += scoreSeason(activity, ctx.seasonKey);
     score += scoreSlot(activity, ctx.slot);
     score += scoreBodyNeed(villager, activity);
+    if (T.residentGroupProfiles?.scoreActivity) score += T.residentGroupProfiles.scoreActivity(villager.id, activity);
+    if (ctx.groupAnchorZoneId && T.residentGroupProfiles?.profileFor?.(villager.id)) {
+      score += activity.zoneId === ctx.groupAnchorZoneId ? 18 : -4;
+    }
     if (townNeeds.scoreTownNeeds) score += townNeeds.scoreTownNeeds(activity, ctx);
     if (ctx.activityCounts?.get) {
       score -= (ctx.activityCounts.get(activity.id) || 0) * 14;

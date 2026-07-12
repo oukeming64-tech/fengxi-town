@@ -14,12 +14,28 @@ const {
   retryFromSummary
 } = require("./model-action-shard-retry");
 
-function splitResidentsForAction(residents, maxActionShardResidents) {
+function splitResidentsForAction(residents, maxActionShardResidents, groupProfiles = []) {
   const size = Math.max(1, Number(maxActionShardResidents || 8));
+  const byId = new Map(residents.map((resident) => [resident.id, resident]));
+  const assigned = new Set();
   const chunks = [];
-  for (let index = 0; index < residents.length; index += size) {
-    chunks.push(residents.slice(index, index + size));
-  }
+  (groupProfiles || []).forEach((group) => {
+    const memberIds = (group?.memberResidentIds || []).filter((id) => byId.has(id) && !assigned.has(id));
+    if (memberIds.length < 2 || memberIds.length > size) return;
+    const orderedIds = [group.centerResidentId, ...memberIds]
+      .filter((id, index, list) => id && memberIds.includes(id) && list.indexOf(id) === index);
+    const chunk = orderedIds.map((id) => byId.get(id));
+    orderedIds.forEach((id) => assigned.add(id));
+    for (const resident of residents) {
+      if (chunk.length >= size) break;
+      if (assigned.has(resident.id)) continue;
+      chunk.push(resident);
+      assigned.add(resident.id);
+    }
+    chunks.push(chunk);
+  });
+  const remaining = residents.filter((resident) => !assigned.has(resident.id));
+  for (let index = 0; index < remaining.length; index += size) chunks.push(remaining.slice(index, index + size));
   return chunks;
 }
 
@@ -39,11 +55,16 @@ async function runWithConcurrency(items, limit, worker) {
 
 function makeActionShardPayload(payload, residents, index, count, retry = null) {
   const residentIds = residents.map((resident) => resident.id);
+  const groupIds = (payload.cognition?.groupProfiles || [])
+    .filter((group) => (group.memberResidentIds || []).some((id) => residentIds.includes(id)))
+    .map((group) => group.id)
+    .filter(Boolean);
   const actionShard = {
     index: index + 1,
     count,
     residentCount: residents.length,
-    residentIds
+    residentIds,
+    groupIds
   };
   if (retry) actionShard.retry = retry;
   return {

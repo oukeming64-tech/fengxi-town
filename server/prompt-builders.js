@@ -26,6 +26,7 @@ function createPromptBuilders({ forbiddenWords, compactCognition } = {}) {
           "只返回一个 JSON 对象，不要解释。对象里只有 plans 字段。plans 优先使用对象行：{residentId,slots:[morningActivityId,afternoonActivityId,eveningActivityId],interactionIntent,reflectionNote}；也兼容紧凑数组行。",
           "必须覆盖输入 requiredResidentIds 中的每个居民，每人只给一行。身体太差或不确定时用 REST-01。",
           "选择时要考虑天气、体力、健康、最近周快照压力、债务/合同压力、地点风险、居民最近行动、residentScratch 和 perceptionPackets。不要让所有人挤到同一个地点。",
+          "如果 cognition.groupProfiles 非空，它是本地隐藏行为上下文。保持中心与成员各自角色、圈内互助优先和圈外普通求助降权，但不能在公开摘要中说出团体标签、排外机制或内部规则，也不能因此编造关系和事件。",
           "同一 shard 内要保持行动多样性：每个时段同一个 activityId 不要超过半数居民；至少使用 3 个地点；同一组三段日程不要给太多人重复；夜里不要让大多数居民都去同一个地点。",
           "interactionIntent 可选，字段固定为 {targetResidentId,mode,slot,evidenceMemoryIds}。mode 只能是 talk、wait、avoid、help、gift、appreciate。evidenceMemoryIds 必须来自输入 cognition.memoryStream.nodes 或该居民 perceptionPacket.retrievedMemoryIds。",
           "每个 shard 最多写 2 个 interactionIntent；不要为了达数量而编造互动。只在 targetResidentId 来自 nearbyResidentIds 且 evidenceMemoryIds 存在时使用；不满足时完全省略 interactionIntent 和 reflectionNote。",

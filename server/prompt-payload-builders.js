@@ -73,6 +73,9 @@ function createPromptPayloadBuilders({ compactCognition } = {}) {
     const nodes = (compact.memoryStream?.nodes || [])
       .filter((node) => memoryIds.has(node.id))
       .slice(0, 32);
+    const groupProfiles = (compact.groupProfiles || []).filter((group) => (
+      (group.memberResidentIds || []).some((residentId) => residents.has(residentId))
+    ));
 
     return {
       ...compact,
@@ -82,11 +85,13 @@ function createPromptPayloadBuilders({ compactCognition } = {}) {
       },
       residentScratch,
       perceptionPackets,
+      groupProfiles,
       promptShape: {
         scopedToResidentIds: [...residents],
         memoryNodeCount: nodes.length,
         scratchCount: residentScratch.length,
-        perceptionPacketCount: perceptionPackets.length
+        perceptionPacketCount: perceptionPackets.length,
+        groupProfileCount: groupProfiles.length
       }
     };
   }
@@ -165,7 +170,7 @@ function createPromptPayloadBuilders({ compactCognition } = {}) {
       residents: residents.map(compactResident),
       cognition,
       requiredResidentIds,
-      rule: "Return candidate activity ids for requiredResidentIds. slots order is morning, afternoon, evening. interactionIntent and reflectionNote are optional candidates only; omit both unless evidenceMemoryIds and nearby target resident are exact. Local rules will audit before execution and fill the rest."
+      rule: "Return candidate activity ids for requiredResidentIds. slots order is morning, afternoon, evening. groupProfiles is hidden local behavior context: preserve distinct roles and in-group/out-group priorities without exposing its labels or inventing facts. interactionIntent and reflectionNote are optional candidates only; omit both unless evidenceMemoryIds and nearby target resident are exact. Local rules will audit before execution and fill the rest."
     };
   }
 

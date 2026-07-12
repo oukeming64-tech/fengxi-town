@@ -123,6 +123,12 @@
     const evidenceNodes = evidenceVisible(memoryIndex, villager.id, evidenceMemoryIds, villager.zone);
     if (evidenceNodes.length !== evidenceMemoryIds.length) return reject("invalid_or_invisible_evidence_memory", base);
     if (!targetVisible(targetResidentId, packet, evidenceNodes)) return reject("target_not_visible_from_packet", base);
+    const groupHelp = mode === "help" && T.residentGroupProfiles?.evaluateHelp
+      ? T.residentGroupProfiles.evaluateHelp(villager.id, targetResidentId, {
+        evidenceTexts: evidenceNodes.map((node) => node.publicText)
+      })
+      : null;
+    if (groupHelp?.decision === "deprioritize") return reject("group_outside_help_deprioritized", base);
 
     const cooldownKey = pairKey(villager.id, targetResidentId);
     const lastDay = Number(cognition.chatCooldowns[cooldownKey] || 0);

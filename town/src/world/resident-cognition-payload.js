@@ -202,7 +202,8 @@
         publicEvents: publicEvents(snapshot, engine.state.currentWeather),
         retrievedMemoryIds: memories.map((node) => node.id),
         relationshipHints: relationshipHints(villager.id, relationshipSnapshot),
-        systemPressure: pressures
+        systemPressure: pressures,
+        groupContext: T.residentGroupProfiles?.contextFor?.(villager.id) || null
       };
       return {
         scratch: buildScratch(engine, villager, memories, cognition),
@@ -217,6 +218,7 @@
       memoryStream: stream,
       residentScratch: residents.map((item) => item.scratch),
       perceptionPackets: residents.map((item) => item.perceptionPacket),
+      groupProfiles: T.residentGroupProfiles?.modelProfiles?.() || [],
       allowedIntentModes: intentModes,
       expectedCandidateFields: {
         interactionIntent: {
