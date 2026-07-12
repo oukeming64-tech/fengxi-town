@@ -125,18 +125,18 @@
   height: calc(var(--hotspot-radius, 5) * 7px);
   min-height: 0;
   transform: translate(-50%, -50%);
-  border: 1px solid rgba(32, 37, 31, 0.16);
+  border: 1px solid transparent;
   border-radius: 50%;
   padding: 0;
-  background: rgba(255, 254, 249, 0.36);
-  box-shadow: 0 4px 10px rgba(31, 39, 33, 0.1);
-  opacity: 0.72;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
   pointer-events: auto;
   transition: opacity 160ms ease, transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .map-feature-hotspot:hover,
-.map-feature-hotspot:focus,
+.map-feature-hotspot:focus-visible,
 .map-feature-hotspot.is-selected {
   z-index: 9;
   border-color: #20251f;
@@ -177,7 +177,7 @@
 }
 
 .map-feature-hotspot:hover .hotspot-label,
-.map-feature-hotspot:focus .hotspot-label,
+.map-feature-hotspot:focus-visible .hotspot-label,
 .map-feature-hotspot.is-selected .hotspot-label {
   opacity: 1;
 }
@@ -192,23 +192,23 @@
   opacity: 0.18;
 }
 
-.map-visual.is-map-zoomed .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) {
-  border-color: rgba(32, 37, 31, 0.08);
-  background: rgba(255, 254, 249, 0.18);
+.map-visual.is-map-zoomed .map-feature-hotspot:not(:hover):not(:focus-visible):not(.is-selected) {
+  border-color: transparent;
+  background: transparent;
   box-shadow: none;
-  opacity: var(--hotspot-fade-opacity, 0.26);
+  opacity: 0;
 }
 
-.map-visual.is-map-deep-zoom .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) {
-  opacity: var(--hotspot-fade-opacity, 0.08);
+.map-visual.is-map-deep-zoom .map-feature-hotspot:not(:hover):not(:focus-visible):not(.is-selected) {
+  opacity: 0;
 }
 
-.map-visual.is-map-zoomed .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) .hotspot-dot {
+.map-visual.is-map-zoomed .map-feature-hotspot:not(:hover):not(:focus-visible):not(.is-selected) .hotspot-dot {
   box-shadow: none;
   opacity: var(--hotspot-dot-fade-opacity, 0.45);
 }
 
-.map-visual.is-map-deep-zoom .map-feature-hotspot:not(:hover):not(:focus):not(.is-selected) .hotspot-dot {
+.map-visual.is-map-deep-zoom .map-feature-hotspot:not(:hover):not(:focus-visible):not(.is-selected) .hotspot-dot {
   opacity: var(--hotspot-dot-fade-opacity, 0.18);
 }
 
