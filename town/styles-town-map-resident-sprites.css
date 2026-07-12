@@ -149,8 +149,12 @@
 }
 
 .resident-token.has-resident-sprite.is-travelling {
-  z-index: 7;
+  z-index: calc(110 + var(--resident-depth, 50));
   animation: resident-travel var(--travel-duration, 1530ms) cubic-bezier(0.3, 0.74, 0.26, 1) both;
+}
+
+.resident-token.has-resident-sprite.is-selected {
+  z-index: 240;
 }
 
 .resident-token.has-resident-sprite.is-travelling .resident-sprite-frame {

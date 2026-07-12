@@ -1,13 +1,17 @@
 (function () {
   const T = window.MorningTown || (window.MorningTown = {});
 
-  function render(engine, options = {}) {
+  function feedbackFor(engine, options = {}) {
     const snapshot = engine.publicTownSnapshot?.();
-    if (!snapshot || !T.townStageFacilityFeedback?.feedbackFor) return "";
-    const feedback = T.townStageFacilityFeedback.feedbackFor(snapshot, {
+    if (!snapshot || !T.townStageFacilityFeedback?.feedbackFor) return [];
+    return T.townStageFacilityFeedback.feedbackFor(snapshot, {
       activeStage: options.activeStage,
       day: options.playback?.day || snapshot.day
     });
+  }
+
+  function render(engine, options = {}) {
+    const feedback = feedbackFor(engine, options);
     if (!feedback.length) return "";
     return `
       <div class="facility-state-layer" aria-label="设施公开状态">
@@ -23,6 +27,7 @@
 
   T.facilityMapLayer = {
     version: "facility-map-layer-v0.1.6-local",
+    feedbackFor,
     render
   };
 }());

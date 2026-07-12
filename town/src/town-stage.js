@@ -4,6 +4,8 @@
   if (!stageData) throw new Error("town-stage-data.js must load before town-stage.js");
   const stageRoutes = T.townStageRoutes;
   if (!stageRoutes) throw new Error("town-stage-routes.js must load before town-stage.js");
+  const stageLayout = T.townStageLayout;
+  if (!stageLayout) throw new Error("town-stage-layout.js must load before town-stage.js");
 
   const hotspots = stageData.mapHotspots || [];
   const animationAssets = stageData.actionAnimations || {};
@@ -67,17 +69,6 @@
     return [...candidates].sort((a, b) => scoreHotspot(b, activity) - scoreHotspot(a, activity))[0] || hotspots[0];
   }
 
-  function offsetPoint(point, seed, index, total, radius = 4) {
-    if (!point) return { x: 50, y: 50 };
-    if (total <= 1) return { x: point.x, y: point.y };
-    const angle = ((index / total) * Math.PI * 2) + (seed % 17) * 0.11;
-    const ring = Math.min(radius, 1.7 + Math.floor(index / 6) * 1.6);
-    return {
-      x: T.clamp(Math.round((point.x + Math.cos(angle) * ring) * 100) / 100, 3, 97),
-      y: T.clamp(Math.round((point.y + Math.sin(angle) * ring) * 100) / 100, 3, 97)
-    };
-  }
-
   function eventFor(villager, log, slot, stageIndex) {
     const activity = activityFor(log?.activityId) || activityFor(villager?.todayPlan?.slots?.[stageIndex]?.activityId) || T.activityRules?.fallbackActivity;
     const hotspot = hotspotForActivity(activity, villager);
@@ -103,21 +94,7 @@
   }
 
   function assignEventPoints(events) {
-    const groups = new Map();
-    events.forEach((event) => {
-      const key = event.hotspotId || event.zoneId || "town";
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(event);
-    });
-    groups.forEach((group) => {
-      group.forEach((event, index) => {
-        const hotspot = byId.get(event.hotspotId) || hotspots[0];
-        const point = offsetPoint(hotspot, idNumber(event.residentId), index, group.length, hotspot?.radius || 4);
-        event.x = point.x;
-        event.y = point.y;
-      });
-    });
-    return events;
+    return stageLayout.assignEventPoints(events, { byId, hotspots });
   }
 
   function evidenceLine(event) {

@@ -26,6 +26,7 @@
     const villager = options.villager || {};
     const event = options.event || null;
     const position = options.position || { x: 50, y: 50 };
+    const depth = Math.round(T.clamp(Number(options.depth ?? position.y) || 0, 0, 100));
     const movement = options.movement || null;
     const cell = residentCell(villager);
     const actionKey = classToken(event?.animationKey, "idle");
@@ -43,7 +44,7 @@
       : "";
     const avatar = villager.avatar || T.residentAvatarPath(villager.id);
     return `
-      <button type="button" class="resident-token has-resident-sprite ${kind}${selected}${staged}${travelling}" data-villager-id="${T.escapeHtml(villager.id)}" data-action-key="${T.escapeHtml(actionKey)}" data-sprite-index="${cell.index}" style="left: ${position.x}%; top: ${position.y}%; --resident-sprite-x: ${cell.x}%; --resident-sprite-y: ${cell.y}%; ${movementStyle}" title="${T.escapeHtml(options.title || villager.name || "居民")}" aria-label="${T.escapeHtml(options.ariaLabel || villager.name || "居民")}">
+      <button type="button" class="resident-token has-resident-sprite ${kind}${selected}${staged}${travelling}" data-villager-id="${T.escapeHtml(villager.id)}" data-hotspot-id="${T.escapeHtml(event?.hotspotId || "")}" data-layout-index="${Number(event?.layoutIndex ?? 0)}" data-layout-size="${Number(event?.layoutSize ?? 1)}" data-action-key="${T.escapeHtml(actionKey)}" data-sprite-index="${cell.index}" data-resident-depth="${depth}" style="left: ${position.x}%; top: ${position.y}%; --resident-depth: ${depth}; --resident-sprite-x: ${cell.x}%; --resident-sprite-y: ${cell.y}%; ${movementStyle}" title="${T.escapeHtml(options.title || villager.name || "居民")}" aria-label="${T.escapeHtml(options.ariaLabel || villager.name || "居民")}">
         <span class="resident-ground-shadow" aria-hidden="true"></span>
         <span class="resident-sprite" aria-hidden="true"><span class="resident-sprite-frame"></span></span>
         <span class="resident-avatar-pin" aria-hidden="true"><img src="${T.escapeHtml(avatar)}" alt=""></span>

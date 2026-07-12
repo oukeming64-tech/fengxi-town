@@ -59,23 +59,10 @@
     `;
   }
 
-  function renderDialogues(activeStage) {
-    return (activeStage?.encounters || []).slice(0, 3).map((encounter) => {
-      const text = (encounter.lines || []).map((line) => `${line.speakerName || line.speakerId}：${line.text}`).join(" / ");
-      return `
-        <div class="stage-dialogue" style="left: ${encounter.x}%; top: ${encounter.y}%;">
-          <span>${T.escapeHtml(encounter.hotspotLabel || "相遇")}</span>
-          <p>${T.escapeHtml(text)}</p>
-        </div>
-      `;
-    }).join("");
-  }
-
   T.townMapHotspotLayer = {
     version: "town-map-hotspot-layer-v0.1.6-local",
     activityNames,
     renderHotspots,
-    renderInspector,
-    renderDialogues
+    renderInspector
   };
 }());

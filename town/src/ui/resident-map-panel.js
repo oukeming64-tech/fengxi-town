@@ -79,6 +79,7 @@
             villager,
             event,
             position: pos,
+            depth: event?.depth ?? pos.y,
             movement,
             selected,
             kind: event?.kind || villager.recentAction?.kind || "quiet",
@@ -117,7 +118,7 @@
             <div class="map-hotspot-layer">${T.townMapHotspotLayer.renderHotspots(hotspotOptions)}</div>
             ${T.facilityMapLayer?.render?.(engine, { playback, activeStage }) || ""}
             <div class="resident-token-layer">${tokens}</div>
-            <div class="stage-dialogue-layer">${T.townMapHotspotLayer.renderDialogues(activeStage)}</div>
+            <div class="stage-dialogue-layer">${T.townMapDialogueLayer?.render?.(engine, { playback, activeStage }) || ""}</div>
           </div>
         </div>
         ${T.townMapChrome.renderStageControls(playback, stageIndex, options.playbackPlaying !== false)}

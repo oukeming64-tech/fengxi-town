@@ -1,0 +1,52 @@
+.stage-dialogue-layer {
+  z-index: 140;
+  pointer-events: none;
+}
+
+.stage-dialogue {
+  position: absolute;
+  width: min(210px, 24%);
+  min-width: 150px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(32, 37, 31, 0.16);
+  border-radius: 8px;
+  padding: 7px 9px;
+  background: rgba(255, 254, 249, 0.76);
+  box-shadow: 0 5px 14px rgba(31, 39, 33, 0.12);
+  opacity: 0.72;
+  backdrop-filter: blur(4px);
+  transition: opacity 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.map-visual.has-selected-hotspot .stage-dialogue,
+.map-visual:has(.resident-token:hover) .stage-dialogue,
+.map-visual:has(.resident-token:focus-visible) .stage-dialogue,
+.map-visual:has(.map-feature-hotspot:hover) .stage-dialogue,
+.map-visual:has(.map-feature-hotspot:focus-visible) .stage-dialogue {
+  border-color: rgba(32, 37, 31, 0.26);
+  background: rgba(255, 254, 249, 0.94);
+  box-shadow: 0 8px 20px rgba(31, 39, 33, 0.18);
+  opacity: 0.96;
+}
+
+.stage-dialogue span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.stage-dialogue p {
+  margin: 0;
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+@media (max-width: 1180px) {
+  .stage-dialogue {
+    width: min(190px, 25%);
+    min-width: 136px;
+  }
+}
