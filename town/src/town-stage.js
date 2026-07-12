@@ -2,6 +2,8 @@
   const T = window.MorningTown || (window.MorningTown = {});
   const stageData = T.townStageData;
   if (!stageData) throw new Error("town-stage-data.js must load before town-stage.js");
+  const stageRoutes = T.townStageRoutes;
+  if (!stageRoutes) throw new Error("town-stage-routes.js must load before town-stage.js");
 
   const hotspots = stageData.mapHotspots || [];
   const animationAssets = stageData.actionAnimations || {};
@@ -216,7 +218,7 @@
     stages.push(buildHomeStage(state));
     return {
       id: `stage-d${day}-${logs.length}-${state.villagers?.length || 0}`,
-      version: "town-stage-v0.1.5-local",
+      version: "town-stage-v0.1.6-local-routes",
       day,
       source: logs.length ? "audited-action-logs" : "today-plan-preview",
       weatherType: state.currentWeather?.type || state.currentWeather?.key || "cloudy",
@@ -245,12 +247,18 @@
     const fromEvent = fromStage?.events?.find((event) => event.residentId === residentId);
     const toEvent = toStage?.events?.find((event) => event.residentId === residentId);
     if (!fromEvent || !toEvent) return null;
+    const from = { x: Number(fromEvent.x), y: Number(fromEvent.y) };
+    const to = { x: Number(toEvent.x), y: Number(toEvent.y) };
+    const route = stageRoutes.routeBetween(fromEvent.hotspotId, toEvent.hotspotId, from, to);
     return {
       residentId,
       fromStageIndex: T.clamp(Number(fromStageIndex) || 0, 0, playback.stages.length - 1),
       toStageIndex: T.clamp(Number(toStageIndex) || 0, 0, playback.stages.length - 1),
-      from: { x: Number(fromEvent.x), y: Number(fromEvent.y) },
-      to: { x: Number(toEvent.x), y: Number(toEvent.y) },
+      from,
+      to,
+      points: route.points,
+      routeNodeIds: route.nodeIds,
+      routeSource: route.source,
       animationKey: toEvent.animationKey || "idle",
       durationMs: T.clamp(Math.round((Number(toStage.durationSeconds) || 9) * 170), 1200, 2200),
       source: "local-audited-stage-events"
@@ -273,7 +281,7 @@
   }
 
   T.townStage = {
-    version: "town-stage-v0.1.5-local",
+    version: "town-stage-v0.1.6-local-routes",
     hotspots,
     animationAssets,
     byId,

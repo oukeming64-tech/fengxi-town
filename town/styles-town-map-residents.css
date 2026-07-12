@@ -533,8 +533,11 @@
 }
 
 @keyframes resident-travel {
-  from { left: var(--travel-from-x); top: var(--travel-from-y); }
-  to { left: var(--travel-to-x); top: var(--travel-to-y); }
+  0% { left: var(--travel-point-0-x); top: var(--travel-point-0-y); }
+  25% { left: var(--travel-point-1-x); top: var(--travel-point-1-y); }
+  50% { left: var(--travel-point-2-x); top: var(--travel-point-2-y); }
+  75% { left: var(--travel-point-3-x); top: var(--travel-point-3-y); }
+  100% { left: var(--travel-point-4-x); top: var(--travel-point-4-y); }
 }
 
 @keyframes resident-idle {

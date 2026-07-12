@@ -35,8 +35,11 @@
     const staged = event ? ` is-stage-token action-${actionKey} tone-${tone}` : "";
     const travelling = movement?.from && movement?.to ? " is-travelling" : "";
     const durationMs = Math.max(1, Number(movement?.durationMs) || 1);
+    const movementPoints = movement?.points?.length === 5
+      ? movement.points
+      : [movement?.from, movement?.from, movement?.to, movement?.to, movement?.to].filter(Boolean);
     const movementStyle = movement?.from && movement?.to
-      ? `--travel-from-x: ${movement.from.x}%; --travel-from-y: ${movement.from.y}%; --travel-to-x: ${movement.to.x}%; --travel-to-y: ${movement.to.y}%; --travel-duration: ${durationMs}ms;`
+      ? movementPoints.map((point, index) => `--travel-point-${index}-x: ${point.x}%; --travel-point-${index}-y: ${point.y}%;`).join(" ") + ` --travel-duration: ${durationMs}ms;`
       : "";
     const avatar = villager.avatar || T.residentAvatarPath(villager.id);
     return `
