@@ -51,14 +51,23 @@ function createPromptBuilders({ forbiddenWords, compactCognition } = {}) {
   }
 
   function buildInteractionMessages(payload) {
+    const lane = payload.interactionLane || null;
+    const laneInstruction = lane?.instruction
+      ? `本次只负责候选视角 ${Number(lane.index || 0) + 1}：${lane.instruction}`
+      : "从最值得展示的已发生互动中选择一段。";
+    const conversationCountRule = lane?.required
+      ? "本路只生成 1 段 conversation。只要输入日志包含足够的两人事实，就必须选择最具体的一段；只有不足两名居民时才能返回空。"
+      : "只生成 0 或 1 段 conversation。找不到符合本视角且有明确证据的事件时返回空 conversations，不要拿普通公告核对硬凑。";
     return [
       {
         role: "system",
         content: [
           "你是枫溪镇的互动场景层。你只根据已经发生的本地日志，生成可展示的候选会话和风险提示。",
+          laneInstruction,
           "不要润色日志，不要写日报，不要写周报，不要改任何事实状态或数值。",
-          "只生成 1 段 conversation。只写 2 到 3 句短对话。用具体物件和动作，不写心理诊断。",
+          `${conversationCountRule} 只写 2 到 3 句短对话。用具体物件和动作，不写心理诊断。`,
           "每段 conversation 必须使用输入里的 residentId，必须绑定 1 到 3 个 evidenceLogIds，且证据日志必须包含 conversation 任一 residentId；speakerId 必须是 conversation residentIds 里的 v01 这类 id。",
+          "note 只描述公开可见的动作，不得解释候选视角，不得出现团体、圈内、圈外、中心人物、成员或“符合某种场景”等分析性措辞。",
           "如果输入 cognition.acceptedInteractionIntents 里有 gift 或 appreciate，优先围绕已发生日志写一段送小礼或表达好感的公开短会话，但不能写关系数值变化。",
           "riskNotes 最多 1 条公开可观察风险，不能把猜测写成结论。",
           "\u4e0d\u80fd\u51fa\u73b0\u8fd9\u4e9b\u8bcd\uff1a" + blockedWords.join("\u3001") + "\u3002",

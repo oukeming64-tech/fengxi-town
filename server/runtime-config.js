@@ -155,29 +155,29 @@ function createRuntimeConfig({ host, port, mockModel, cleanString }) {
 
   function activeKeyPool(providerId) {
     const provider = providerDefaults(providerId || runtimeConfig.provider);
-    const sessionConfigs = uniqueKeyConfigs(runtimeConfig.sessionKeyConfigs || []);
-    if (sessionConfigs.length) {
-      return { keys: sessionConfigs, source: "session", envName: "" };
-    }
-    const sessionKeys = uniqueList(runtimeConfig.sessionKeys || []).map((key) => makeKeyConfig({
+    const environmentConfigs = envKeys(provider.id).map((key) => makeKeyConfig({
       provider: provider.id,
       endpoint: runtimeConfig.endpoint || provider.endpoint,
       model: runtimeConfig.model || provider.model,
       key
     }));
-    if (sessionKeys.length) {
-      return { keys: sessionKeys, source: "session", envName: "" };
-    }
-    const keys = envKeys(provider.id).map((key) => makeKeyConfig({
-      provider: provider.id,
-      endpoint: runtimeConfig.endpoint || provider.endpoint,
-      model: runtimeConfig.model || provider.model,
-      key
-    }));
+    const sessionConfigs = uniqueKeyConfigs([
+      ...(runtimeConfig.sessionKeyConfigs || []),
+      ...uniqueList(runtimeConfig.sessionKeys || []).map((key) => makeKeyConfig({
+        provider: provider.id,
+        endpoint: runtimeConfig.endpoint || provider.endpoint,
+        model: runtimeConfig.model || provider.model,
+        key
+      }))
+    ]);
+    const keys = uniqueKeyConfigs([...environmentConfigs, ...sessionConfigs]);
+    const source = environmentConfigs.length && sessionConfigs.length
+      ? "environment+session"
+      : (sessionConfigs.length ? "session" : (environmentConfigs.length ? "environment" : "none"));
     return {
       keys,
-      source: keys.length ? "environment" : "none",
-      envName: firstEnv(provider.keyEnv)
+      source,
+      envName: environmentConfigs.length ? firstEnv(provider.keyEnv) : ""
     };
   }
 

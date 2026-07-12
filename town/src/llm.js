@@ -95,6 +95,7 @@
   function keyStatusLabel(config) {
     const count = Number(config?.keyCount || 0);
     const suffix = count > 1 ? ` x${count}` : "";
+    if (config?.keySource === "environment+session") return `环境+页面 key${suffix}`;
     return config?.keySource === "environment" ? `环境 key${suffix}` : `页面 key${suffix}`;
   }
 
