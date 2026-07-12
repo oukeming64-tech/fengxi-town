@@ -3,7 +3,7 @@
     version: {
       code: "v0.1.6",
       name: "枫溪镇",
-      status: "本地路线第一阶段"
+      status: "设施事实反馈"
     },
     assets: {
       townMap: "./assets/concept/map.png",

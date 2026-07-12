@@ -1,0 +1,282 @@
+.resident-action-cue {
+  position: absolute;
+  right: -18px;
+  bottom: -15px;
+  z-index: 12;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 254, 249, 0.64);
+  border-radius: 999px;
+  background: rgba(255, 254, 249, 0.4);
+  box-shadow: 0 4px 9px rgba(31, 39, 33, 0.16);
+  opacity: 0.78;
+  pointer-events: none;
+  overflow: hidden;
+  transition: opacity 160ms ease, transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.resident-action-cue::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background-image: var(--cue-icon, var(--cue-atlas));
+  background-position: var(--cue-bg-position, center);
+  background-repeat: no-repeat;
+  background-size: var(--cue-bg-size, 400% 300%);
+  filter: drop-shadow(0 2px 2px rgba(31, 39, 33, 0.2));
+  image-rendering: auto;
+  animation: cue-sprite-bob 1.35s ease-in-out infinite;
+}
+
+.resident-action-cue.has-icon::before {
+  display: none;
+}
+
+.resident-action-icon {
+  position: absolute;
+  inset: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  object-fit: contain;
+  filter: drop-shadow(0 2px 2px rgba(31, 39, 33, 0.2));
+  animation: cue-sprite-bob 1.35s ease-in-out infinite;
+}
+
+.resident-token:hover .resident-action-cue,
+.resident-token:focus-visible .resident-action-cue,
+.resident-token.is-selected .resident-action-cue {
+  transform: scale(1.08);
+  border-color: rgba(255, 254, 249, 0.92);
+  background: rgba(255, 254, 249, 0.78);
+  box-shadow: 0 7px 15px rgba(31, 39, 33, 0.24);
+  opacity: 1;
+}
+
+.resident-action-cue i {
+  position: absolute;
+  display: none;
+  transform-origin: center;
+}
+
+.cue-water i {
+  width: 5px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(71, 135, 163, 0.72);
+  animation: cue-water-fall 920ms ease-in infinite;
+}
+
+.cue-water i:nth-child(1) {
+  left: 4px;
+  top: 8px;
+}
+
+.cue-water i:nth-child(2) {
+  right: 4px;
+  top: 13px;
+  animation-delay: 120ms;
+}
+
+.cue-water i:nth-child(3) {
+  left: 50%;
+  bottom: 0;
+  animation-delay: 240ms;
+}
+
+.cue-field i {
+  width: 12px;
+  height: 7px;
+  border-radius: 12px 0;
+  background: rgba(47, 123, 79, 0.7);
+  animation: cue-leaf-sway 1.4s ease-in-out infinite;
+}
+
+.cue-field i:nth-child(1) {
+  left: 0;
+  top: 18px;
+}
+
+.cue-field i:nth-child(2) {
+  right: 2px;
+  top: 6px;
+  animation-delay: 180ms;
+}
+
+.cue-field i:nth-child(3) {
+  right: 7px;
+  bottom: 2px;
+  animation-delay: 360ms;
+}
+
+.cue-repair i,
+.cue-carry i {
+  width: 10px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(67, 82, 98, 0.78);
+  animation: cue-tool-tap 1.05s ease-in-out infinite;
+}
+
+.cue-repair i:nth-child(1),
+.cue-carry i:nth-child(1) {
+  left: 3px;
+  top: 10px;
+  transform: rotate(35deg);
+}
+
+.cue-repair i:nth-child(2),
+.cue-carry i:nth-child(2) {
+  right: 3px;
+  top: 12px;
+  transform: rotate(-35deg);
+  animation-delay: 140ms;
+}
+
+.cue-repair i:nth-child(3),
+.cue-carry i:nth-child(3) {
+  left: 50%;
+  bottom: 3px;
+  transform: translateX(-50%);
+  animation-delay: 280ms;
+}
+
+.cue-trade i,
+.cue-sell i {
+  width: 9px;
+  height: 9px;
+  border: 2px solid rgba(169, 118, 34, 0.72);
+  border-radius: 50%;
+  animation: cue-coin-pop 1.1s ease-in-out infinite;
+}
+
+.cue-trade i:nth-child(1),
+.cue-sell i:nth-child(1) {
+  left: 3px;
+  top: 6px;
+}
+
+.cue-trade i:nth-child(2),
+.cue-sell i:nth-child(2) {
+  right: 4px;
+  top: 14px;
+  animation-delay: 160ms;
+}
+
+.cue-trade i:nth-child(3),
+.cue-sell i:nth-child(3) {
+  left: 18px;
+  bottom: 2px;
+  animation-delay: 320ms;
+}
+
+.cue-notice i,
+.cue-audit i {
+  width: 12px;
+  height: 9px;
+  border: 1px solid rgba(103, 85, 138, 0.76);
+  border-radius: 2px;
+  background: rgba(255, 254, 249, 0.85);
+  animation: cue-paper-shift 1.35s ease-in-out infinite;
+}
+
+.cue-notice i:nth-child(1),
+.cue-audit i:nth-child(1) {
+  left: 0;
+  top: 8px;
+}
+
+.cue-notice i:nth-child(2),
+.cue-audit i:nth-child(2) {
+  right: 1px;
+  top: 8px;
+  animation-delay: 180ms;
+}
+
+.cue-notice i:nth-child(3),
+.cue-audit i:nth-child(3) {
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  animation-delay: 360ms;
+}
+
+.cue-chat i {
+  width: 15px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(155, 77, 66, 0.72);
+  animation: cue-chat-rise 1.2s ease-in-out infinite;
+}
+
+.cue-chat i::after {
+  content: "";
+  position: absolute;
+  right: 2px;
+  bottom: -3px;
+  border-top: 4px solid rgba(155, 77, 66, 0.72);
+  border-left: 4px solid transparent;
+}
+
+.cue-chat i:nth-child(1) {
+  left: 0;
+  top: 6px;
+}
+
+.cue-chat i:nth-child(2) {
+  right: 0;
+  top: 14px;
+  animation-delay: 160ms;
+}
+
+.cue-chat i:nth-child(3) {
+  display: none;
+}
+
+.cue-rest i {
+  width: 11px;
+  height: 11px;
+  border: 2px solid rgba(109, 107, 82, 0.72);
+  border-left-color: transparent;
+  border-radius: 50%;
+  animation: cue-rest-pulse 1.8s ease-in-out infinite;
+}
+
+.cue-rest i:nth-child(1) {
+  left: 4px;
+  top: 8px;
+}
+
+.cue-rest i:nth-child(2) {
+  right: 4px;
+  top: 15px;
+  animation-delay: 240ms;
+}
+
+.cue-rest i:nth-child(3) {
+  display: none;
+}
+
+.resident-token.action-water,
+.resident-token.action-field {
+  box-shadow: 0 7px 17px rgba(47, 123, 79, 0.34);
+}
+
+.resident-token.action-repair,
+.resident-token.action-carry {
+  box-shadow: 0 7px 17px rgba(67, 82, 98, 0.34);
+}
+
+.resident-token.action-trade,
+.resident-token.action-sell {
+  box-shadow: 0 7px 17px rgba(169, 118, 34, 0.34);
+}
+
+.resident-token.action-chat,
+.resident-token.action-notice,
+.resident-token.action-audit {
+  box-shadow: 0 7px 17px rgba(103, 85, 138, 0.3);
+}
+
+.resident-token.action-rest {
+  box-shadow: 0 7px 17px rgba(109, 107, 82, 0.28);
+}

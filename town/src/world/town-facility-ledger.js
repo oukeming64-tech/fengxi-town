@@ -217,7 +217,10 @@
         group: facility.group,
         level: facility.level,
         maxLevel: facility.maxLevel,
-        condition: facility.condition
+        condition: facility.condition,
+        effectiveLevel: effectiveLevel(facility),
+        lastMaintenanceDay: facility.lastMaintenanceDay,
+        upgradedDay: facility.upgradedDay
       })),
       effects: fx,
       proficiency

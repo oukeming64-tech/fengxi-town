@@ -1,0 +1,83 @@
+.facility-state-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.facility-state-marker {
+  position: absolute;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  max-width: 64px;
+  transform: translate(-50%, calc(-100% - 9px));
+  border: 1px solid rgba(32, 37, 31, 0.24);
+  border-radius: 6px;
+  padding: 3px 6px;
+  background: rgba(255, 254, 249, 0.9);
+  box-shadow: 0 5px 12px rgba(31, 39, 33, 0.16);
+  color: #30372f;
+  font-size: 9px;
+  line-height: 1.1;
+  white-space: nowrap;
+  backdrop-filter: blur(3px);
+}
+
+.facility-state-dot {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #54798b;
+  box-shadow: 0 0 0 3px rgba(84, 121, 139, 0.14);
+}
+
+.facility-state-copy {
+  color: #496572;
+  font-weight: 760;
+}
+
+.facility-state-marker.is-damaged {
+  border-color: rgba(169, 118, 34, 0.42);
+  background: rgba(255, 248, 224, 0.92);
+}
+
+.facility-state-marker.is-damaged .facility-state-dot {
+  background: #a97622;
+  box-shadow: 0 0 0 3px rgba(169, 118, 34, 0.16);
+}
+
+.facility-state-marker.is-stopped {
+  border-color: rgba(155, 77, 66, 0.46);
+  background: rgba(255, 238, 234, 0.94);
+}
+
+.facility-state-marker.is-stopped .facility-state-dot {
+  background: #9b4d42;
+  box-shadow: 0 0 0 3px rgba(155, 77, 66, 0.16);
+}
+
+.facility-state-marker.is-upgrading {
+  border-color: rgba(103, 85, 138, 0.42);
+  background: rgba(245, 239, 255, 0.94);
+}
+
+.facility-state-marker.is-upgrading .facility-state-dot {
+  background: #67558a;
+  box-shadow: 0 0 0 3px rgba(103, 85, 138, 0.16);
+  animation: facility-state-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes facility-state-pulse {
+  50% {
+    transform: scale(1.18);
+    opacity: 0.72;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .facility-state-marker.is-upgrading .facility-state-dot {
+    animation: none;
+  }
+}

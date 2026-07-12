@@ -1,0 +1,280 @@
+/* v0.1.5 resident sprite action stage */
+.resident-token.has-resident-sprite,
+.resident-token.has-resident-sprite.is-selected {
+  width: 48px;
+  height: 58px;
+  transform: translate(-50%, -82%);
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  outline: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: filter 140ms ease;
+}
+
+.resident-token.has-resident-sprite::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  z-index: 0;
+  width: 26px;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(31, 39, 33, 0.3);
+  filter: blur(1px);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.resident-sprite {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 2;
+  display: block;
+  width: 56px;
+  height: 56px;
+  transform: translateX(-50%);
+  transform-origin: 50% 88%;
+  transition: transform 140ms ease, filter 140ms ease;
+  pointer-events: none;
+}
+
+.resident-sprite-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: var(--resident-sprite-sheet);
+  background-repeat: no-repeat;
+  background-size: 600% 500%;
+  background-position: var(--resident-sprite-x, 0%) var(--resident-sprite-y, 0%);
+  image-rendering: pixelated;
+  filter: drop-shadow(0 3px 2px rgba(31, 39, 33, 0.26));
+  animation: resident-idle 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.resident-token.has-resident-sprite:hover .resident-sprite,
+.resident-token.has-resident-sprite:focus-visible .resident-sprite,
+.resident-token.has-resident-sprite.is-selected .resident-sprite {
+  transform: translateX(-50%) scale(1.13);
+  filter: saturate(1.08) brightness(1.04);
+}
+
+.resident-token.has-resident-sprite.is-selected::after {
+  width: 31px;
+  opacity: 0.9;
+}
+
+.resident-avatar-pin {
+  position: absolute;
+  right: -3px;
+  top: 0;
+  z-index: 13;
+  width: 19px;
+  height: 19px;
+  transform: translateY(3px) scale(0.82);
+  border: 1px solid rgba(255, 254, 249, 0.95);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--panel);
+  box-shadow: 0 4px 8px rgba(31, 39, 33, 0.2);
+  opacity: 0;
+  transition: opacity 140ms ease, transform 140ms ease;
+  pointer-events: none;
+}
+
+.resident-avatar-pin img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.resident-token.has-resident-sprite:hover .resident-avatar-pin,
+.resident-token.has-resident-sprite:focus-visible .resident-avatar-pin,
+.resident-token.has-resident-sprite.is-selected .resident-avatar-pin {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.resident-token.has-resident-sprite .resident-action-cue {
+  right: -2px;
+  bottom: 4px;
+  width: 20px;
+  height: 20px;
+  border-width: 1px;
+  background: rgba(255, 254, 249, 0.46);
+  box-shadow: 0 3px 7px rgba(31, 39, 33, 0.12);
+  opacity: 0.42;
+}
+
+.resident-token.has-resident-sprite:hover .resident-action-cue,
+.resident-token.has-resident-sprite:focus-visible .resident-action-cue,
+.resident-token.has-resident-sprite.is-selected .resident-action-cue {
+  transform: scale(1.12);
+  opacity: 0.96;
+}
+
+.resident-token.has-resident-sprite.is-stage-token {
+  animation: none;
+}
+
+.resident-token.has-resident-sprite.action-water .resident-sprite-frame,
+.resident-token.has-resident-sprite.action-field .resident-sprite-frame,
+.resident-token.has-resident-sprite.action-repair .resident-sprite-frame {
+  animation: resident-work 880ms ease-in-out infinite;
+}
+
+.resident-token.has-resident-sprite.action-carry .resident-sprite-frame {
+  animation: resident-carry 760ms ease-in-out infinite;
+}
+
+.resident-token.has-resident-sprite.action-trade .resident-sprite-frame,
+.resident-token.has-resident-sprite.action-sell .resident-sprite-frame,
+.resident-token.has-resident-sprite.action-chat .resident-sprite-frame {
+  animation: resident-social 1.05s ease-in-out infinite;
+}
+
+.resident-token.has-resident-sprite.action-notice .resident-sprite-frame,
+.resident-token.has-resident-sprite.action-audit .resident-sprite-frame {
+  animation: resident-inspect 1.35s ease-in-out infinite;
+}
+
+.resident-token.has-resident-sprite.action-rest .resident-sprite-frame {
+  animation: resident-rest 1.9s ease-in-out infinite;
+}
+
+.resident-token.has-resident-sprite.is-travelling {
+  z-index: 7;
+  animation: resident-travel var(--travel-duration, 1530ms) cubic-bezier(0.3, 0.74, 0.26, 1) both;
+}
+
+.resident-token.has-resident-sprite.is-travelling .resident-sprite-frame {
+  animation: resident-walk 420ms steps(2, end) infinite;
+}
+
+@keyframes resident-travel {
+  0% { left: var(--travel-point-0-x); top: var(--travel-point-0-y); }
+  25% { left: var(--travel-point-1-x); top: var(--travel-point-1-y); }
+  50% { left: var(--travel-point-2-x); top: var(--travel-point-2-y); }
+  75% { left: var(--travel-point-3-x); top: var(--travel-point-3-y); }
+  100% { left: var(--travel-point-4-x); top: var(--travel-point-4-y); }
+}
+
+@keyframes resident-idle {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-1px) scaleY(1.01); }
+}
+
+@keyframes resident-walk {
+  0% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-4px) rotate(1.5deg); }
+  100% { transform: translateY(0) rotate(-1.5deg); }
+}
+
+@keyframes resident-work {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  45% { transform: translateY(1px) rotate(4deg); }
+  70% { transform: translateY(-2px) rotate(-2deg); }
+}
+
+@keyframes resident-carry {
+  0%, 100% { transform: translateY(0) scaleX(0.99); }
+  50% { transform: translateY(-3px) scaleX(1.02); }
+}
+
+@keyframes resident-social {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  38% { transform: translateY(-3px) rotate(-2deg); }
+  72% { transform: translateY(-1px) rotate(2deg); }
+}
+
+@keyframes resident-inspect {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-1px) rotate(1.5deg) scale(0.98); }
+}
+
+@keyframes resident-rest {
+  0%, 100% { transform: translateY(2px) scaleY(0.97); opacity: 0.9; }
+  50% { transform: translateY(0) scaleY(1); opacity: 1; }
+}
+
+@keyframes token-arrive {
+  from {
+    opacity: 0.62;
+    transform: translate(-50%, -50%) scale(0.78);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes cue-sprite-bob {
+  0%, 100% { opacity: 0.92; transform: translateY(0) scale(0.96); }
+  50% { opacity: 1; transform: translateY(-4px) scale(1.04); }
+}
+
+@keyframes cue-water-fall {
+  0% { opacity: 0; transform: translateY(-4px) scale(0.72); }
+  35% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(12px) scale(0.92); }
+}
+
+@keyframes cue-leaf-sway {
+  0%, 100% { opacity: 0.65; transform: rotate(-10deg) translateY(0); }
+  50% { opacity: 1; transform: rotate(12deg) translateY(-2px); }
+}
+
+@keyframes cue-tool-tap {
+  0%, 100% { opacity: 0.6; }
+  45% { opacity: 1; transform: rotate(0deg) scaleX(1.14); }
+}
+
+@keyframes cue-coin-pop {
+  0%, 100% { opacity: 0.55; transform: translateY(2px) scale(0.82); }
+  50% { opacity: 1; transform: translateY(-5px) scale(1); }
+}
+
+@keyframes cue-paper-shift {
+  0%, 100% { opacity: 0.62; transform: translateY(0) rotate(-2deg); }
+  50% { opacity: 1; transform: translateY(-4px) rotate(3deg); }
+}
+
+@keyframes cue-chat-rise {
+  0%, 100% { opacity: 0.55; transform: translateY(2px) scale(0.86); }
+  50% { opacity: 0.95; transform: translateY(-6px) scale(1); }
+}
+
+@keyframes cue-rest-pulse {
+  0%, 100% { opacity: 0.46; transform: scale(0.84); }
+  50% { opacity: 0.9; transform: scale(1.06); }
+}
+
+@media (max-width: 720px) {
+  .resident-token {
+    width: 30px;
+    height: 30px;
+  }
+
+  .resident-token.is-selected {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resident-token.has-resident-sprite.is-travelling {
+    animation-duration: 1ms;
+  }
+
+  .resident-token.has-resident-sprite .resident-sprite-frame,
+  .resident-action-cue::before,
+  .resident-action-icon {
+    animation: none;
+  }
+}
