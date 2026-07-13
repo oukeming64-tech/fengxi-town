@@ -43,6 +43,23 @@
     return T.relationshipVisualCues?.fromSources?.({ events }) || Object.freeze([]);
   }
 
+  function bindMapImageFallback(container, festivalTheme) {
+    if (!festivalTheme?.isFestivalMap) return;
+    const image = container.querySelector?.(".map-image");
+    if (!image) return;
+    image.addEventListener("error", () => {
+      if (image.dataset.fallbackApplied === "true") return;
+      image.dataset.fallbackApplied = "true";
+      image.src = festivalTheme.fallbackMapAsset;
+      image.alt = "枫溪镇默认 2D 小镇地图";
+      const surface = image.closest?.(".map-stage-surface");
+      if (surface) {
+        surface.dataset.mapPackageId = "default";
+        surface.dataset.mapFallback = "asset-load-error";
+      }
+    }, { once: true });
+  }
+
   function renderMap(container, engine, options = {}) {
     if (!container) return;
     const current = options.current || null;
@@ -55,6 +72,10 @@
     const selectedSocialCues = T.residentSocialCueLayer?.selectForStage?.(socialCues, activeStage) || [];
     const socialAssignments = T.residentSocialCueLayer?.residentAssignments?.(selectedSocialCues) || new Map();
     const animateStageMove = Boolean(options.animateStageMove);
+    const festivalTheme = T.townStageFestivalTheme?.resolveForState?.({
+      day: engine.state.townState?.day || engine.state.day || playback?.day,
+      seasonKey: engine.state.townState?.seasonKey || "spring"
+    }) || null;
     const previousStageIndex = Number.isInteger(options.previousStageIndex) ? options.previousStageIndex : stageIndex;
     const byZone = new Map(engine.zones.map((zone) => [zone.id, []]));
     engine.state.villagers.forEach((villager) => {
@@ -127,11 +148,11 @@
     container.innerHTML = `
       <div class="${mapClasses}" style="--map-scale: ${mapScale}; --resident-sprite-sheet: url('${residentSpriteSheet}');" aria-label="枫溪镇像素地图">
         ${T.townMapChrome.renderMapControls(options.viewport)}
-        ${T.townMapChrome.renderStageHud(engine, playback, activeStage)}
+        ${T.townMapChrome.renderStageHud(engine, playback, activeStage, festivalTheme)}
         ${T.townMapChrome.renderActionLegend(activeStage)}
         <div class="map-stage-viewport">
-          <div class="map-stage-surface" style="${T.townMapChrome.viewportStyle(options.viewport)}">
-            <img class="map-image" src="${T.escapeHtml(T.assets.townMap)}" alt="枫溪镇 2D 小镇地图">
+          <div class="map-stage-surface" data-map-package-id="${T.escapeHtml(festivalTheme?.mapPackage?.id || "default")}" data-festival-id="${T.escapeHtml(festivalTheme?.festivalId || "")}" data-festival-phase="${T.escapeHtml(festivalTheme?.phase || "none")}" style="${T.townMapChrome.viewportStyle(options.viewport)}">
+            <img class="map-image" src="${T.escapeHtml(festivalTheme?.mapAsset || T.assets.townMap)}" alt="${T.escapeHtml(festivalTheme?.mapAlt || "枫溪镇 2D 小镇地图")}">
             <div class="map-shade" aria-hidden="true"></div>
             ${T.townMapChrome.renderWeatherLayer(engine, options)}
             <div class="zone-marker-layer">${labels}</div>
@@ -147,6 +168,7 @@
         ${T.townMapHotspotLayer.renderInspector(engine, activeStage, options.selectedHotspotId)}
       </div>
     `;
+    bindMapImageFallback(container, festivalTheme);
   }
 
   function renderResidentCard(container, engine, options = {}) {

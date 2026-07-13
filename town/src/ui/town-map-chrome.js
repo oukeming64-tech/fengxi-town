@@ -46,13 +46,17 @@
     `;
   }
 
-  function renderStageHud(engine, playback, activeStage) {
+  function renderStageHud(engine, playback, activeStage, festivalTheme = null) {
     const weather = T.townStage?.weatherView?.(engine.state.currentWeather) || { label: "阴天" };
+    const festivalLabel = festivalTheme?.festivalId
+      ? `<span>${T.escapeHtml(festivalTheme.festivalName)} · ${T.escapeHtml(festivalTheme.phaseLabel)}</span>`
+      : "";
     return `
       <div class="map-stage-hud" aria-live="polite">
         <span>第 ${playback?.day || engine.state.day} 天</span>
         <span>${T.escapeHtml(weather.label)}</span>
         <span>${T.escapeHtml(activeStage?.label || "清晨")}</span>
+        ${festivalLabel}
       </div>
     `;
   }
@@ -82,7 +86,7 @@
   }
 
   T.townMapChrome = {
-    version: "town-map-chrome-v0.1.6-local",
+    version: "town-map-chrome-v0.1.9-a-festival-map",
     viewportScale,
     mapZoomClass,
     viewportStyle,
