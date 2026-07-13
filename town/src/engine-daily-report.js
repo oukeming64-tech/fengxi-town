@@ -10,7 +10,7 @@
     return source.map((log) => `${log.slot}，${factText(log)}`);
   }
 
-  function generateReport({ state, zones }) {
+  function generateReport({ state, zones, festivalResult = null }) {
     const visibleLogs = state.dailyLogs.filter((log) => log.kind !== "system");
     const work = visibleLogs.filter((log) => log.kind === "work").slice(0, 4);
     const talk = visibleLogs.filter((log) => log.kind === "talk").slice(0, 4);
@@ -28,6 +28,7 @@
       ? { title: "安静角落", list: listFor(quiet, visibleLogs.slice(0, 4)) }
       : { title: "路过的事", list: fallbackList };
     const settlementSections = state.lastSettlement?.reportSections || [];
+    const festivalSection = T.festivalResultLedger?.reportSection?.(festivalResult);
 
     return {
       day: state.day,
@@ -35,6 +36,7 @@
       sections: [
         { title: "今日公告", body: `${state.season.field} ${state.scene.task}走过了一天，镇上的动静都留在黄石农场、镇中心、河湾湿地和旧矿区上。` },
         ...settlementSections,
+        ...(festivalSection ? [festivalSection] : []),
         { title: "做过的事", list: work.length ? listFor(work, visibleLogs.slice(0, 4)) : fallbackList },
         { title: "听见的话", list: talk.length ? listFor(talk, visibleLogs.slice(0, 4)) : fallbackList },
         quietSection,

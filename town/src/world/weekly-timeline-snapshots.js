@@ -102,6 +102,7 @@
   function makeDailySnapshot(options) {
     const snapshot = options.publicSnapshot || {};
     const report = options.report || null;
+    const festivalResult = options.festivalResult || null;
     return utils.deepFreeze({
       day: options.day,
       scene: options.scene || "",
@@ -117,6 +118,19 @@
       ledgerLines: collectSectionLines(report, /现金流|账务事件|合同/, 5),
       facilityContractLines: collectSectionLines(report, /设施|招标|寄售|合同|市场/, 6),
       riskLines: collectSectionLines(report, /风险/, 5),
+      festivalResult: festivalResult ? {
+        id: festivalResult.id,
+        festivalId: festivalResult.festivalId,
+        festivalName: festivalResult.festivalName,
+        phase: festivalResult.phase,
+        phaseLabel: festivalResult.phaseLabel,
+        participantIds: [...festivalResult.participantIds],
+        actionCount: festivalResult.actionCount,
+        resultTypeCounts: festivalResult.resultTypeCounts.map((item) => ({ label: item.label, count: item.count })),
+        summaryLines: [...festivalResult.summaryLines],
+        source: festivalResult.source,
+        immutableState: true
+      } : null,
       eventLines: (snapshot.events || []).slice(-4).map((event) => `${event.title}：${event.detail}`)
     });
   }

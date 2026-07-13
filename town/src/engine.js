@@ -10,6 +10,7 @@
   const relationshipLedger = T.townRelationshipLedger || {};
   const stageLaborFairness = T.stageLaborFairness || {};
   const engineDailyReport = T.engineDailyReport || {};
+  const festivalResultLedger = T.festivalResultLedger || {};
   const staticData = T.engineStaticData || {};
 
   const namePool = staticData.namePool || { first: { male: [], female: [] }, last: [] };
@@ -37,6 +38,7 @@
     dayStart: null,
     dailyLogs: [],
     dailyActivityLogs: [],
+    festivalResults: [],
     displayLogs: [],
     allLogs: [],
     lastReport: null,
@@ -212,6 +214,7 @@
     stageLaborFairness,
     weatherSystem,
     engineDailyReport,
+    festivalResultLedger,
     actionRunner,
     timeline,
     currentSceneKey,
@@ -238,6 +241,7 @@
     state.dayStart = snapshot();
     state.dailyLogs = [];
     state.dailyActivityLogs = [];
+    state.festivalResults = [];
     state.displayLogs = [];
     state.allLogs = [];
     state.lastReport = null;

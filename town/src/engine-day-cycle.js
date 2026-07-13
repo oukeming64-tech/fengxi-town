@@ -11,6 +11,7 @@
       stageLaborFairness = {},
       weatherSystem = {},
       engineDailyReport = {},
+      festivalResultLedger = {},
       actionRunner,
       timeline,
       currentSceneKey = () => "daily",
@@ -127,7 +128,13 @@
         state.lastSettlement = settlement;
       }
       const settlementLogs = engineDailyReport.makeSettlementLogs(settlement, state);
-      const report = engineDailyReport.generateReport({ state, zones });
+      const festivalResult = festivalResultLedger.recordDailyResult?.(state, {
+        day: state.day,
+        seasonKey: currentSeasonKey(),
+        townState: state.townState,
+        activityLogs: settlementActivityLogs
+      }) || null;
+      const report = engineDailyReport.generateReport({ state, zones, festivalResult });
       state.lastReport = report;
       if (T.townStage?.buildPlayback) {
         state.lastStagePlayback = T.townStage.buildPlayback(state, {
@@ -136,7 +143,7 @@
           timeSlots
         });
       }
-      const daySnapshot = timeline.makeDailyFactSnapshot(state.day, report, [...finishedLogs, ...settlementLogs]);
+      const daySnapshot = timeline.makeDailyFactSnapshot(state.day, report, [...finishedLogs, ...settlementLogs], festivalResult);
       if (daySnapshot) state.dailySnapshots.push(daySnapshot);
       stageLaborFairness.recordDay?.(state.stageLaborLedger, state.villagers, state.day);
       timeline.maybeCreateStageEvaluation(state.day, state.lastWeeklyDebtSettlement);

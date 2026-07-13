@@ -14,7 +14,7 @@
       return weeklyTimeline.makeBoundarySnapshot(publicTownSnapshot(), day, label);
     }
 
-    function makeDailyFactSnapshot(completedDay, report, logs) {
+    function makeDailyFactSnapshot(completedDay, report, logs, festivalResult = null) {
       if (!weeklyTimeline.makeDailySnapshot) return null;
       return weeklyTimeline.makeDailySnapshot({
         day: completedDay,
@@ -23,7 +23,8 @@
         weather: state.lastSettlement?.settlement?.weather || state.currentWeather,
         publicSnapshot: publicTownSnapshot(),
         report,
-        logs
+        logs,
+        festivalResult
       });
     }
 

@@ -31,12 +31,14 @@
     const debtLine = debt
       ? `本周债务：应还 ${debt.scheduledPaymentYsc} YSC，已还 ${debt.paidThisWeekYsc} YSC，新增利息 ${debt.interestAccruedYsc} YSC，压力 ${debt.debtPressure}。`
       : `债务 ${record.startSnapshot.ledger.debtYsc} -> ${end.ledger.debtYsc} YSC。`;
+    const festivalResults = T.festivalResultLedger?.weeklyLines?.(record.dailySnapshots) || [];
 
     return {
       title: `第 ${record.startDay}-${record.endDay} 天周报`,
       oneLine: `现金 ${record.startSnapshot.ledger.cashYsc} -> ${end.ledger.cashYsc} YSC，债务 ${record.startSnapshot.ledger.debtYsc} -> ${end.ledger.debtYsc} YSC，账务透明度 ${record.startSnapshot.ledger.accountingTransparency} -> ${end.ledger.accountingTransparency}/100。`,
       sections: {
         keyInteractions: interactionLines.length ? interactionLines : ["本周居民互动主要留在行动日志和公告板摘要里。"],
+        ...(festivalResults.length ? { festivalResults } : {}),
         ledgerTrend: [
           `现金 ${utils.signed(delta.cashYsc)} YSC，应收 ${utils.signed(delta.receivableYsc)} YSC，应付 ${utils.signed(delta.payableYsc)} YSC，债务 ${utils.signed(delta.debtYsc)} YSC。`,
           `账务透明度 ${utils.signed(delta.accountingTransparency)}，高金依赖 ${utils.signed(delta.goldkinDependency)}，合作信任 ${utils.signed(delta.cooperativeTrust)}。`,
