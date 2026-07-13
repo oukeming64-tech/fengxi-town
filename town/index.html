@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="./styles-town-map-residents.css?v=0.1.6">
   <link rel="stylesheet" href="./styles-town-map-resident-actions.css?v=0.1.6">
   <link rel="stylesheet" href="./styles-town-map-resident-sprites.css?v=0.1.6">
+  <link rel="stylesheet" href="./styles-town-map-resident-life.css?v=0.1.8">
+  <link rel="stylesheet" href="./styles-town-map-action-props.css?v=0.1.8">
+  <link rel="stylesheet" href="./styles-town-map-relationships.css?v=0.1.8">
+  <link rel="stylesheet" href="./styles-town-map-accessibility.css?v=0.1.8">
   <link rel="stylesheet" href="./styles-town-map-facilities.css?v=0.1.6">
   <link rel="stylesheet" href="./styles-town-map-notice.css?v=0.1.5">
   <link rel="stylesheet" href="./styles-town-panels.css?v=0.1.5">
@@ -33,7 +37,7 @@
       <div class="title-block">
         <h1>枫溪镇</h1>
         <div class="status-strip" aria-live="polite">
-          <span class="pill stage-detail-pill">版本 <strong id="versionLabel">v0.1.7 · 居民团体行为</strong></span>
+          <span class="pill stage-detail-pill">版本 <strong id="versionLabel">v0.1.8-d · 清晰度与无障碍验收</strong></span>
           <span class="pill stage-primary-pill">日子 <strong id="dayLabel">第 1 天</strong></span>
           <span class="pill stage-primary-pill">季节 <strong id="seasonLabel">春季</strong></span>
           <span class="pill stage-primary-pill">天气 <strong id="weatherLabel">阴天</strong></span>
@@ -244,7 +248,7 @@
     </aside>
   </div>
 
-  <script src="./src/shared.js?v=0.1.7"></script>
+  <script src="./src/shared.js?v=0.1.8"></script>
   <script src="./src/world/world-config.js?v=0.1.5"></script>
   <script src="./src/world/model-contract.js?v=0.1.5"></script>
   <script src="./src/world/weather-data.js?v=0.1.5"></script>
@@ -281,6 +285,7 @@
   <script src="./src/world/town-relationship-rules.js?v=0.1.5"></script>
   <script src="./src/world/town-relationship-interactions.js?v=0.1.7"></script>
   <script src="./src/world/town-relationship-public.js?v=0.1.5"></script>
+  <script src="./src/world/relationship-visual-cues.js?v=0.1.8"></script>
   <script src="./src/world/town-relationship-ledger.js?v=0.1.5"></script>
   <script src="./src/world/town-ledger.js?v=0.1.5"></script>
   <script src="./src/world/weekly-timeline-utils.js?v=0.1.5"></script>
@@ -296,6 +301,7 @@
   <script src="./src/town-stage-routes.js?v=0.1.6"></script>
   <script src="./src/town-stage-layout.js?v=0.1.6"></script>
   <script src="./src/town-stage.js?v=0.1.6"></script>
+  <script src="./src/town-stage-life-cues.js?v=0.1.8"></script>
   <script src="./src/town-stage-facility-feedback.js?v=0.1.6"></script>
   <script src="./src/world/action-policy-town-needs.js?v=0.1.5"></script>
   <script src="./src/world/action-policy.js?v=0.1.7"></script>
@@ -343,13 +349,14 @@
   <script src="./src/engine.js?v=0.1.5"></script>
   <script src="./src/ui/weekly-timeline-panel.js?v=0.1.5"></script>
   <script src="./src/ui/facility-notice-panel.js?v=0.1.5"></script>
-  <script src="./src/ui/town-map-chrome.js?v=0.1.6"></script>
+  <script src="./src/ui/town-map-chrome.js?v=0.1.8"></script>
   <script src="./src/ui/town-map-hotspot-layer.js?v=0.1.6"></script>
   <script src="./src/ui/resident-action-cue.js?v=0.1.6"></script>
   <script src="./src/ui/facility-map-layer.js?v=0.1.6"></script>
-  <script src="./src/ui/town-map-dialogue-layer.js?v=0.1.6"></script>
-  <script src="./src/ui/resident-sprite-layer.js?v=0.1.6"></script>
-  <script src="./src/ui/resident-map-panel.js?v=0.1.5"></script>
+  <script src="./src/ui/town-map-dialogue-layer.js?v=0.1.8"></script>
+  <script src="./src/ui/resident-sprite-layer.js?v=0.1.8"></script>
+  <script src="./src/ui/resident-social-cue-layer.js?v=0.1.8"></script>
+  <script src="./src/ui/resident-map-panel.js?v=0.1.8"></script>
   <script src="./src/ui/daily-panels.js?v=0.1.5"></script>
   <script src="./src/ui/town-state-panel.js?v=0.1.5"></script>
   <script src="./src/ui/conversation-panel.js?v=0.1.5"></script>

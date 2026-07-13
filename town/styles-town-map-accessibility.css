@@ -1,0 +1,47 @@
+/* v0.1.8-d: keyboard visibility and static reduced-motion fallbacks */
+.resident-token.has-resident-sprite:focus-visible {
+  border-radius: 8px;
+  outline: 3px solid #fffef9;
+  outline-offset: 2px;
+  filter: drop-shadow(0 0 5px #2f6f92) drop-shadow(0 0 9px rgba(47, 111, 146, 0.7));
+}
+
+.map-view-controls button:focus-visible,
+.map-stage-controls button:focus-visible,
+.stage-drawer button:focus-visible {
+  outline: 3px solid #2f6f92;
+  outline-offset: 2px;
+}
+
+@media (max-width: 1320px) {
+  .map-action-legend {
+    max-width: 330px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-stage-surface,
+  .stage-dialogue,
+  .resident-token,
+  .resident-sprite,
+  .resident-avatar-pin {
+    transition: none !important;
+  }
+
+  .resident-token.has-resident-sprite.is-travelling,
+  .resident-token.has-resident-sprite .resident-sprite-frame,
+  .weather-layer *,
+  .resident-action-cue *,
+  .resident-held-prop,
+  .resident-held-prop *,
+  .resident-social-link,
+  .resident-social-link *,
+  .resident-social-ring {
+    animation: none !important;
+  }
+
+  .resident-social-link,
+  .resident-social-ring {
+    opacity: 1;
+  }
+}

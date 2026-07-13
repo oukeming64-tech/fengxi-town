@@ -60,11 +60,15 @@
   function renderActionLegend(activeStage) {
     const labels = [];
     (activeStage?.events || []).forEach((event) => {
-      const label = event.animationLabel || T.townStage?.animationForKey?.(event.animationKey)?.label || "";
+      const lifeCue = T.townStageLifeCues?.forEvent?.(event);
+      const label = T.townStageLifeCues?.labelFor?.(lifeCue)
+        || event.animationLabel
+        || T.townStage?.animationForKey?.(event.animationKey)?.label
+        || "";
       if (label && !labels.includes(label)) labels.push(label);
     });
     if (!labels.length) return "";
-    return `<div class="map-action-legend" aria-hidden="true">${labels.slice(0, 8).map((label) => `<span>${T.escapeHtml(label)}</span>`).join("")}</div>`;
+    return `<div class="map-action-legend" aria-hidden="true">${labels.slice(0, 12).map((label) => `<span>${T.escapeHtml(label)}</span>`).join("")}</div>`;
   }
 
   function renderWeatherLayer(engine, options = {}) {
