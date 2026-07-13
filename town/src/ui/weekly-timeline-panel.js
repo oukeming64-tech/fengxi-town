@@ -27,6 +27,7 @@
     const sectionDefs = [
       ["本周一句话", [report?.oneLine || "本周本地快照已生成。"]],
       ["关键互动", sections.keyInteractions || []],
+      ...(sections.festivalResults?.length ? [["节日结果", sections.festivalResults]] : []),
       ["账本走势", sections.ledgerTrend || []],
       ["设施/合同变化", sections.facilityContractChanges || []],
       ["未解决线索", sections.unresolvedHooks || []],
