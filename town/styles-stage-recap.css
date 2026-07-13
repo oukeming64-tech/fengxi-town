@@ -8,7 +8,6 @@
   background: rgba(19, 30, 24, 0.72);
   backdrop-filter: blur(5px);
 }
-
 .stage-recap-overlay[hidden] {
   display: none;
 }
@@ -262,81 +261,4 @@
   border-radius: 12px;
   color: #5e6c63;
   background: #f2f5f1;
-}
-
-body.has-stage-recap {
-  overflow: hidden;
-}
-
-.stage-recap-history {
-  display: grid;
-  grid-template-columns: minmax(150px, 1fr) repeat(2, minmax(150px, 1fr));
-  grid-column: 1 / -1;
-  gap: 8px;
-  margin-bottom: 12px;
-  padding: 10px;
-  border-radius: 13px;
-  background: #edf5eb;
-}
-
-.weekly-timeline.has-stage-recap-history {
-  grid-template-rows: auto minmax(0, 1fr);
-}
-
-.stage-recap-history > div,
-.stage-recap-history button {
-  display: grid;
-  align-content: center;
-  gap: 3px;
-  min-height: 52px;
-  text-align: left;
-}
-
-.stage-recap-history > div span,
-.stage-recap-history button span {
-  color: #607067;
-  font-size: 11px;
-}
-
-.stage-recap-history button {
-  border-color: rgba(47, 122, 81, 0.22);
-  background: #fffef9;
-}
-
-@media (max-width: 720px) {
-  .stage-recap-overlay {
-    padding: 10px;
-  }
-
-  .stage-recap-card {
-    width: calc(100vw - 20px);
-    max-height: calc(100vh - 20px);
-  }
-
-  .stage-recap-head,
-  .stage-recap-actions,
-  .stage-recap-content {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .stage-recap-score,
-  .stage-recap-pairs,
-  .stage-recap-conversations,
-  .stage-recap-history {
-    grid-template-columns: 1fr;
-  }
-
-  .stage-recap-grade {
-    min-height: 130px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .stage-recap-overlay,
-  .stage-recap-card,
-  .stage-recap-axis i {
-    animation: none !important;
-    transition: none !important;
-  }
 }

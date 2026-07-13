@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==">
   <link rel="stylesheet" href="./styles.css?v=0.1.5">
+  <link rel="stylesheet" href="./styles-stage-shell.css?v=0.1.9-e2">
   <link rel="stylesheet" href="./styles-town-map.css?v=0.1.5">
   <link rel="stylesheet" href="./styles-town-map-weather.css?v=0.1.6">
   <link rel="stylesheet" href="./styles-town-map-dialogues.css?v=0.1.6">
@@ -30,6 +31,7 @@
   <link rel="stylesheet" href="./styles-stage-drawer-content.css?v=0.1.6">
   <link rel="stylesheet" href="./styles-model-config.css?v=0.1.5">
   <link rel="stylesheet" href="./styles-stage-recap.css?v=0.1.8-e2">
+  <link rel="stylesheet" href="./styles-stage-recap-history.css?v=0.1.9-e2">
   <title>枫溪镇</title>
 </head>
 <body>
@@ -270,7 +272,8 @@
   <script src="./src/shared.js?v=0.1.9-e"></script>
   <script src="./src/world/world-config.js?v=0.1.5"></script>
   <script src="./src/world/model-contract.js?v=0.1.8-e2"></script>
-  <script src="./src/world/weather-data.js?v=0.1.5"></script>
+  <script src="./src/world/weather-types-data.js?v=0.1.9-e2"></script>
+  <script src="./src/world/weather-data.js?v=0.1.9-e2"></script>
   <script src="./src/world/weather-system-utils.js?v=0.1.5"></script>
   <script src="./src/world/weather-system-inertia.js?v=0.1.5"></script>
   <script src="./src/world/weather-system-output.js?v=0.1.5"></script>
@@ -281,7 +284,11 @@
   <script src="./src/world/town-ledger-crop-specialty-data.js?v=0.1.5"></script>
   <script src="./src/world/town-ledger-crop-plan-data.js?v=0.1.5"></script>
   <script src="./src/world/town-ledger-crop-data.js?v=0.1.5"></script>
-  <script src="./src/world/town-ledger-economy-data.js?v=0.1.9-e"></script>
+  <script src="./src/world/town-ledger-contract-data.js?v=0.1.9-e2"></script>
+  <script src="./src/world/town-ledger-market-data.js?v=0.1.9-e2"></script>
+  <script src="./src/world/town-ledger-festival-data.js?v=0.1.9-e2"></script>
+  <script src="./src/world/town-ledger-processing-data.js?v=0.1.9-e2"></script>
+  <script src="./src/world/town-ledger-economy-data.js?v=0.1.9-e2"></script>
   <script src="./src/world/town-ledger-facility-data.js?v=0.1.5"></script>
   <script src="./src/world/town-ledger-weather-compat-data.js?v=0.1.5"></script>
   <script src="./src/world/town-ledger-data.js?v=0.1.5"></script>
@@ -294,7 +301,8 @@
   <script src="./src/world/town-crop-ledger.js?v=0.1.5"></script>
   <script src="./src/world/town-contract-bids-ledger.js?v=0.1.5"></script>
   <script src="./src/world/town-consignment-ledger.js?v=0.1.5"></script>
-  <script src="./src/world/town-contract-report-ledger.js?v=0.1.5"></script>
+  <script src="./src/world/town-contract-risk-ledger.js?v=0.1.9-e2"></script>
+  <script src="./src/world/town-contract-report-ledger.js?v=0.1.9-e2"></script>
   <script src="./src/world/town-contract-delivery-ledger.js?v=0.1.5"></script>
   <script src="./src/world/town-surplus-sales-ledger.js?v=0.1.5"></script>
   <script src="./src/world/town-contract-accounting-ledger.js?v=0.1.5"></script>
@@ -318,7 +326,9 @@
   <script src="./src/world/activity-effects.js?v=0.1.5"></script>
   <script src="./src/world/activity-copy.js?v=0.1.5"></script>
   <script src="./src/world/activity-rules.js?v=0.1.5"></script>
-  <script src="./src/town-stage-data.js?v=0.1.9-e"></script>
+  <script src="./src/town-stage-hotspot-data.js?v=0.1.9-e2"></script>
+  <script src="./src/town-stage-action-data.js?v=0.1.9-e2"></script>
+  <script src="./src/town-stage-data.js?v=0.1.9-e2"></script>
   <script src="./src/town-stage-routes.js?v=0.1.6"></script>
   <script src="./src/town-stage-festival-theme.js?v=0.1.9-a"></script>
   <script src="./src/town-stage-festival-map-packages.js?v=0.1.9-d"></script>
@@ -370,7 +380,8 @@
   <script src="./src/engine-action-runner.js?v=0.1.7"></script>
   <script src="./src/engine-timeline.js?v=0.1.8-e2"></script>
   <script src="./src/engine-day-cycle.js?v=0.1.8-e2"></script>
-  <script src="./src/engine.js?v=0.1.8-e2"></script>
+  <script src="./src/engine-resident-factory.js?v=0.1.9-e2"></script>
+  <script src="./src/engine.js?v=0.1.9-e2"></script>
   <script src="./src/ui/weekly-timeline-panel.js?v=0.1.8-e"></script>
   <script src="./src/ui/stage-recap-panel.js?v=0.1.8-e2"></script>
   <script src="./src/ui/facility-notice-panel.js?v=0.1.5"></script>
@@ -385,9 +396,13 @@
   <script src="./src/ui/daily-panels.js?v=0.1.5"></script>
   <script src="./src/ui/town-state-panel.js?v=0.1.5"></script>
   <script src="./src/ui/conversation-panel.js?v=0.1.5"></script>
-  <script src="./src/ui.js?v=0.1.8-e"></script>
+  <script src="./src/ui/ui-elements.js?v=0.1.9-e2"></script>
+  <script src="./src/ui/ui-map-controller.js?v=0.1.9-e2"></script>
+  <script src="./src/ui/ui-stage-recap-controller.js?v=0.1.9-e2"></script>
+  <script src="./src/ui.js?v=0.1.9-e2"></script>
   <script src="./src/llm-payloads.js?v=0.1.5"></script>
-  <script src="./src/llm.js?v=0.1.8-e"></script>
+  <script src="./src/llm-result-applier.js?v=0.1.9-e2"></script>
+  <script src="./src/llm.js?v=0.1.9-e2"></script>
   <script src="./src/main.js?v=0.1.8-e"></script>
 </body>
 </html>

@@ -14,10 +14,16 @@ function run(relativePath) {
 
 run("src/shared.js");
 run("src/world/world-config.js");
+run("src/world/town-ledger-contract-data.js");
+run("src/world/town-ledger-market-data.js");
+run("src/world/town-ledger-festival-data.js");
+run("src/world/town-ledger-processing-data.js");
 run("src/world/town-ledger-economy-data.js");
 window.MorningTown.townLedgerData = {
   festivalCalendar: window.MorningTown.townLedgerEconomyData.festivalCalendar
 };
+run("src/town-stage-hotspot-data.js");
+run("src/town-stage-action-data.js");
 run("src/town-stage-data.js");
 run("src/town-stage-routes.js");
 run("src/town-stage-festival-theme.js");
