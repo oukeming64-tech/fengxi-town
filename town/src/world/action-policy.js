@@ -105,6 +105,7 @@
     score += scoreScene(activity, ctx);
     score += scoreSeason(activity, ctx.seasonKey);
     score += scoreSlot(activity, ctx.slot);
+    score += T.festivalResidentBehavior?.scoreActivity?.(villager, activity, ctx) || 0;
     score += scoreBodyNeed(villager, activity);
     if (T.residentGroupProfiles?.scoreActivity) score += T.residentGroupProfiles.scoreActivity(villager.id, activity);
     if (ctx.groupAnchorZoneId && T.residentGroupProfiles?.profileFor?.(villager.id)) {

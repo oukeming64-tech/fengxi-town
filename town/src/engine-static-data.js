@@ -81,8 +81,8 @@
     },
     harvest: {
       key: "harvest",
-      label: "丰收集市",
-      task: "丰收集市",
+      label: "丰收节",
+      task: "丰收节",
       bridge: 0.8,
       weights: { farm: 1.2, mine: 0.6, river: 0.7, market: 1.8, bridge: 0.7, notice: 1.5, inn: 1.3, home: 0.7 }
     },

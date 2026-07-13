@@ -30,4 +30,32 @@
     activeZoneIds: ["yellowstoneFarm", "townCenter", "wetlands", "southRoad", "communityHall"],
     phases: ["active"]
   });
+
+  theme.registerMapPackage({
+    id: "harvest-festival-map-v1",
+    festivalId: "harvest_festival",
+    label: "丰收节地图",
+    mapAsset: "./assets/runtime/festivals/harvest_festival/map.png",
+    mapAlt: "枫溪镇秋季丰收节地图",
+    aspectRatio: theme.defaultMapPackage.aspectRatio,
+    coordinateContract: theme.coordinateContract,
+    hotspotIds: [...theme.defaultMapPackage.hotspotIds],
+    routeVersion: theme.defaultMapPackage.routeVersion,
+    activeZoneIds: ["yellowstoneFarm", "townCenter", "communityHall", "goldkinStation"],
+    phases: ["active"]
+  });
+
+  theme.registerMapPackage({
+    id: "snowfall-festival-map-v1",
+    festivalId: "snowfall_festival",
+    label: "落雪节地图",
+    mapAsset: "./assets/runtime/festivals/snowfall_festival/map.png",
+    mapAlt: "枫溪镇冬季落雪节地图",
+    aspectRatio: theme.defaultMapPackage.aspectRatio,
+    coordinateContract: theme.coordinateContract,
+    hotspotIds: [...theme.defaultMapPackage.hotspotIds],
+    routeVersion: theme.defaultMapPackage.routeVersion,
+    activeZoneIds: ["yellowstoneFarm", "townCenter", "communityHall", "southRoad"],
+    phases: ["active"]
+  });
 }());

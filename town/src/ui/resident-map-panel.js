@@ -73,7 +73,7 @@
     const socialAssignments = T.residentSocialCueLayer?.residentAssignments?.(selectedSocialCues) || new Map();
     const animateStageMove = Boolean(options.animateStageMove);
     const festivalTheme = T.townStageFestivalTheme?.resolveForState?.({
-      day: engine.state.townState?.day || engine.state.day || playback?.day,
+      day: playback?.day || engine.state.townState?.day || engine.state.day,
       seasonKey: engine.state.townState?.seasonKey || "spring"
     }) || null;
     const previousStageIndex = Number.isInteger(options.previousStageIndex) ? options.previousStageIndex : stageIndex;
