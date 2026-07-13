@@ -1,0 +1,105 @@
+.stage-shell .map-pane > .pane-header {
+  display: none;
+}
+
+.stage-drawer {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 22;
+  display: grid;
+  grid-template-columns: 52px minmax(340px, 430px);
+  width: min(482px, calc(100vw - 28px));
+  max-width: calc(100vw - 28px);
+  transform: translateX(calc(100% - 52px));
+  transition: transform 180ms ease;
+  pointer-events: none;
+}
+
+.stage-drawer.is-open {
+  transform: translateX(0);
+}
+
+.stage-drawer-rail {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  border: 1px solid rgba(32, 37, 31, 0.2);
+  border-right: 0;
+  border-radius: 8px 0 0 8px;
+  padding: 8px 6px;
+  background: rgba(255, 254, 249, 0.9);
+  box-shadow: -8px 12px 24px rgba(31, 39, 33, 0.18);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+}
+
+.stage-drawer-rail button {
+  width: 39px;
+  min-height: 35px;
+  border-radius: 7px;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 740;
+}
+
+.stage-drawer-rail button.is-active {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fffef9;
+}
+
+.stage-drawer-rail button[data-stage-drawer-action="close"] {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.stage-drawer-panels {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid rgba(32, 37, 31, 0.2);
+  border-radius: 0 8px 8px 0;
+  overflow: hidden;
+  background: rgba(255, 254, 249, 0.94);
+  box-shadow: -12px 16px 34px rgba(31, 39, 33, 0.2);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+
+.stage-drawer.is-open .stage-drawer-panels {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.stage-drawer-panels .pane {
+  display: none;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.stage-drawer-panels .pane.is-active {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.stage-drawer-panels .pane-body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.roster-pane .pane-body {
+  display: grid;
+  gap: 12px;
+}
+
+.state-drawer-body {
+  display: grid;
+  gap: 12px;
+}

@@ -2,58 +2,8 @@
   const T = window.MorningTown;
   const engine = T.engine;
 
-  const el = {
-    dayLabel: document.getElementById("dayLabel"),
-    versionLabel: document.getElementById("versionLabel"),
-    seasonLabel: document.getElementById("seasonLabel"),
-    weatherLabel: document.getElementById("weatherLabel"),
-    ledgerLabel: document.getElementById("ledgerLabel"),
-    slotLabel: document.getElementById("slotLabel"),
-    countLabel: document.getElementById("countLabel"),
-    reportLabel: document.getElementById("reportLabel"),
-    llmLabel: document.getElementById("llmLabel"),
-    sceneSelect: document.getElementById("sceneSelect"),
-    seasonSelect: document.getElementById("seasonSelect"),
-    advanceSelect: document.getElementById("advanceSelect"),
-    modelSelect: document.getElementById("modelSelect"),
-    modelConfigBtn: document.getElementById("modelConfigBtn"),
-    resetBtn: document.getElementById("resetBtn"),
-    advanceBtn: document.getElementById("advanceBtn"),
-    townMap: document.getElementById("townMap"),
-    stageDrawer: document.getElementById("stageDrawer"),
-    residentCard: document.getElementById("residentCard"),
-    townStatePanel: document.getElementById("townStatePanel"),
-    facilityPanel: document.getElementById("facilityPanel"),
-    noticeBoardPanel: document.getElementById("noticeBoardPanel"),
-    noticeBoardContent: document.getElementById("noticeBoardContent"),
-    noticeBoardClose: document.getElementById("noticeBoardClose"),
-    lifeOverlay: document.getElementById("lifeOverlay"),
-    villagerList: document.getElementById("villagerList"),
-    logList: document.getElementById("logList"),
-    reportPanel: document.getElementById("reportPanel"),
-    conversationPanel: document.getElementById("conversationPanel"),
-    weeklyTimelinePanel: document.getElementById("weeklyTimelinePanel"),
-    modelConfigPanel: document.getElementById("modelConfigPanel"),
-    modelConfigClose: document.getElementById("modelConfigClose"),
-    modelConfigStatus: document.getElementById("modelConfigStatus"),
-    providerSelect: document.getElementById("providerSelect"),
-    modelNameInput: document.getElementById("modelNameInput"),
-    modelEndpointInput: document.getElementById("modelEndpointInput"),
-    apiKeyInput1: document.getElementById("apiKeyInput1"),
-    apiKeyInput2: document.getElementById("apiKeyInput2"),
-    apiKeyInput3: document.getElementById("apiKeyInput3"),
-    apiKeyInput4: document.getElementById("apiKeyInput4"),
-    saveModelConfigBtn: document.getElementById("saveModelConfigBtn"),
-    clearSessionKeyBtn: document.getElementById("clearSessionKeyBtn"),
-    stageRecapPanel: document.getElementById("stageRecapPanel"),
-    stageRecapEyebrow: document.getElementById("stageRecapEyebrow"),
-    stageRecapTitle: document.getElementById("stageRecapTitle"),
-    stageRecapLead: document.getElementById("stageRecapLead"),
-    stageRecapContent: document.getElementById("stageRecapContent"),
-    stageRecapClose: document.getElementById("stageRecapClose"),
-    stageRecapDetails: document.getElementById("stageRecapDetails"),
-    stageRecapContinue: document.getElementById("stageRecapContinue")
-  };
+  const el = T.uiElements;
+  if (!el) throw new Error("ui-elements must load before ui");
 
   const noticeBoardAsset = T.assets.noticeBoard || "../assets/runtime/maple-creek-notice-board-v0.0.6.svg";
   let selectedVillagerId = null;
@@ -61,25 +11,6 @@
   let modelConfigOpen = false;
   let stageDrawerOpen = false;
   let stageDrawerPanel = "residents";
-  let stageRecapOpen = false;
-  let activeStageEvaluationId = "";
-  let stageRecapReturnFocus = null;
-  const mapViewport = {
-    scale: 1,
-    x: 0,
-    y: 0,
-    reducedWeatherMotion: false,
-    selectedHotspotId: "",
-    stageIndex: 0,
-    playbackId: "",
-    playbackPlaying: true,
-    renderedStageIndex: null,
-    renderedPlaybackId: ""
-  };
-  let mapDrag = null;
-  let stagePlaybackTimer = null;
-  let stagePlaybackTimerKey = "";
-
   function selectedVillager() {
     const villagers = engine.state.villagers;
     if (!villagers.length) return null;
@@ -100,67 +31,30 @@
     return engine.state.villagers.find((villager) => villager.id === id)?.name || id;
   }
 
-  function clearStagePlaybackTimer() {
-    if (stagePlaybackTimer !== null) window.clearTimeout?.(stagePlaybackTimer);
-    stagePlaybackTimer = null;
-    stagePlaybackTimerKey = "";
-  }
-
-  function scheduleStagePlayback(playback) {
-    if (!mapViewport.playbackPlaying || !playback?.stages?.length || document.hidden) {
-      clearStagePlaybackTimer();
-      return;
-    }
-    const index = T.clamp(Number(mapViewport.stageIndex) || 0, 0, playback.stages.length - 1);
-    const timerKey = `${playback.id}:${index}`;
-    if (stagePlaybackTimer !== null && stagePlaybackTimerKey === timerKey) return;
-    clearStagePlaybackTimer();
-    stagePlaybackTimerKey = timerKey;
-    const delayMs = Math.max(4000, Math.round((Number(playback.stages[index]?.durationSeconds) || 9) * 1000));
-    stagePlaybackTimer = window.setTimeout(() => {
-      stagePlaybackTimer = null;
-      stagePlaybackTimerKey = "";
-      const latest = T.townStage?.currentPlayback?.(engine) || null;
-      if (!mapViewport.playbackPlaying || !latest?.stages?.length) return;
-      if (latest.id !== playback.id) {
-        renderMap();
-        return;
-      }
-      mapViewport.stageIndex = (index + 1) % latest.stages.length;
-      renderMap();
-    }, delayMs);
-  }
+  if (!T.uiMapController?.create) throw new Error("ui-map-controller must load before ui");
+  const mapController = T.uiMapController.create({
+    element: el.townMap,
+    engine,
+    noticeBoardAsset,
+    selectedVillager,
+    noticeBoardIsOpen: () => noticeBoardOpen,
+    openNoticeBoard,
+    selectVillager
+  });
+  if (!T.uiStageRecapController?.create) throw new Error("ui-stage-recap-controller must load before ui");
+  const stageRecapController = T.uiStageRecapController.create({
+    engine,
+    el,
+    villagerNameById,
+    openStageDrawer
+  });
 
   function renderMap() {
-    const playback = T.townStage?.currentPlayback?.(engine) || null;
-    const previousStageIndex = mapViewport.renderedPlaybackId === playback?.id
-      ? mapViewport.renderedStageIndex
-      : null;
-    if (playback?.id && playback.id !== mapViewport.playbackId) {
-      mapViewport.playbackId = playback.id;
-      mapViewport.stageIndex = 0;
-    }
-    const stageIndex = playback?.stages?.length
-      ? T.clamp(Number(mapViewport.stageIndex) || 0, 0, playback.stages.length - 1)
-      : 0;
-    const animateStageMove = Number.isInteger(previousStageIndex) && previousStageIndex !== stageIndex;
-    T.residentMapPanel?.renderMap(el.townMap, engine, {
-      current: selectedVillager(),
-      noticeBoardOpen,
-      noticeBoardAsset,
-      viewport: mapViewport,
-      selectedHotspotId: mapViewport.selectedHotspotId,
-      stageIndex,
-      playback,
-      previousStageIndex,
-      animateStageMove,
-      playbackPlaying: mapViewport.playbackPlaying
-    });
-    mapViewport.stageIndex = stageIndex;
-    mapViewport.renderedStageIndex = stageIndex;
-    mapViewport.renderedPlaybackId = playback?.id || "";
-    applyMapTransform();
-    scheduleStagePlayback(playback);
+    mapController.render();
+  }
+
+  function renderStageRecap() {
+    stageRecapController.render();
   }
 
   function renderResidentCard() {
@@ -205,39 +99,6 @@
 
   function renderWeeklyTimeline() {
     T.weeklyTimelinePanel?.render(el.weeklyTimelinePanel, engine);
-  }
-
-  function stageEvaluationById(id) {
-    return (engine.state.stageEvaluations || []).find((item) => item.id === id) || null;
-  }
-
-  function setStageRecapBackgroundInert(value) {
-    [document.querySelector(".topbar"), document.querySelector(".main-grid"), el.modelConfigPanel].forEach((node) => {
-      if (!node) return;
-      if (value) node.setAttribute("inert", "");
-      else node.removeAttribute("inert");
-    });
-    document.body.classList.toggle("has-stage-recap", value);
-  }
-
-  function renderStageRecap() {
-    const evaluation = stageEvaluationById(activeStageEvaluationId);
-    if (!evaluation) stageRecapOpen = false;
-    const conversationRecap = evaluation
-      ? T.stageRecapData?.conversationRecapFor?.(engine.state, evaluation.id)
-        || T.stageRecapData?.ensureConversationRecap?.(engine.state, evaluation)
-      : null;
-    T.stageRecapPanel?.render?.({
-      panel: el.stageRecapPanel,
-      eyebrow: el.stageRecapEyebrow,
-      title: el.stageRecapTitle,
-      lead: el.stageRecapLead,
-      content: el.stageRecapContent
-    }, evaluation, conversationRecap, {
-      open: stageRecapOpen,
-      villagerNameById
-    });
-    setStageRecapBackgroundInert(stageRecapOpen);
   }
 
   function configStatusText() {
@@ -329,61 +190,6 @@
     renderNoticeBoard();
   }
 
-  function clampMapViewport() {
-    mapViewport.scale = T.clamp(Number(mapViewport.scale) || 1, 1, 2.8);
-    const viewport = el.townMap.querySelector?.(".map-stage-viewport");
-    const surface = el.townMap.querySelector?.(".map-stage-surface");
-    const maxX = viewport && surface
-      ? Math.max(0, Math.round((surface.offsetWidth * mapViewport.scale - viewport.clientWidth) / 2))
-      : Math.round(220 * (mapViewport.scale - 1));
-    const maxY = viewport && surface
-      ? Math.max(0, Math.round((surface.offsetHeight * mapViewport.scale - viewport.clientHeight) / 2))
-      : Math.round(150 * (mapViewport.scale - 1));
-    mapViewport.x = T.clamp(Number(mapViewport.x) || 0, -maxX, maxX);
-    mapViewport.y = T.clamp(Number(mapViewport.y) || 0, -maxY, maxY);
-  }
-
-  function applyMapTransform() {
-    clampMapViewport();
-    const surface = el.townMap.querySelector?.(".map-stage-surface");
-    if (!surface) return;
-    const visual = el.townMap.querySelector?.(".map-visual");
-    surface.style.setProperty("--map-pan-x", `${Math.round(mapViewport.x * 10) / 10}px`);
-    surface.style.setProperty("--map-pan-y", `${Math.round(mapViewport.y * 10) / 10}px`);
-    surface.style.setProperty("--map-zoom", mapViewport.scale);
-    if (!visual) return;
-    const fade = T.clamp((mapViewport.scale - 1) / 0.9, 0, 1);
-    const fadeValue = (start, end) => Math.round((start + (end - start) * fade) * 100) / 100;
-    visual.style.setProperty("--map-scale", mapViewport.scale);
-    visual.style.setProperty("--hotspot-fade-opacity", fadeValue(0.72, 0.08));
-    visual.style.setProperty("--hotspot-dot-fade-opacity", fadeValue(1, 0.18));
-    visual.style.setProperty("--zone-fade-opacity", fadeValue(1, 0.18));
-    visual.classList.toggle("is-map-zoomed", mapViewport.scale >= 1.18);
-    visual.classList.toggle("is-map-deep-zoom", mapViewport.scale >= 1.85);
-  }
-
-  function zoomMap(delta) {
-    mapViewport.scale = T.clamp(Math.round((mapViewport.scale + delta) * 100) / 100, 1, 2.8);
-    applyMapTransform();
-  }
-
-  function resetMapView() {
-    mapViewport.scale = 1;
-    mapViewport.x = 0;
-    mapViewport.y = 0;
-    renderMap();
-  }
-
-  function handleMapAction(action) {
-    if (action === "zoom-in") zoomMap(0.2);
-    if (action === "zoom-out") zoomMap(-0.2);
-    if (action === "reset-view") resetMapView();
-    if (action === "toggle-weather-motion") {
-      mapViewport.reducedWeatherMotion = !mapViewport.reducedWeatherMotion;
-      renderMap();
-    }
-  }
-
   function openModelConfig() {
     modelConfigOpen = true;
     renderModelConfig();
@@ -406,65 +212,6 @@
     applyStageDrawerState();
   }
 
-  function acknowledgeStageRecap(id) {
-    if (!id) return;
-    const acknowledged = engine.state.acknowledgedStageEvaluationIds || (engine.state.acknowledgedStageEvaluationIds = []);
-    if (!acknowledged.includes(id)) acknowledged.push(id);
-  }
-
-  function openStageRecap(id) {
-    const evaluation = stageEvaluationById(id);
-    if (!evaluation) return false;
-    stageRecapReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    activeStageEvaluationId = evaluation.id;
-    T.stageRecapData?.ensureConversationRecap?.(engine.state, evaluation);
-    stageRecapOpen = true;
-    renderStageRecap();
-    window.setTimeout(() => el.stageRecapContinue?.focus(), 0);
-    return true;
-  }
-
-  function openPendingStageRecap() {
-    const acknowledged = new Set(engine.state.acknowledgedStageEvaluationIds || []);
-    const pending = (engine.state.stageEvaluations || []).find((item) => !acknowledged.has(item.id));
-    return pending ? openStageRecap(pending.id) : false;
-  }
-
-  function closeStageRecap(options = {}) {
-    if (!stageRecapOpen) return;
-    const id = activeStageEvaluationId;
-    if (options.acknowledge !== false) acknowledgeStageRecap(id);
-    stageRecapOpen = false;
-    renderStageRecap();
-    if (options.restoreFocus !== false) window.setTimeout(() => stageRecapReturnFocus?.focus?.(), 0);
-  }
-
-  function showStageRecapDetails() {
-    closeStageRecap({ restoreFocus: false });
-    openStageDrawer("timeline");
-    window.setTimeout(() => el.weeklyTimelinePanel?.querySelector?.(`[data-stage-recap-id="${activeStageEvaluationId}"]`)?.focus?.(), 0);
-  }
-
-  function trapStageRecapFocus(event) {
-    if (!stageRecapOpen || event.key !== "Tab") return false;
-    const focusable = [...(el.stageRecapPanel?.querySelectorAll?.("button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])") || [])]
-      .filter((node) => !node.hidden);
-    if (!focusable.length) return false;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-      return true;
-    }
-    if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-      return true;
-    }
-    return false;
-  }
-
   function handleStageDrawerClick(event) {
     const action = event.target.closest("[data-stage-drawer-action]");
     if (action?.dataset.stageDrawerAction === "close") {
@@ -482,88 +229,6 @@
     selectVillager(target.dataset.villagerId);
   }
 
-  function handleMapClick(event) {
-    const action = event.target.closest("[data-map-action]");
-    if (action) {
-      handleMapAction(action.dataset.mapAction);
-      return;
-    }
-    const playbackAction = event.target.closest("[data-stage-playback-action]");
-    if (playbackAction?.dataset.stagePlaybackAction === "toggle") {
-      mapViewport.playbackPlaying = !mapViewport.playbackPlaying;
-      clearStagePlaybackTimer();
-      renderMap();
-      return;
-    }
-    const stage = event.target.closest("[data-stage-index]");
-    if (stage) {
-      mapViewport.stageIndex = Number(stage.dataset.stageIndex) || 0;
-      renderMap();
-      return;
-    }
-    const board = event.target.closest("[data-notice-board]");
-    if (board) {
-      openNoticeBoard();
-      return;
-    }
-    const hotspot = event.target.closest("[data-hotspot-id]");
-    if (hotspot) {
-      mapViewport.selectedHotspotId = hotspot.dataset.hotspotId || "";
-      renderMap();
-      return;
-    }
-    const resident = event.target.closest("[data-villager-id]");
-    if (resident) {
-      handleResidentPointer(event);
-      return;
-    }
-    if (mapViewport.selectedHotspotId) {
-      mapViewport.selectedHotspotId = "";
-      renderMap();
-    }
-  }
-
-  function handleMapPointerDown(event) {
-    if (event.button !== 0) return;
-    if (event.target.closest("button, aside")) return;
-    const viewport = event.target.closest(".map-stage-viewport");
-    if (!viewport) return;
-    mapDrag = {
-      startX: event.clientX,
-      startY: event.clientY,
-      x: mapViewport.x,
-      y: mapViewport.y,
-      viewport
-    };
-    viewport.classList.add("is-dragging");
-  }
-
-  function handleMapPointerMove(event) {
-    if (!mapDrag) return;
-    mapViewport.x = mapDrag.x + event.clientX - mapDrag.startX;
-    mapViewport.y = mapDrag.y + event.clientY - mapDrag.startY;
-    applyMapTransform();
-  }
-
-  function finishMapDrag() {
-    if (!mapDrag) return;
-    mapDrag.viewport?.classList.remove("is-dragging");
-    mapDrag = null;
-  }
-
-  function handleMapWheel(event) {
-    if (!event.target.closest(".map-stage-viewport")) return;
-    event.preventDefault();
-    zoomMap(event.deltaY < 0 ? 0.12 : -0.12);
-  }
-
-  function handleMapAnimationEnd(event) {
-    if (event.animationName !== "resident-travel") return;
-    const resident = event.target.closest?.(".resident-token.is-travelling");
-    if (!resident) return;
-    resident.classList.remove("is-travelling");
-  }
-
   function handleWeekClick(event) {
     const stageRecap = event.target.closest("[data-stage-recap-id]");
     if (stageRecap) {
@@ -573,19 +238,6 @@
     T.weeklyTimelinePanel?.handleClick(event, render);
   }
 
-  el.townMap.addEventListener("click", handleMapClick);
-  el.townMap.addEventListener("pointerdown", handleMapPointerDown);
-  el.townMap.addEventListener("wheel", handleMapWheel, { passive: false });
-  el.townMap.addEventListener("animationend", handleMapAnimationEnd);
-  document.addEventListener("pointermove", handleMapPointerMove);
-  document.addEventListener("pointerup", finishMapDrag);
-  document.addEventListener("pointercancel", finishMapDrag);
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) clearStagePlaybackTimer();
-    else renderMap();
-  });
-  el.townMap.addEventListener("mouseover", handleResidentPointer);
-  el.townMap.addEventListener("focusin", handleResidentPointer);
   el.villagerList.addEventListener("click", handleResidentPointer);
   el.villagerList.addEventListener("mouseover", handleResidentPointer);
   el.villagerList.addEventListener("focusin", handleResidentPointer);
@@ -593,15 +245,11 @@
   el.stageDrawer?.addEventListener("click", handleStageDrawerClick);
   el.noticeBoardClose?.addEventListener("click", closeNoticeBoard);
   el.modelConfigClose?.addEventListener("click", closeModelConfig);
-  el.stageRecapClose?.addEventListener("click", closeStageRecap);
-  el.stageRecapContinue?.addEventListener("click", closeStageRecap);
-  el.stageRecapDetails?.addEventListener("click", showStageRecapDetails);
+  el.stageRecapClose?.addEventListener("click", () => stageRecapController.close());
+  el.stageRecapContinue?.addEventListener("click", () => stageRecapController.close());
+  el.stageRecapDetails?.addEventListener("click", stageRecapController.showDetails);
   document.addEventListener("keydown", (event) => {
-    if (stageRecapOpen) {
-      if (event.key === "Escape") closeStageRecap();
-      else trapStageRecapFocus(event);
-      return;
-    }
+    if (stageRecapController.handleKeyDown(event)) return;
     if (event.key === "Escape" && noticeBoardOpen) closeNoticeBoard();
     if (event.key === "Escape" && modelConfigOpen) closeModelConfig();
     if (event.key === "Escape" && stageDrawerOpen) closeStageDrawer();
@@ -612,14 +260,10 @@
     render,
     openModelConfig,
     closeModelConfig,
-    openStageRecap,
-    openPendingStageRecap,
-    closeStageRecap,
-    stageRecapState: () => ({ open: stageRecapOpen, evaluationId: activeStageEvaluationId }),
-    stagePlaybackState: () => ({
-      playing: mapViewport.playbackPlaying,
-      stageIndex: mapViewport.stageIndex,
-      playbackId: mapViewport.playbackId
-    })
+    openStageRecap: stageRecapController.open,
+    openPendingStageRecap: stageRecapController.openPending,
+    closeStageRecap: stageRecapController.close,
+    stageRecapState: stageRecapController.state,
+    stagePlaybackState: mapController.playbackState
   };
 }());
