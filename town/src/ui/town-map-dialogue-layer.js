@@ -39,19 +39,27 @@
     return blockedScore + dialogueScore + bottomPenalty + travelDistance;
   }
 
-  function layoutDialogues(activeStage, facilityFeedback = []) {
+  function socialBlocksFor(selectedSocialCues = []) {
+    return selectedSocialCues.map(({ actor, target }) => blockForPoint({
+      x: (Number(actor?.x || 0) + Number(target?.x || 0)) / 2,
+      y: (Number(actor?.y || 0) + Number(target?.y || 0)) / 2 - 3
+    }, 5.8, 3.2));
+  }
+
+  function layoutDialogues(activeStage, facilityFeedback = [], selectedSocialCues = []) {
     const activeResidentIds = new Set((activeStage?.events || []).map((event) => event.residentId));
     const encounters = (activeStage?.encounters || [])
       .filter((encounter) => (encounter.residentIds || []).every((id) => activeResidentIds.has(id)))
       .slice(0, 2);
     const residentBlocks = (activeStage?.events || []).map((event) => blockForPoint(event, 4.2, 5.8));
     const facilityBlocks = facilityFeedback.map((item) => blockForPoint({ x: item.x, y: item.y - 2 }, 3.6, 2.2));
+    const socialBlocks = socialBlocksFor(selectedSocialCues);
     const placed = [];
     return encounters.map((encounter, index) => {
       const origin = { x: Number(encounter.x || 50), y: Number(encounter.y || 50) };
       const candidates = candidatePoints(encounter, index);
       const position = candidates
-        .map((candidate) => ({ candidate, score: candidateScore(candidate, origin, [...residentBlocks, ...facilityBlocks], placed) }))
+        .map((candidate) => ({ candidate, score: candidateScore(candidate, origin, [...residentBlocks, ...facilityBlocks, ...socialBlocks], placed) }))
         .sort((a, b) => a.score - b.score)[0].candidate;
       placed.push({ ...position, ...dialogueSize });
       return { ...encounter, displayX: position.x, displayY: position.y };
@@ -61,10 +69,10 @@
   function render(engine, options = {}) {
     const activeStage = options.activeStage || null;
     const facilityFeedback = T.facilityMapLayer?.feedbackFor?.(engine, options) || [];
-    return layoutDialogues(activeStage, facilityFeedback).map((encounter) => {
+    return layoutDialogues(activeStage, facilityFeedback, options.socialCues || []).map((encounter) => {
       const text = (encounter.lines || []).slice(0, 2).map((line) => `${line.speakerName || line.speakerId}：${line.text}`).join(" / ");
       return `
-        <div class="stage-dialogue" data-dialogue-id="${T.escapeHtml(encounter.id)}" data-dialogue-x="${encounter.displayX}" data-dialogue-y="${encounter.displayY}" data-avoids="residents facilities controls" style="left: ${encounter.displayX}%; top: ${encounter.displayY}%;">
+        <div class="stage-dialogue" data-dialogue-id="${T.escapeHtml(encounter.id)}" data-dialogue-x="${encounter.displayX}" data-dialogue-y="${encounter.displayY}" data-avoids="residents facilities relationships controls" style="left: ${encounter.displayX}%; top: ${encounter.displayY}%;">
           <span>${T.escapeHtml(encounter.hotspotLabel || "相遇")}</span>
           <p>${T.escapeHtml(text)}</p>
         </div>
@@ -73,7 +81,8 @@
   }
 
   T.townMapDialogueLayer = {
-    version: "town-map-dialogue-layer-v0.1.6-local-collision-aware",
+    version: "town-map-dialogue-layer-v0.1.8-d-accessible",
+    socialBlocksFor,
     layoutDialogues,
     render
   };

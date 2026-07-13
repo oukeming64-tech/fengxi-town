@@ -1,0 +1,187 @@
+/* v0.1.8 first read-only life motions; no new visual assets */
+.resident-token.has-life-cue.life-idle .resident-sprite-frame {
+  animation: resident-life-idle 1.8s ease-in-out infinite;
+}
+
+.resident-token.has-life-cue.life-work .resident-sprite-frame {
+  animation: resident-life-work 1.1s ease-in-out infinite;
+}
+
+.resident-token.has-life-cue.life-carry .resident-sprite-frame {
+  animation: resident-life-carry 900ms ease-in-out infinite;
+}
+
+.resident-token.has-life-cue.life-chat .resident-sprite-frame {
+  animation: resident-life-chat 1.4s ease-in-out infinite;
+}
+
+.resident-token.has-life-cue.life-rest .resident-sprite-frame {
+  animation: resident-life-rest 1.9s ease-in-out infinite;
+}
+
+.resident-token.has-life-cue.life-fatigue .resident-sprite-frame {
+  animation: resident-life-fatigue 2.1s ease-in-out infinite;
+  filter: saturate(0.86) drop-shadow(0 3px 2px rgba(31, 39, 33, 0.22));
+}
+
+.resident-token.has-physical-prop .resident-action-cue {
+  display: none;
+}
+
+.resident-held-prop {
+  position: absolute;
+  z-index: 4;
+  display: block;
+  pointer-events: none;
+}
+
+.resident-held-prop.prop-crate {
+  left: 50%;
+  bottom: 7px;
+  width: 27px;
+  height: 27px;
+  transform: translateX(-50%);
+  transform-origin: 50% 90%;
+  animation: resident-held-crate 900ms ease-in-out infinite;
+}
+
+.resident-held-prop.prop-crate img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 1px rgba(31, 39, 33, 0.28));
+}
+
+.resident-held-prop.prop-watering-can {
+  left: 44%;
+  bottom: 14px;
+  width: 22px;
+  height: 17px;
+  transform: rotate(-12deg);
+  transform-origin: 70% 70%;
+  animation: resident-held-watering-can 1.1s ease-in-out infinite;
+}
+
+.watering-can-body {
+  position: absolute;
+  left: 6px;
+  top: 5px;
+  width: 13px;
+  height: 10px;
+  border: 2px solid #263b38;
+  border-radius: 2px 2px 4px 4px;
+  background: #6f9fa5;
+  box-shadow: inset 2px 2px 0 rgba(209, 237, 231, 0.72);
+}
+
+.watering-can-body::before {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -8px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #263b38;
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0;
+}
+
+.watering-can-body::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 1px;
+  width: 11px;
+  height: 4px;
+  border: 2px solid #263b38;
+  border-right: 0;
+  background: #6f9fa5;
+  transform: rotate(-18deg);
+  transform-origin: 100% 50%;
+}
+
+.resident-held-prop.prop-watering-can i {
+  position: absolute;
+  left: -1px;
+  top: 11px;
+  width: 3px;
+  height: 5px;
+  border-radius: 50%;
+  background: #67b9d0;
+  opacity: 0;
+  animation: resident-water-drop 1.1s ease-in infinite;
+}
+
+.resident-held-prop.prop-watering-can i:nth-of-type(2) {
+  left: -5px;
+  top: 14px;
+  animation-delay: 120ms;
+}
+
+.resident-held-prop.prop-watering-can i:nth-of-type(3) {
+  left: 2px;
+  top: 16px;
+  animation-delay: 240ms;
+}
+
+@keyframes resident-life-idle {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-1px) scaleY(1.01); }
+}
+
+@keyframes resident-life-work {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  45% { transform: translateY(1px) rotate(3deg); }
+  72% { transform: translateY(-2px) rotate(-2deg); }
+}
+
+@keyframes resident-life-carry {
+  0%, 100% { transform: translateY(0) scaleX(0.99); }
+  50% { transform: translateY(-3px) scaleX(1.02); }
+}
+
+@keyframes resident-life-chat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  38% { transform: translateY(-2px) rotate(-1.5deg); }
+  72% { transform: translateY(-1px) rotate(1.5deg); }
+}
+
+@keyframes resident-life-rest {
+  0%, 100% { transform: translateY(2px) scaleY(0.97); opacity: 0.9; }
+  50% { transform: translateY(0) scaleY(1); opacity: 1; }
+}
+
+@keyframes resident-life-fatigue {
+  0%, 100% { transform: translateY(2px) rotate(-1deg) scaleY(0.97); }
+  40% { transform: translateY(1px) rotate(1deg) scaleY(0.98); }
+  70% { transform: translateY(3px) rotate(0) scaleY(0.96); }
+}
+
+@keyframes resident-held-crate {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+@keyframes resident-held-watering-can {
+  0%, 100% { transform: rotate(-8deg) translateY(0); }
+  45%, 72% { transform: rotate(-28deg) translate(-2px, 1px); }
+}
+
+@keyframes resident-water-drop {
+  0%, 32% { opacity: 0; transform: translate(0, -2px) scale(0.72); }
+  48% { opacity: 0.95; }
+  100% { opacity: 0; transform: translate(-5px, 11px) scale(0.94); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resident-token.has-life-cue .resident-sprite-frame {
+    animation: none;
+  }
+
+  .resident-held-prop,
+  .resident-held-prop.prop-watering-can i {
+    animation: none;
+  }
+}

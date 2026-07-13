@@ -34,6 +34,15 @@
     return T.townStage?.stageAt?.(playback, stageIndex) || null;
   }
 
+  function socialCuesForStage(engine, playback, activeStage) {
+    const relationshipSnapshot = T.townRelationshipLedger?.publicSnapshot?.(engine.state) || null;
+    const events = (relationshipSnapshot?.recentInteractions || []).filter((event) => (
+      Number(event.day) === Number(playback?.day)
+      && String(event.slot || "") === String(activeStage?.label || "")
+    ));
+    return T.relationshipVisualCues?.fromSources?.({ events }) || Object.freeze([]);
+  }
+
   function renderMap(container, engine, options = {}) {
     if (!container) return;
     const current = options.current || null;
@@ -42,6 +51,9 @@
     const stageIndex = T.clamp(Number(options.stageIndex) || 0, 0, Math.max(0, (playback?.stages?.length || 1) - 1));
     const activeStage = activeStageFor(playback, stageIndex);
     const activeEvents = new Map((activeStage?.events || []).map((event) => [event.residentId, event]));
+    const socialCues = socialCuesForStage(engine, playback, activeStage);
+    const selectedSocialCues = T.residentSocialCueLayer?.selectForStage?.(socialCues, activeStage) || [];
+    const socialAssignments = T.residentSocialCueLayer?.residentAssignments?.(selectedSocialCues) || new Map();
     const animateStageMove = Boolean(options.animateStageMove);
     const previousStageIndex = Number.isInteger(options.previousStageIndex) ? options.previousStageIndex : stageIndex;
     const byZone = new Map(engine.zones.map((zone) => [zone.id, []]));
@@ -74,6 +86,12 @@
         const movement = animateStageMove && event
           ? T.townStage?.movementBetween?.(playback, previousStageIndex, stageIndex, villager.id)
           : null;
+        const lifeCue = event
+          ? T.townStageLifeCues?.forEvent?.(event, { startsAt: `${playback?.day || "day"}:${activeStage?.key || stageIndex}` })
+          : null;
+        const socialAssignment = socialAssignments.get(villager.id) || null;
+        const visibleAction = T.townStageLifeCues?.labelFor?.(lifeCue) || event?.animationLabel || "停留";
+        const visibleRelationship = T.residentSocialCueLayer?.labelFor?.(socialAssignment?.cue);
         if (T.residentSpriteLayer?.renderToken) {
           return T.residentSpriteLayer.renderToken({
             villager,
@@ -81,10 +99,12 @@
             position: pos,
             depth: event?.depth ?? pos.y,
             movement,
+            lifeCue,
+            socialAssignment,
             selected,
             kind: event?.kind || villager.recentAction?.kind || "quiet",
             title,
-            ariaLabel: `${villager.name}，${event?.hotspotLabel || zone.name}`,
+            ariaLabel: `${villager.name}，${event?.hotspotLabel || zone.name}，${visibleAction}${visibleRelationship ? `，关系动作：${visibleRelationship}` : ""}`,
             actionCueHtml: T.residentActionCue?.render?.(event) || ""
           });
         }
@@ -118,9 +138,11 @@
             <div class="map-hotspot-layer">${T.townMapHotspotLayer.renderHotspots(hotspotOptions)}</div>
             ${T.facilityMapLayer?.render?.(engine, { playback, activeStage }) || ""}
             <div class="resident-token-layer">${tokens}</div>
-            <div class="stage-dialogue-layer">${T.townMapDialogueLayer?.render?.(engine, { playback, activeStage }) || ""}</div>
+            ${T.residentSocialCueLayer?.render?.(selectedSocialCues) || ""}
+            <div class="stage-dialogue-layer">${T.townMapDialogueLayer?.render?.(engine, { playback, activeStage, socialCues: selectedSocialCues }) || ""}</div>
           </div>
         </div>
+        ${T.residentSocialCueLayer?.renderLegend?.() || ""}
         ${T.townMapChrome.renderStageControls(playback, stageIndex, options.playbackPlaying !== false)}
         ${T.townMapHotspotLayer.renderInspector(engine, activeStage, options.selectedHotspotId)}
       </div>
