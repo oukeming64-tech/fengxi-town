@@ -8,6 +8,7 @@
       timeSlots = [],
       activityRules = {},
       townLedger = {},
+      stageLaborFairness = {},
       weatherSystem = {},
       engineDailyReport = {},
       actionRunner,
@@ -45,6 +46,7 @@
         }
         const action = plan.legacyAction;
         const delta = actionRunner.applyAction(villager, plan);
+        stageLaborFairness.recordAction?.(state.stageLaborLedger, villager, plan);
         const samePlace = state.villagers.filter((item) => item.id !== villager.id && item.zone === villager.zone);
         const target = samePlace.length ? T.pick(samePlace) : T.pick(state.villagers.filter((item) => item.id !== villager.id));
         if (["inn", "market", "river", "bridge"].includes(action)) {
@@ -136,6 +138,7 @@
       }
       const daySnapshot = timeline.makeDailyFactSnapshot(state.day, report, [...finishedLogs, ...settlementLogs]);
       if (daySnapshot) state.dailySnapshots.push(daySnapshot);
+      stageLaborFairness.recordDay?.(state.stageLaborLedger, state.villagers, state.day);
       timeline.maybeCreateStageEvaluation(state.day, state.lastWeeklyDebtSettlement);
       timeline.closeWeekIfNeeded(state.day);
       const doneLog = {

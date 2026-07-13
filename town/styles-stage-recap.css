@@ -138,6 +138,18 @@
   background: linear-gradient(90deg, #7fba84, #2f7a51);
 }
 
+.stage-recap-labor-note {
+  display: grid;
+  gap: 3px;
+  margin: 4px 0 0;
+  padding: 9px 11px;
+  border-radius: 10px;
+  color: #53645a;
+  font-size: 11px;
+  line-height: 1.45;
+  background: #eef5ed;
+}
+
 .stage-recap-section-head,
 .stage-recap-conversation header,
 .stage-recap-pair-metrics {

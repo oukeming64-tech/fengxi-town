@@ -6,6 +6,7 @@
     weeklyTimeline,
     debtLedger,
     relationshipLedger,
+    stageLaborFairness,
     publicTownSnapshot
   }) {
     function boundarySnapshot(day, label) {
@@ -38,15 +39,20 @@
       if (!weeklyTimeline.makeStageEvaluation || completedDay < 60 || completedDay % 60 !== 0) return null;
       const exists = state.stageEvaluations.some((item) => item.endDay === completedDay);
       if (exists) return null;
+      const laborSnapshot = stageLaborFairness?.summarize?.(state.stageLaborLedger) || null;
       const evaluation = weeklyTimeline.makeStageEvaluation({
         startDay: Math.max(1, completedDay - 59),
         endDay: completedDay,
         snapshot: boundarySnapshot(completedDay, "stage-evaluation"),
         villagers: state.villagers,
         debtSettlement,
+        laborSnapshot,
         relationshipHighlights: relationshipLedger?.stageHighlights?.(state.townState) || null
       });
       state.stageEvaluations.push(evaluation);
+      if (stageLaborFairness?.create) {
+        state.stageLaborLedger = stageLaborFairness.create(state.villagers.map((resident) => resident.id), completedDay + 1);
+      }
       return evaluation;
     }
 

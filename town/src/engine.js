@@ -8,6 +8,7 @@
   const debtLedger = T.townDebtLedger || {};
   const weeklyTimeline = T.weeklyTimeline || {};
   const relationshipLedger = T.townRelationshipLedger || {};
+  const stageLaborFairness = T.stageLaborFairness || {};
   const engineDailyReport = T.engineDailyReport || {};
   const staticData = T.engineStaticData || {};
 
@@ -47,6 +48,7 @@
     currentWeekStartSnapshot: null,
     lastWeeklyDebtSettlement: null,
     stageEvaluations: [],
+    stageLaborLedger: null,
     modelConversationArchive: [],
     stageConversationRecaps: [],
     acknowledgedStageEvaluationIds: [],
@@ -177,6 +179,7 @@
     weeklyTimeline,
     debtLedger,
     relationshipLedger,
+    stageLaborFairness,
     publicTownSnapshot
   });
 
@@ -226,6 +229,7 @@
     timeSlots,
     activityRules,
     townLedger,
+    stageLaborFairness,
     weatherSystem,
     engineDailyReport,
     actionRunner,
@@ -288,6 +292,9 @@
     state.currentWeekStartSnapshot = timeline.boundarySnapshot(1, "week-start");
     state.lastWeeklyDebtSettlement = null;
     state.stageEvaluations = [];
+    state.stageLaborLedger = stageLaborFairness.create
+      ? stageLaborFairness.create(state.villagers.map((resident) => resident.id), 1)
+      : null;
     state.modelConversationArchive = [];
     state.stageConversationRecaps = [];
     state.acknowledgedStageEvaluationIds = [];

@@ -43,6 +43,17 @@
     }).join("");
   }
 
+  function laborDetailHtml(detail) {
+    const components = detail?.components || {};
+    if (![components.workloadBalance, components.heavyWorkBalance, components.restAccess, components.sustainableWork].every(Number.isFinite)) return "";
+    return `
+      <p class="stage-recap-labor-note">
+        <strong>劳动公平依据</strong>
+        <span>分工均衡 ${components.workloadBalance} · 重活均衡 ${components.heavyWorkBalance} · 休息机会 ${components.restAccess} · 负担可持续 ${components.sustainableWork}</span>
+      </p>
+    `;
+  }
+
   function pressureLabels(effects = {}) {
     const labels = [];
     if (effects.autonomyPressure === "high") labels.push("自主性压力偏高");
@@ -105,7 +116,7 @@
     elements.content.innerHTML = `
       <section class="stage-recap-section stage-recap-score">
         <div class="stage-recap-grade" aria-label="阶段等级 ${T.escapeHtml(evaluation.grade)}"><strong>${T.escapeHtml(evaluation.grade)}</strong><span>${T.escapeHtml(evaluation.gradeName)}</span></div>
-        <div class="stage-recap-axes">${axesHtml(evaluation.axes)}</div>
+        <div class="stage-recap-axes">${axesHtml(evaluation.axes)}${laborDetailHtml(evaluation.laborFairnessDetail)}</div>
       </section>
       <section class="stage-recap-section" data-relationship-source="local-ledger">
         <div class="stage-recap-section-head"><h3>截至第 ${evaluation.endDay} 天的人际关系</h3><span>${Number(relationships.activePairCount || 0)} 组活跃关系</span></div>
