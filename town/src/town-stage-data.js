@@ -62,7 +62,7 @@
       x: 51,
       y: 46,
       radius: 5,
-      activityIds: ["TC-03", "TC-04", "TC-07", "TC-08", "TC-09", "CH-10"],
+      activityIds: ["TC-03", "TC-04", "TC-07", "TC-08", "TC-09", "CH-06", "CH-10"],
       animationKey: "chat",
       panelTarget: "social",
       description: "碰头、休养建议、送礼和短对话更容易在这里被看见。"
@@ -75,7 +75,7 @@
       x: 52,
       y: 61,
       radius: 4,
-      activityIds: ["TC-01", "TC-06", "CH-01", "CH-02", "CH-03", "CH-11"],
+      activityIds: ["TC-01", "TC-06", "CH-01", "CH-02", "CH-03", "CH-04", "CH-11"],
       animationKey: "notice",
       panelTarget: "notice-board",
       description: "公告、合同消息、周会和公示账目只读落点。"

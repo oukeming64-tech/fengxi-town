@@ -1,9 +1,9 @@
 (function () {
   const town = {
     version: {
-      code: "v0.1.8-e",
+      code: "v0.1.9-e",
       name: "枫溪镇",
-      status: "六十天阶段回顾"
+      status: "经典节日与居民参与"
     },
     assets: {
       townMap: "./assets/concept/map.png",

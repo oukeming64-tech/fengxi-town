@@ -217,11 +217,11 @@
       { id: "water_meeting", name: "用水协调会", startDay: 16, endDay: 16, demandFamilies: ["processed"], commercialPressure: 0, accountingPressure: 2, note: "热天用水账容易起争议。" }
     ],
     fall: [
-      { id: "harvest_fair", name: "丰收集市", startDay: 5, endDay: 7, demandFamilies: ["gourd", "fruiting", "grain", "processed"], commercialPressure: 2, accountingPressure: 1, note: "节日摊位涨价，也会把包装和账本推到台前。" },
+      { id: "harvest_festival", name: "丰收节", startDay: 5, endDay: 7, demandFamilies: ["gourd", "fruiting", "grain", "processed"], commercialPressure: 2, accountingPressure: 1, note: "收成展示、共享长桌与晚宴把摊位、包装和公开致谢一起推到台前。" },
       { id: "barn_audit_day", name: "谷仓盘点日", startDay: 14, endDay: 14, demandFamilies: ["root", "grain"], commercialPressure: 1, accountingPressure: 2, note: "合作社查库存，模糊账会引来争议。" }
     ],
     winter: [
-      { id: "candle_market", name: "灯烛夜市", startDay: 4, endDay: 5, demandFamilies: ["mushroom", "leaf", "processed"], commercialPressure: 1, accountingPressure: 1, note: "冬夜市场喜欢温室菜、菇类和加工小食。" },
+      { id: "snowfall_festival", name: "落雪节", startDay: 4, endDay: 5, demandFamilies: ["mushroom", "leaf", "processed"], commercialPressure: 1, accountingPressure: 1, note: "雪夜灯串、暖食与互赠让会堂、餐桌和温室货摊更热闹。" },
       { id: "year_end_books", name: "年末账本夜", startDay: 18, endDay: 18, demandFamilies: ["processed", "grain"], commercialPressure: 0, accountingPressure: 3, note: "会计协会要求把应收、库存和寄售说清楚。" }
     ]
   };
