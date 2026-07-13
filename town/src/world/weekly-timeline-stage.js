@@ -26,11 +26,11 @@
     const average = Math.round(Object.values(axes).reduce((sum, value) => sum + value, 0) / 5);
     const grade = average >= 82 ? "A" : average >= 66 ? "B" : average >= 50 ? "C" : average >= 34 ? "D" : "E";
     const gradeNames = {
-      A: "社区自救成功",
-      B: "修复成功但有裂痕",
-      C: "勉强完成",
-      D: "被外部接管",
-      E: "社区性失败"
+      A: "自主生长",
+      B: "稳步修复",
+      C: "勉力维持",
+      D: "外部压力加深",
+      E: "来到重建关口"
     };
 
     return { axes, average, grade, gradeName: gradeNames[grade] };
@@ -47,6 +47,7 @@
       source: "local-rules-community-stage-evaluation",
       immutableState: true,
       ...scores,
+      relationshipHighlights: options.relationshipHighlights || null,
       publicText: `${scores.grade} · ${scores.gradeName}。评价只改变下一阶段压力，不结束模拟。`,
       nextStageEffects: {
         autonomyPressure: scores.grade === "D" ? "high" : scores.grade === "E" ? "rebuild" : "watch",

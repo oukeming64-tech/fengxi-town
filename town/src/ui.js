@@ -44,7 +44,15 @@
     apiKeyInput3: document.getElementById("apiKeyInput3"),
     apiKeyInput4: document.getElementById("apiKeyInput4"),
     saveModelConfigBtn: document.getElementById("saveModelConfigBtn"),
-    clearSessionKeyBtn: document.getElementById("clearSessionKeyBtn")
+    clearSessionKeyBtn: document.getElementById("clearSessionKeyBtn"),
+    stageRecapPanel: document.getElementById("stageRecapPanel"),
+    stageRecapEyebrow: document.getElementById("stageRecapEyebrow"),
+    stageRecapTitle: document.getElementById("stageRecapTitle"),
+    stageRecapLead: document.getElementById("stageRecapLead"),
+    stageRecapContent: document.getElementById("stageRecapContent"),
+    stageRecapClose: document.getElementById("stageRecapClose"),
+    stageRecapDetails: document.getElementById("stageRecapDetails"),
+    stageRecapContinue: document.getElementById("stageRecapContinue")
   };
 
   const noticeBoardAsset = T.assets.noticeBoard || "../assets/runtime/maple-creek-notice-board-v0.0.6.svg";
@@ -53,6 +61,9 @@
   let modelConfigOpen = false;
   let stageDrawerOpen = false;
   let stageDrawerPanel = "residents";
+  let stageRecapOpen = false;
+  let activeStageEvaluationId = "";
+  let stageRecapReturnFocus = null;
   const mapViewport = {
     scale: 1,
     x: 0,
@@ -196,6 +207,39 @@
     T.weeklyTimelinePanel?.render(el.weeklyTimelinePanel, engine);
   }
 
+  function stageEvaluationById(id) {
+    return (engine.state.stageEvaluations || []).find((item) => item.id === id) || null;
+  }
+
+  function setStageRecapBackgroundInert(value) {
+    [document.querySelector(".topbar"), document.querySelector(".main-grid"), el.modelConfigPanel].forEach((node) => {
+      if (!node) return;
+      if (value) node.setAttribute("inert", "");
+      else node.removeAttribute("inert");
+    });
+    document.body.classList.toggle("has-stage-recap", value);
+  }
+
+  function renderStageRecap() {
+    const evaluation = stageEvaluationById(activeStageEvaluationId);
+    if (!evaluation) stageRecapOpen = false;
+    const conversationRecap = evaluation
+      ? T.stageRecapData?.conversationRecapFor?.(engine.state, evaluation.id)
+        || T.stageRecapData?.ensureConversationRecap?.(engine.state, evaluation)
+      : null;
+    T.stageRecapPanel?.render?.({
+      panel: el.stageRecapPanel,
+      eyebrow: el.stageRecapEyebrow,
+      title: el.stageRecapTitle,
+      lead: el.stageRecapLead,
+      content: el.stageRecapContent
+    }, evaluation, conversationRecap, {
+      open: stageRecapOpen,
+      villagerNameById
+    });
+    setStageRecapBackgroundInert(stageRecapOpen);
+  }
+
   function configStatusText() {
     const config = T.llm?.config;
     if (!config) return T.llm?.lastError ? `配置读取失败：${T.llm.lastError}` : "尚未读取配置。";
@@ -266,6 +310,7 @@
     renderReport();
     renderConversations();
     renderWeeklyTimeline();
+    renderStageRecap();
     renderNoticeBoard();
     renderModelConfig();
     applyStageDrawerState();
@@ -359,6 +404,65 @@
   function closeStageDrawer() {
     stageDrawerOpen = false;
     applyStageDrawerState();
+  }
+
+  function acknowledgeStageRecap(id) {
+    if (!id) return;
+    const acknowledged = engine.state.acknowledgedStageEvaluationIds || (engine.state.acknowledgedStageEvaluationIds = []);
+    if (!acknowledged.includes(id)) acknowledged.push(id);
+  }
+
+  function openStageRecap(id) {
+    const evaluation = stageEvaluationById(id);
+    if (!evaluation) return false;
+    stageRecapReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    activeStageEvaluationId = evaluation.id;
+    T.stageRecapData?.ensureConversationRecap?.(engine.state, evaluation);
+    stageRecapOpen = true;
+    renderStageRecap();
+    window.setTimeout(() => el.stageRecapContinue?.focus(), 0);
+    return true;
+  }
+
+  function openPendingStageRecap() {
+    const acknowledged = new Set(engine.state.acknowledgedStageEvaluationIds || []);
+    const pending = (engine.state.stageEvaluations || []).find((item) => !acknowledged.has(item.id));
+    return pending ? openStageRecap(pending.id) : false;
+  }
+
+  function closeStageRecap(options = {}) {
+    if (!stageRecapOpen) return;
+    const id = activeStageEvaluationId;
+    if (options.acknowledge !== false) acknowledgeStageRecap(id);
+    stageRecapOpen = false;
+    renderStageRecap();
+    if (options.restoreFocus !== false) window.setTimeout(() => stageRecapReturnFocus?.focus?.(), 0);
+  }
+
+  function showStageRecapDetails() {
+    closeStageRecap({ restoreFocus: false });
+    openStageDrawer("timeline");
+    window.setTimeout(() => el.weeklyTimelinePanel?.querySelector?.(`[data-stage-recap-id="${activeStageEvaluationId}"]`)?.focus?.(), 0);
+  }
+
+  function trapStageRecapFocus(event) {
+    if (!stageRecapOpen || event.key !== "Tab") return false;
+    const focusable = [...(el.stageRecapPanel?.querySelectorAll?.("button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])") || [])]
+      .filter((node) => !node.hidden);
+    if (!focusable.length) return false;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+      return true;
+    }
+    if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+      return true;
+    }
+    return false;
   }
 
   function handleStageDrawerClick(event) {
@@ -461,6 +565,11 @@
   }
 
   function handleWeekClick(event) {
+    const stageRecap = event.target.closest("[data-stage-recap-id]");
+    if (stageRecap) {
+      openStageRecap(stageRecap.dataset.stageRecapId);
+      return;
+    }
     T.weeklyTimelinePanel?.handleClick(event, render);
   }
 
@@ -484,7 +593,15 @@
   el.stageDrawer?.addEventListener("click", handleStageDrawerClick);
   el.noticeBoardClose?.addEventListener("click", closeNoticeBoard);
   el.modelConfigClose?.addEventListener("click", closeModelConfig);
+  el.stageRecapClose?.addEventListener("click", closeStageRecap);
+  el.stageRecapContinue?.addEventListener("click", closeStageRecap);
+  el.stageRecapDetails?.addEventListener("click", showStageRecapDetails);
   document.addEventListener("keydown", (event) => {
+    if (stageRecapOpen) {
+      if (event.key === "Escape") closeStageRecap();
+      else trapStageRecapFocus(event);
+      return;
+    }
     if (event.key === "Escape" && noticeBoardOpen) closeNoticeBoard();
     if (event.key === "Escape" && modelConfigOpen) closeModelConfig();
     if (event.key === "Escape" && stageDrawerOpen) closeStageDrawer();
@@ -495,6 +612,10 @@
     render,
     openModelConfig,
     closeModelConfig,
+    openStageRecap,
+    openPendingStageRecap,
+    closeStageRecap,
+    stageRecapState: () => ({ open: stageRecapOpen, evaluationId: activeStageEvaluationId }),
     stagePlaybackState: () => ({
       playing: mapViewport.playbackPlaying,
       stageIndex: mapViewport.stageIndex,

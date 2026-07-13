@@ -74,6 +74,37 @@
     };
   }
 
+  function highlightPair(pair) {
+    if (!pair) return null;
+    const publicValue = publicPair(pair);
+    return {
+      ...publicValue,
+      interactionCount: pair.recentMemories.length,
+      evidence: pair.recentMemories.slice(-3).reverse().map(publicMemory).filter(Boolean)
+    };
+  }
+
+  function stageHighlights(ledger) {
+    const active = Object.values(ledger?.pairs || {}).filter((pair) => pair.lastInteraction);
+    const mostTrusted = [...active].sort((a, b) => (
+      (b.trust * 2 + b.familiarity - b.friction - b.exclusion) -
+      (a.trust * 2 + a.familiarity - a.friction - a.exclusion)
+    ))[0] || null;
+    const strained = [...active]
+      .filter((pair) => active.length < 2 || pair.pairId !== mostTrusted?.pairId)
+      .sort((a, b) => (
+        (a.trust * 2 + a.familiarity - a.friction * 2 - a.exclusion * 2) -
+        (b.trust * 2 + b.familiarity - b.friction * 2 - b.exclusion * 2)
+      ))[0] || null;
+    return {
+      mostTrusted: highlightPair(mostTrusted),
+      mostStrained: highlightPair(strained),
+      activePairCount: active.length,
+      source: "local-relationship-ledger",
+      genericTextInference: false
+    };
+  }
+
   function publicSnapshot(ledger, options = {}) {
     const summary = summarizeLedger(ledger);
     const pairs = Object.values(ledger.pairs || {})
@@ -114,6 +145,7 @@
     relationshipTone,
     publicMemory,
     publicPair,
+    stageHighlights,
     publicSnapshot,
     makeReportSection
   };

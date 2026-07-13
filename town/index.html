@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="./styles-weekly-timeline.css?v=0.1.5">
   <link rel="stylesheet" href="./styles-stage-drawer-content.css?v=0.1.6">
   <link rel="stylesheet" href="./styles-model-config.css?v=0.1.5">
+  <link rel="stylesheet" href="./styles-stage-recap.css?v=0.1.8-e">
   <title>枫溪镇</title>
 </head>
 <body>
@@ -37,7 +38,7 @@
       <div class="title-block">
         <h1>枫溪镇</h1>
         <div class="status-strip" aria-live="polite">
-          <span class="pill stage-detail-pill">版本 <strong id="versionLabel">v0.1.8-d · 清晰度与无障碍验收</strong></span>
+          <span class="pill stage-detail-pill">版本 <strong id="versionLabel">v0.1.8-e · 六十天阶段回顾</strong></span>
           <span class="pill stage-primary-pill">日子 <strong id="dayLabel">第 1 天</strong></span>
           <span class="pill stage-primary-pill">季节 <strong id="seasonLabel">春季</strong></span>
           <span class="pill stage-primary-pill">天气 <strong id="weatherLabel">阴天</strong></span>
@@ -246,11 +247,29 @@
         </div>
       </div>
     </aside>
+
+    <aside class="stage-recap-overlay" id="stageRecapPanel" role="dialog" aria-modal="true" aria-labelledby="stageRecapTitle" aria-hidden="true" hidden>
+      <article class="stage-recap-card">
+        <header class="stage-recap-head">
+          <div>
+            <p class="stage-recap-eyebrow" id="stageRecapEyebrow">阶段回顾</p>
+            <h2 id="stageRecapTitle">六十天阶段回顾</h2>
+            <p id="stageRecapLead">小镇走过了一个阶段。</p>
+          </div>
+          <button type="button" id="stageRecapClose" aria-label="关闭阶段回顾">关闭</button>
+        </header>
+        <div class="stage-recap-content" id="stageRecapContent"></div>
+        <footer class="stage-recap-actions">
+          <button type="button" id="stageRecapDetails">查看阶段记录</button>
+          <button type="button" id="stageRecapContinue" class="primary">继续生活</button>
+        </footer>
+      </article>
+    </aside>
   </div>
 
-  <script src="./src/shared.js?v=0.1.8"></script>
+  <script src="./src/shared.js?v=0.1.8-e"></script>
   <script src="./src/world/world-config.js?v=0.1.5"></script>
-  <script src="./src/world/model-contract.js?v=0.1.5"></script>
+  <script src="./src/world/model-contract.js?v=0.1.8-e"></script>
   <script src="./src/world/weather-data.js?v=0.1.5"></script>
   <script src="./src/world/weather-system-utils.js?v=0.1.5"></script>
   <script src="./src/world/weather-system-inertia.js?v=0.1.5"></script>
@@ -284,14 +303,15 @@
   <script src="./src/world/resident-group-profiles.js?v=0.1.7"></script>
   <script src="./src/world/town-relationship-rules.js?v=0.1.5"></script>
   <script src="./src/world/town-relationship-interactions.js?v=0.1.7"></script>
-  <script src="./src/world/town-relationship-public.js?v=0.1.5"></script>
+  <script src="./src/world/town-relationship-public.js?v=0.1.8-e"></script>
   <script src="./src/world/relationship-visual-cues.js?v=0.1.8"></script>
-  <script src="./src/world/town-relationship-ledger.js?v=0.1.5"></script>
+  <script src="./src/world/town-relationship-ledger.js?v=0.1.8-e"></script>
   <script src="./src/world/town-ledger.js?v=0.1.5"></script>
   <script src="./src/world/weekly-timeline-utils.js?v=0.1.5"></script>
   <script src="./src/world/weekly-timeline-snapshots.js?v=0.1.5"></script>
   <script src="./src/world/weekly-timeline-reports.js?v=0.1.5"></script>
-  <script src="./src/world/weekly-timeline-stage.js?v=0.1.5"></script>
+  <script src="./src/world/weekly-timeline-stage.js?v=0.1.8-e"></script>
+  <script src="./src/world/stage-recap-data.js?v=0.1.8-e"></script>
   <script src="./src/world/weekly-timeline.js?v=0.1.5"></script>
   <script src="./src/world/activity-data.js?v=0.1.5"></script>
   <script src="./src/world/activity-effects.js?v=0.1.5"></script>
@@ -344,10 +364,11 @@
   <script src="./src/engine-static-data.js?v=0.1.5"></script>
   <script src="./src/engine-daily-report.js?v=0.1.5"></script>
   <script src="./src/engine-action-runner.js?v=0.1.7"></script>
-  <script src="./src/engine-timeline.js?v=0.1.5"></script>
+  <script src="./src/engine-timeline.js?v=0.1.8-e"></script>
   <script src="./src/engine-day-cycle.js?v=0.1.5"></script>
-  <script src="./src/engine.js?v=0.1.5"></script>
-  <script src="./src/ui/weekly-timeline-panel.js?v=0.1.5"></script>
+  <script src="./src/engine.js?v=0.1.8-e"></script>
+  <script src="./src/ui/weekly-timeline-panel.js?v=0.1.8-e"></script>
+  <script src="./src/ui/stage-recap-panel.js?v=0.1.8-e"></script>
   <script src="./src/ui/facility-notice-panel.js?v=0.1.5"></script>
   <script src="./src/ui/town-map-chrome.js?v=0.1.8"></script>
   <script src="./src/ui/town-map-hotspot-layer.js?v=0.1.6"></script>
@@ -360,9 +381,9 @@
   <script src="./src/ui/daily-panels.js?v=0.1.5"></script>
   <script src="./src/ui/town-state-panel.js?v=0.1.5"></script>
   <script src="./src/ui/conversation-panel.js?v=0.1.5"></script>
-  <script src="./src/ui.js?v=0.1.5"></script>
+  <script src="./src/ui.js?v=0.1.8-e"></script>
   <script src="./src/llm-payloads.js?v=0.1.5"></script>
-  <script src="./src/llm.js?v=0.1.5"></script>
-  <script src="./src/main.js?v=0.1.5"></script>
+  <script src="./src/llm.js?v=0.1.8-e"></script>
+  <script src="./src/main.js?v=0.1.8-e"></script>
 </body>
 </html>

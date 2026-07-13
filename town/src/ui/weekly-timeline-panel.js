@@ -53,11 +53,29 @@
     `;
   }
 
+  function renderStageArchive(engine) {
+    const evaluations = [...(engine.state.stageEvaluations || [])].reverse();
+    if (!evaluations.length) return "";
+    return `
+      <section class="stage-recap-history" aria-label="阶段回顾记录">
+        <div><strong>六十天阶段回顾</strong><span>可重新打开</span></div>
+        ${evaluations.map((item) => `
+          <button type="button" data-stage-recap-id="${T.escapeHtml(item.id)}">
+            <span>第 ${item.startDay}-${item.endDay} 天</span>
+            <strong>${T.escapeHtml(item.grade)} · ${T.escapeHtml(item.gradeName)}</strong>
+          </button>
+        `).join("")}
+      </section>
+    `;
+  }
+
   function render(panel, engine) {
     if (!panel) return;
     const weeks = engine.state.weeklyTimeline || [];
+    const stageArchive = renderStageArchive(engine);
+    panel.classList.toggle("has-stage-recap-history", Boolean(stageArchive));
     if (!weeks.length) {
-      panel.innerHTML = `<div class="empty">推进 7 天后，这里会出现第一条本地周快照。</div>`;
+      panel.innerHTML = `${stageArchive}<div class="empty">推进 7 天后，这里会出现第一条本地周快照。</div>`;
       return;
     }
     const week = selectedWeek(engine);
@@ -78,6 +96,7 @@
     const debt = week.debtSettlement;
 
     panel.innerHTML = `
+      ${stageArchive}
       <div class="week-list" role="list">${weekItems}</div>
       <article class="week-detail">
         <div class="week-detail-head">

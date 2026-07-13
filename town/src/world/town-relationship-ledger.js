@@ -65,6 +65,10 @@
     return publicLedger.publicSnapshot(ensureLedger(state || {}), options);
   }
 
+  function stageHighlights(state) {
+    return publicLedger.stageHighlights?.(ensureLedger(state || {})) || null;
+  }
+
   function makeReportSection(state, settlement) {
     return publicLedger.makeReportSection(state, settlement);
   }
@@ -76,6 +80,7 @@
     ensureLedger,
     updateRelationships,
     publicSnapshot,
+    stageHighlights,
     makeReportSection
   };
 }());

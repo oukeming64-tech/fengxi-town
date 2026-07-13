@@ -1,0 +1,330 @@
+.stage-recap-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(19, 30, 24, 0.72);
+  backdrop-filter: blur(5px);
+}
+
+.stage-recap-overlay[hidden] {
+  display: none;
+}
+
+.stage-recap-card {
+  width: min(920px, calc(100vw - 32px));
+  max-height: min(860px, calc(100vh - 32px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid rgba(57, 89, 66, 0.35);
+  border-radius: 22px;
+  background: #fffef9;
+  box-shadow: 0 28px 80px rgba(9, 24, 14, 0.38);
+}
+
+.stage-recap-head,
+.stage-recap-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(57, 89, 66, 0.14);
+}
+
+.stage-recap-actions {
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(57, 89, 66, 0.14);
+  border-bottom: 0;
+}
+
+.stage-recap-head h2,
+.stage-recap-section h3,
+.stage-recap-pair h4 {
+  margin: 0;
+}
+
+.stage-recap-head p {
+  margin: 5px 0 0;
+  color: #53645a;
+}
+
+.stage-recap-head > button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.stage-recap-eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #2e7650 !important;
+}
+
+.stage-recap-content {
+  overflow: auto;
+  padding: 20px 24px 28px;
+  background: linear-gradient(180deg, #f7fbf5, #fffef9 28%);
+}
+
+.stage-recap-section {
+  margin-bottom: 16px;
+  padding: 17px;
+  border: 1px solid rgba(57, 89, 66, 0.15);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.stage-recap-score,
+.stage-recap-pairs {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.34fr) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.stage-recap-pairs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stage-recap-grade {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 170px;
+  border-radius: 14px;
+  color: #fffef9;
+  background: linear-gradient(145deg, #2f7a51, #173d29);
+}
+
+.stage-recap-grade strong {
+  font-size: clamp(64px, 9vw, 104px);
+  line-height: 0.9;
+}
+
+.stage-recap-grade span {
+  margin-top: 12px;
+  font-weight: 800;
+}
+
+.stage-recap-axes {
+  display: grid;
+  align-content: center;
+  gap: 11px;
+}
+
+.stage-recap-axis {
+  display: grid;
+  grid-template-columns: 96px minmax(80px, 1fr) 32px;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.stage-recap-axis > div {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dce7de;
+}
+
+.stage-recap-axis i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7fba84, #2f7a51);
+}
+
+.stage-recap-section-head,
+.stage-recap-conversation header,
+.stage-recap-pair-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.stage-recap-section-head {
+  margin-bottom: 13px;
+}
+
+.stage-recap-section-head span,
+.stage-recap-section small,
+.stage-recap-pair small,
+.stage-recap-conversation header span {
+  color: #68776e;
+  font-size: 12px;
+}
+
+.stage-recap-pair {
+  padding: 15px;
+  border-radius: 13px;
+  background: #f3f7f2;
+}
+
+.stage-recap-pair.is-trusted {
+  border-left: 4px solid #4e9a68;
+}
+
+.stage-recap-pair.is-strained {
+  border-left: 4px solid #c87856;
+  background: #fff6f0;
+}
+
+.stage-recap-pair > span {
+  color: #53645a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.stage-recap-pair h4 {
+  margin-top: 5px;
+}
+
+.stage-recap-pair p {
+  min-height: 42px;
+  margin: 11px 0 6px;
+  line-height: 1.45;
+}
+
+.stage-recap-pair-metrics {
+  justify-content: flex-start;
+  margin-top: 9px;
+  flex-wrap: wrap;
+}
+
+.stage-recap-pair-metrics em,
+.stage-recap-pressure span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-style: normal;
+  font-size: 12px;
+  background: rgba(56, 102, 69, 0.1);
+}
+
+.stage-recap-conversation-summary > p {
+  margin: 0 0 14px;
+  line-height: 1.55;
+}
+
+.stage-recap-conversations {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.stage-recap-conversation {
+  padding: 12px;
+  border-radius: 12px;
+  background: #f5f1e8;
+}
+
+.stage-recap-conversation header {
+  align-items: flex-start;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.stage-recap-conversation p {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px;
+  margin: 6px 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.stage-recap-pressure > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stage-recap-empty {
+  margin: 0;
+  padding: 14px;
+  border-radius: 12px;
+  color: #5e6c63;
+  background: #f2f5f1;
+}
+
+body.has-stage-recap {
+  overflow: hidden;
+}
+
+.stage-recap-history {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) repeat(2, minmax(150px, 1fr));
+  grid-column: 1 / -1;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 13px;
+  background: #edf5eb;
+}
+
+.weekly-timeline.has-stage-recap-history {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.stage-recap-history > div,
+.stage-recap-history button {
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  min-height: 52px;
+  text-align: left;
+}
+
+.stage-recap-history > div span,
+.stage-recap-history button span {
+  color: #607067;
+  font-size: 11px;
+}
+
+.stage-recap-history button {
+  border-color: rgba(47, 122, 81, 0.22);
+  background: #fffef9;
+}
+
+@media (max-width: 720px) {
+  .stage-recap-overlay {
+    padding: 10px;
+  }
+
+  .stage-recap-card {
+    width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
+  }
+
+  .stage-recap-head,
+  .stage-recap-actions,
+  .stage-recap-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .stage-recap-score,
+  .stage-recap-pairs,
+  .stage-recap-conversations,
+  .stage-recap-history {
+    grid-template-columns: 1fr;
+  }
+
+  .stage-recap-grade {
+    min-height: 130px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-recap-overlay,
+  .stage-recap-card,
+  .stage-recap-axis i {
+    animation: none !important;
+    transition: none !important;
+  }
+}

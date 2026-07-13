@@ -5,6 +5,7 @@
     state,
     weeklyTimeline,
     debtLedger,
+    relationshipLedger,
     publicTownSnapshot
   }) {
     function boundarySnapshot(day, label) {
@@ -42,7 +43,8 @@
         endDay: completedDay,
         snapshot: boundarySnapshot(completedDay, "stage-evaluation"),
         villagers: state.villagers,
-        debtSettlement
+        debtSettlement,
+        relationshipHighlights: relationshipLedger?.stageHighlights?.(state.townState) || null
       });
       state.stageEvaluations.push(evaluation);
       return evaluation;

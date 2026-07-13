@@ -55,6 +55,7 @@
         await task;
       }
       ui.render();
+      ui.openPendingStageRecap?.();
     } finally {
       running = false;
       setBusy(false);

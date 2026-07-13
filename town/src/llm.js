@@ -92,6 +92,12 @@
     return { conversations, weeklyReport, riskNotes };
   }
 
+  function archiveShadowConversations(shadow) {
+    if (!shadow?.conversations?.length) return;
+    const completedDay = Number(engine.state.lastReport?.day) || Math.max(1, Number(engine.state.day) - 1);
+    T.stageRecapData?.archiveModelConversations?.(engine.state, shadow.conversations, completedDay);
+  }
+
   function keyStatusLabel(config) {
     const count = Number(config?.keyCount || 0);
     const suffix = count > 1 ? ` x${count}` : "";
@@ -162,6 +168,7 @@
       applyLogs(result.logs);
       applyReport(result.reportSections);
       state.shadow = validateShadow(result.shadow);
+      archiveShadowConversations(state.shadow);
       state.audit = result.audit || null;
       state.config = result.config || state.config;
       state.status = "文本已整理";
@@ -237,6 +244,7 @@
       }
 
       state.shadow = validateShadow(result.shadow);
+      archiveShadowConversations(state.shadow);
       state.audit = result.audit || null;
       state.config = result.config || state.config;
       if (state.shadow) {

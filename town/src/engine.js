@@ -47,6 +47,9 @@
     currentWeekStartSnapshot: null,
     lastWeeklyDebtSettlement: null,
     stageEvaluations: [],
+    modelConversationArchive: [],
+    stageConversationRecaps: [],
+    acknowledgedStageEvaluationIds: [],
     lastStagePlayback: null,
     modelActionControl: null,
     residentCognition: null,
@@ -173,6 +176,7 @@
     state,
     weeklyTimeline,
     debtLedger,
+    relationshipLedger,
     publicTownSnapshot
   });
 
@@ -284,6 +288,9 @@
     state.currentWeekStartSnapshot = timeline.boundarySnapshot(1, "week-start");
     state.lastWeeklyDebtSettlement = null;
     state.stageEvaluations = [];
+    state.modelConversationArchive = [];
+    state.stageConversationRecaps = [];
+    state.acknowledgedStageEvaluationIds = [];
     state.lastStagePlayback = null;
     state.modelActionControl = null;
     state.residentCognition = null;
