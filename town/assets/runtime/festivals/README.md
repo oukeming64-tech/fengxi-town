@@ -21,4 +21,4 @@ assets/runtime/festivals/snowfall_festival/map.png
 
 注册代码位于 `src/town-stage-festival-map-packages.js`，四个地图包的 `phases` 都仅包含 `active`：换种日在春季第 3–4 日显示，清沟义工日在春季第 10 日显示，丰收节在秋季第 5–7 日显示，落雪节在冬季第 4–5 日显示；各自的筹备期、收尾期、文件缺失或浏览器加载失败仍由 v0.1.9-a 的回退逻辑恢复默认地图。
 
-具体节日活动由 `src/world/festival-resident-behavior.js` 读取本地 `festivalCalendar` 和已审核活动事实，只为现有活动提供分阶段、分时段加权；地图图片不能反向决定活动，参与层也不能强制居民参加或读取固定团体身份。
+具体节日活动由 `src/world/festival-resident-behavior.js` 读取本地 `festivalCalendar` 和已审核活动事实，只为现有活动提供分阶段、分时段加权；地图图片不能反向决定活动，参与层也不能强制居民参加。
