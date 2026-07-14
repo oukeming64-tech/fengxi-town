@@ -12,6 +12,7 @@ function createPromptPayloadBuilders({ compactCognition } = {}) {
     return {
       id: resident.id,
       name: resident.name,
+      voiceStyle: resident.voiceStyle || "",
       zone: resident.zone,
       health: resident.health,
       energy: resident.energy,

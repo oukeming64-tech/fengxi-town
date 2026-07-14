@@ -2,10 +2,11 @@
   const T = window.MorningTown || (window.MorningTown = {});
   const rules = T.townRelationshipRules || {};
 
-  const version = "town-relationship-interactions-v0.0.1-local";
+  const version = "town-relationship-interactions-v0.2.0-local";
   const typeLabels = rules.typeLabels || {};
   const typeEffects = rules.typeEffects || {};
   const groupProfiles = T.residentGroupProfiles || {};
+  const language = T.residentLanguageProfile || {};
 
   function residentsById(context) {
     const map = new Map();
@@ -73,9 +74,21 @@
     if (pair.allianceTags.length > 6) pair.allianceTags.shift();
   }
 
-  function chooseType(log, otherLog, pair, context) {
+  function unresolvedFriction(pair, currentDay) {
+    const memories = [...(pair?.recentMemories || [])].reverse();
+    for (const memory of memories) {
+      if (memory.type === "mediation") return null;
+      if (memory.type !== "exclusion") continue;
+      const elapsed = Number(currentDay || 1) - Number(memory.day || 0);
+      return elapsed >= 1 && elapsed <= 7 ? memory : null;
+    }
+    return null;
+  }
+
+  function chooseType(log, otherLog, pair, context, priorFriction = null) {
     const seed = rules.stableHash(`${context.day || ""}:${log.id}:${otherLog.id}:${pair.pairId}`);
     const text = `${log.activityId} ${otherLog.activityId} ${log.activityTitle} ${otherLog.activityTitle} ${log.kind} ${otherLog.kind} ${log.place}`;
+    if (priorFriction && /CH-|AC-|TC-|会堂|账|餐馆|市场|谈|碰头|预算/.test(text)) return "mediation";
     if (groupProfiles.sameGroup?.(log.residentId, otherLog.residentId)) {
       return seed % 3 === 0 ? "alliance" : "help";
     }
@@ -90,15 +103,6 @@
     return seed % 4 === 0 ? "gift" : "help";
   }
 
-  function giftItemFor(log) {
-    const text = `${log.activityId} ${log.activityTitle} ${log.place}`;
-    if (/RW|湿地|鱼/.test(text)) return "一小包河边带回来的东西";
-    if (/YF|农场|采收|谷仓/.test(text)) return "一份刚整理好的农场小物";
-    if (/TC|市场|餐馆/.test(text)) return "一份顺手买下的小点心";
-    if (/CH|会堂|节日/.test(text)) return "一张会堂桌边留下的纸签";
-    return "一件今天用得上的小东西";
-  }
-
   function allianceDetail(tag) {
     const details = {
       "facility-care": "把要修的地方、谁去找工具先记清楚",
@@ -111,15 +115,32 @@
     return details[tag] || "把明天先做哪件事写在同一页";
   }
 
-  function interactionSummary(type, actor, target, log, otherLog, tag) {
+  function arrangementText(value) {
+    const text = String(value || "今天的事");
+    return /安排|顺序|计划|任务$/.test(text) ? text : `${text}安排`;
+  }
+
+  function interactionSummary(type, actor, target, log, otherLog, tag, priorFriction = null) {
     const actorName = rules.residentName(actor, log.residentId);
     const targetName = rules.residentName(target, otherLog.residentId);
     const place = rules.cleanPlace(log.place || otherLog.place, "小路");
     const activity = log.activityTitle || otherLog.activityTitle || "今天的事";
     if (type === "help") return `${actorName}在${place}接过${targetName}手边一段活，${activity}没有断下来。`;
-    if (type === "gift") return `${actorName}在${place}把${giftItemFor(log)}递给${targetName}，这件小事被记了下来。`;
+    if (type === "gift") {
+      const item = language.giftItemFor?.(actor, log) || "今天收工时留好的一件小东西";
+      return language.giftSummary?.(actor, target, item) || `${actorName}在${place}把${item}递给${targetName}。`;
+    }
     if (type === "alliance") return `${actorName}和${targetName}在${place}${allianceDetail(tag)}，这件事暂时有人一起盯着。`;
-    if (type === "exclusion") return `${actorName}在${place}把${targetName}的想法搁到后面，旁边的人先照着另一套说法走。`;
+    if (type === "exclusion") {
+      const callback = priorFriction
+        ? `第 ${priorFriction.day} 天没说定的${arrangementText(priorFriction.activityTitle || activity)}`
+        : arrangementText(activity);
+      const verb = priorFriction ? "再次搁到后面" : "搁到后面";
+      return `${actorName}在${place}把${targetName}提出的${callback}${verb}，旁边的人先去做${log.activityTitle || "眼前这件事"}。`;
+    }
+    if (priorFriction) {
+      return `${actorName}在${place}又把第 ${priorFriction.day} 天没说定的${arrangementText(priorFriction.activityTitle || activity)}摆回桌面，请${targetName}把先后顺序重新讲清楚。`;
+    }
     return `${actorName}在${place}替${targetName}把刚才那句话梳理了一遍，事情暂时回到桌面上。`;
   }
 
@@ -128,12 +149,14 @@
     const pair = rules.ensurePair(ledger, log.residentId, otherLog.residentId);
     pair.residentLabels[log.residentId] = log.displayName;
     pair.residentLabels[otherLog.residentId] = otherLog.displayName;
-    const type = chooseType(log, otherLog, pair, context);
+    const currentDay = Number(state.day || context.day || 1);
+    const priorFriction = unresolvedFriction(pair, currentDay);
+    const type = chooseType(log, otherLog, pair, context, priorFriction);
     const effect = typeEffects[type] || typeEffects.help;
     const tag = tagFor(log, otherLog, context);
     const memory = {
       id: `rel-${state.day || context.day || 1}-${ledger.recentInteractions.length + 1}`,
-      day: Number(state.day || context.day || 1),
+      day: currentDay,
       slot: log.slot || otherLog.slot || "一天里",
       type,
       label: typeLabels[type] || type,
@@ -145,7 +168,9 @@
       activityId: log.activityId || otherLog.activityId || "",
       activityTitle: log.activityTitle || otherLog.activityTitle || "",
       allianceTag: type === "alliance" ? tag : "",
-      summary: interactionSummary(type, log.resident, otherLog.resident, log, otherLog, tag),
+      followUpOf: priorFriction && ["mediation", "exclusion"].includes(type) ? priorFriction.id : "",
+      unresolvedSinceDay: priorFriction && ["mediation", "exclusion"].includes(type) ? priorFriction.day : null,
+      summary: interactionSummary(type, log.resident, otherLog.resident, log, otherLog, tag, priorFriction),
       sourceLogIds: [log.id, otherLog.id].filter(Boolean),
       effects: {
         familiarity: effect.familiarity,
@@ -242,6 +267,7 @@
     normalizeLog,
     logsFromContext,
     candidatePairs,
-    makeInteraction
+    makeInteraction,
+    unresolvedFriction
   };
 }());

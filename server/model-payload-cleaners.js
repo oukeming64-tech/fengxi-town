@@ -110,6 +110,7 @@ function createModelPayloadCleaner({
         id: cleanString(resident.id, 12),
         name: cleanString(resident.name, 30),
         tag: cleanString(resident.tag, 40),
+        voiceStyle: cleanString(resident.voiceStyle, 120),
         zone: cleanString(resident.zone, 40),
         health: Number(resident.health || 0),
         energy: Number(resident.energy || 0),

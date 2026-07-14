@@ -5,21 +5,27 @@ const laneSpecs = [
     instruction: "面向全部居民，优先找已经发生的帮忙、送礼、资源回报或接力合作；没有明确证据就返回空。"
   },
   {
-    instruction: "面向全部居民，优先找已经发生的忽略、排挤、争议、延后回应或拒绝合作；没有明确证据就返回空。"
+    instruction: "面向全部居民，优先找已经发生的忽略、排挤、争议、延后回应或拒绝合作；必须说清被搁置的具体任务、物件或安排，不能只说‘这边的’或‘另一套说法’；没有明确证据就返回空。"
   },
   {
     instruction: "面向全部居民，优先找有人强调自己早有安排、替别人定调、争取功劳或得到他人呼应的已发生场景；不能虚构身份、关系或渠道。"
   },
   {
-    instruction: "面向全部居民，找具有具体物件、动作和地点的镇上日常；避开重复的公告板缺货核对。只要日志里有足够的两人事实，本路必须给出一段。",
+    instruction: "面向全部居民，找具有具体物件、动作和地点的镇上日常；避开重复的公告板缺货核对，也不要把纸条、任务表、账页或菜价当成每天固定主题。只要日志里有足够的两人事实，本路必须给出一段。",
     required: true
   }
+];
+
+const dailyMotifSpecs = [
+  { id: "restaurant-paper", limit: 3 },
+  { id: "routine-market-price", limit: 8 }
 ];
 
 function createModelInteractionLaneRunner({ runtime, providerClient, guards }) {
   const { callWithJsonFallbackOnKey, isModelJsonError } = providerClient;
   const { normalizeShadow, knownResidentMap } = guards;
   const exposureCounts = new Map();
+  const motifExposureCounts = new Map();
 
   function evidenceText(conversation, payload) {
     const ids = new Set(conversation.evidenceLogIds || []);
@@ -29,9 +35,23 @@ function createModelInteractionLaneRunner({ runtime, providerClient, guards }) {
       .join(" ");
   }
 
+  function candidateText(candidate, payload) {
+    return `${evidenceText(candidate.conversation, payload)} ${(candidate.conversation.lines || []).map((line) => line.text).join(" ")}`;
+  }
+
+  function dailyMotifs(candidate, payload) {
+    const text = candidateText(candidate, payload);
+    const hasSocialEvent = /帮忙|送礼|递给|致谢|感谢|接过.*活|排挤|搁到后面|争议|拒绝|调停/.test(text);
+    return dailyMotifSpecs.filter((motif) => {
+      if (motif.id === "restaurant-paper") return /餐馆/.test(text) && /油渍|纸条|纸签/.test(text);
+      if (motif.id === "routine-market-price") return !hasSocialEvent && /价格|价差|行情|报价|菜价/.test(text);
+      return false;
+    });
+  }
+
   function scoreCandidate(candidate, payload) {
     const ids = candidate.conversation.residentIds || [];
-    const text = `${evidenceText(candidate.conversation, payload)} ${(candidate.conversation.lines || []).map((line) => line.text).join(" ")}`;
+    const text = candidateText(candidate, payload);
     let score = 20;
     if (candidate.laneIndex === 0) score += 28;
     if (candidate.laneIndex === 1) score += 32;
@@ -43,6 +63,8 @@ function createModelInteractionLaneRunner({ runtime, providerClient, guards }) {
     if (/公告板|还差几单位|到期日|核对/.test(text)) score -= 10;
     score += Math.min(6, (candidate.conversation.evidenceLogIds || []).length * 2);
     score -= ids.reduce((sum, id) => sum + Number(exposureCounts.get(id) || 0) * 12, 0);
+    score -= dailyMotifs(candidate, payload)
+      .reduce((sum, motif) => sum + Number(motifExposureCounts.get(motif.id) || 0) * 10, 0);
     return score;
   }
 
@@ -79,12 +101,19 @@ function createModelInteractionLaneRunner({ runtime, providerClient, guards }) {
       if (selected.length >= limit) return;
       const residentIds = candidate.conversation.residentIds || [];
       const pair = [...residentIds].sort().join(":");
+      const motifs = dailyMotifs(candidate, payload);
+      const overusedDailyMotif = candidate.laneIndex === 3
+        && motifs.some((motif) => Number(motifExposureCounts.get(motif.id) || 0) >= motif.limit);
+      if (overusedDailyMotif) return;
       if (!pair || pairs.has(pair) || residentIds.some((id) => usedResidents.has(id))) return;
       pairs.add(pair);
       residentIds.forEach((id) => usedResidents.add(id));
       selected.push({
         ...candidate,
         conversation: { ...candidate.conversation, note: "" }
+      });
+      motifs.forEach((motif) => {
+        motifExposureCounts.set(motif.id, Number(motifExposureCounts.get(motif.id) || 0) + 1);
       });
     });
     selected.forEach((candidate) => {
@@ -192,7 +221,8 @@ function createModelInteractionLaneRunner({ runtime, providerClient, guards }) {
         candidateScores: ranked.map((item) => ({ lane: item.laneIndex + 1, score: item.score })).slice(0, 8),
         fairness: {
           trackedResidents: exposureCounts.size,
-          highestExposure: Math.max(0, ...exposureCounts.values())
+          highestExposure: Math.max(0, ...exposureCounts.values()),
+          dailyMotifExposure: Object.fromEntries(motifExposureCounts.entries())
         }
       }
     };

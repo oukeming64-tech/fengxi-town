@@ -59,9 +59,11 @@
   }
 
   function summarizeResident(villager) {
+    const languageProfile = T.residentLanguageProfile?.profileFor?.(villager) || null;
     return {
       id: villager.id,
       name: villager.name,
+      voiceStyle: languageProfile?.promptStyle || "用自然短句说眼前的事。",
       zone: villager.zone,
       health: villager.health,
       energy: villager.energy,

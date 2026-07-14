@@ -5,6 +5,20 @@
   if (!activityData) throw new Error("activity-data.js must load before activity-copy.js");
 
   const copyTemplates = activityData.copyTemplates;
+  const demandFamilyLabels = Object.freeze({
+    root: "根茎菜",
+    legume: "豆类",
+    leaf: "叶菜",
+    grain: "谷物",
+    processed: "加工食品",
+    gourd: "瓜类",
+    fruiting: "果菜",
+    mushroom: "菌菇"
+  });
+
+  function publicDemandFamilyLabel(value) {
+    return demandFamilyLabels[value] || String(value || "");
+  }
 
   function templateFor(activity) {
     const templates = copyTemplates[activity.category] || copyTemplates.default;
@@ -92,7 +106,14 @@
 
   function marketText(townState) {
     const current = townState?.market?.current;
-    if (current?.activeFestival) return `${current.activeFestival.name}把${current.activeFestival.demandFamilies?.slice(0, 2).join("、") || "摊位货"}推热了`;
+    if (current?.activeFestival) {
+      const families = (current.activeFestival.demandFamilies || [])
+        .slice(0, 2)
+        .map(publicDemandFamilyLabel)
+        .filter(Boolean)
+        .join("、");
+      return `${current.activeFestival.name}把${families || "摊位货"}推热了`;
+    }
     return String(current?.notes?.[0] || "今日行情没有大起伏").replace(/[。，；;,.]+$/g, "");
   }
 
@@ -101,6 +122,20 @@
     const remaining = Math.max(0, contract.quantity - contract.deliveredQuantity);
     const daysLeft = contract.dueDay - (townState?.day || 1);
     return `${contract.label}还差 ${remaining} 单位，离到期还有 ${daysLeft} 天`;
+  }
+
+  function accountingPressureText(ledger, contract, townState) {
+    const cash = Number(ledger.cashYsc || 0);
+    const cashText = cash < 1000
+      ? "柜里能立刻动用的钱已经不多"
+      : cash < 3000
+        ? "手头的钱只够先顾最急的几件事"
+        : "手头暂时还转得开，但不能同时答应所有开销";
+    if (!contract) return `${cashText}，今天先把零散收据归到一起`;
+    const remaining = Math.max(0, Number(contract.quantity || 0) - Number(contract.deliveredQuantity || 0));
+    const daysLeft = Number(contract.dueDay || 0) - Number(townState?.day || 1);
+    const dueText = daysLeft < 0 ? "已经过了交付日" : daysLeft === 0 ? "今天到期" : daysLeft === 1 ? "明天到期" : `还有 ${daysLeft} 天到期`;
+    return `${cashText}，${contract.buyer || contract.label}那单${dueText}，还差 ${remaining} 单位`;
   }
 
   function stateAwareLine(villager, activity, ctx = {}) {
@@ -114,6 +149,7 @@
     const name = villager.name;
     const energy = Number(villager.energy || 0);
     const health = Number(villager.health || 0);
+    const voice = T.residentLanguageProfile?.profileIdFor?.(villager) || "practical";
 
     if (activity.zoneCode === "YF") {
       if (/采收/.test(activity.title) && field) {
@@ -187,7 +223,14 @@
 
     if (activity.zoneCode === "TC") {
       if (/餐馆/.test(activity.title)) {
-        return `${name}在餐馆门边听了两句，话题落到${contract?.cropName || "明天的菜"}和${marketText(townState)}。桌上没有账本，只有一张被油渍压住的小纸条。`;
+        const cropName = contract?.cropName || "明天的菜";
+        const market = marketText(townState);
+        return T.pick([
+          `${name}在餐馆门边听了两句，话题落到${cropName}和${market}。靠门的小黑板还留着早上的报价，粉笔只擦掉了一半。`,
+          `${name}在餐馆门边问起${cropName}，又听人说到${market}。柜台旁两个空菜筐摞在一起，卖得快的那只被放在最上面。`,
+          `餐馆的收音机刚播完天气，${name}把话题拉回${cropName}。${market}，几个人对着门边的送货箱又核了一遍。`,
+          `${name}在餐馆靠窗的位置停了一会儿，先问${cropName}，再听完${market}。杯沿在木桌上轻轻碰了一下，话没有说得很满。`
+        ]);
       }
       if (/邮局|传真|电话/.test(activity.title)) {
         return `${name}在${zone}把传真纸夹进信封，写的是${contract?.buyer || "买方"}那边的确认回话，不是农场当天账页。`;
@@ -199,11 +242,16 @@
     }
 
     if (activity.zoneCode === "AC" || /查账|旧账|补贴|发票|收据|成本|预算|审计|档案|复核|认证/.test(activity.title)) {
-      return T.pick([
-        `${name}在${zone}翻到账本当天页，现金写着 ${ledger.cashYsc ?? 0} YSC，旁边压着${contract?.buyer || "合作社"}的单子：${contractText(contract, townState)}。`,
-        `${zone}的账页被${name}摊开，左边是现金 ${ledger.cashYsc ?? 0} YSC，右边是${contract?.buyer || "合作社"}的到期日。缺的数量被圈了两遍。`,
-        `${name}把${contract?.cropName || "库存"}那一栏挪到灯下，先核交付数，再看应收。铅笔停在账务透明度 ${ledger.accountingTransparency ?? 0}/100 旁边。`
-      ]);
+      const pressure = accountingPressureText(ledger, contract, townState);
+      const openings = {
+        orderly: `${name}先把最急的单子放到左边，再把能晚一天的收据移到右边。`,
+        bargaining: `${name}没有从总数念起，只问哪笔钱今天非付不可。`,
+        observant: `${name}把摊开的票据一张张翻到到期日那一面，停了一会儿才开口。`,
+        sociable: `${name}先问桌边的人各自卡在哪一步，再把最急的单子推到中间。`,
+        daring: `${name}把最急的单子拍在桌上，先指着今天必须回答的那一笔。`,
+        practical: `${name}把收据按今天能办、明天再办分成两摞。`
+      };
+      return `${openings[voice] || openings.practical}${pressure}。`;
     }
 
     if (activity.category === "recovery") {
@@ -212,8 +260,10 @@
 
     if (activity.skills.includes("social")) {
       return T.pick([
-        `${name}在${zone}停下来说了几句，话题绕到${contract?.cropName || "明天的农活"}和${marketText(townState)}。有人把这句记到小纸条背面。`,
-        `${zone}里有人问起${contract?.cropName || "明天的农活"}，${name}顺手把杯子挪开，给账页腾出一小块地方。`
+        `${name}在${zone}停下来说了几句，话题绕到${contract?.cropName || "明天的农活"}和${marketText(townState)}。旁边的人把空杯子挪开，让他们能靠近一点说。`,
+        `${zone}里有人问起${contract?.cropName || "明天的农活"}，${name}用指节敲了敲门边的货筐，又把话题拉回今天要做的事。`,
+        `${name}等${zone}里的收音机播完天气，才接着说${contract?.cropName || "明天的农活"}。${marketText(townState)}，几个人都没有急着下结论。`,
+        `${zone}里有人提到${contract?.cropName || "明天的农活"}，${name}把听到的话记在旧信封背面，再抬头确认了一遍。`
       ]);
     }
 
@@ -236,7 +286,7 @@
   }
 
   T.activityCopy = {
-    version: "activity-copy-v0.2-local",
+    version: "activity-copy-v0.2.0-personalized-language",
     templateFor,
     objectFor,
     fieldFor,
