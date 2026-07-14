@@ -2,7 +2,7 @@
   const T = window.MorningTown || (window.MorningTown = {});
   const rules = T.townRelationshipRules || {};
 
-  const version = "town-relationship-public-v0.0.1-local";
+  const version = "town-relationship-public-v0.2.0-local";
 
   function summarizeLedger(ledger) {
     const pairs = Object.values(ledger.pairs || {});
@@ -52,6 +52,8 @@
       activityId: memory.activityId,
       activityTitle: memory.activityTitle,
       allianceTag: memory.allianceTag || "",
+      followUpOf: memory.followUpOf || "",
+      unresolvedSinceDay: memory.unresolvedSinceDay || null,
       summary: memory.summary
     };
   }
@@ -119,7 +121,7 @@
     const recentLimit = rules.clamp(Number(options.recentLimit || 8), 1, 18);
     const pairLimit = rules.clamp(Number(options.pairLimit || 6), 1, 12);
     return {
-      version: "town-relationship-ledger-v0.0.6-local",
+      version: "town-relationship-ledger-v0.2.0-local",
       mode: "local-rules-first",
       summary,
       summaryLines: relationshipSummaryLines(ledger, summary),

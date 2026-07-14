@@ -4,7 +4,7 @@
   const interactions = T.townRelationshipInteractions || {};
   const publicLedger = T.townRelationshipPublic || {};
 
-  const version = "town-relationship-ledger-v0.0.6-local";
+  const version = "town-relationship-ledger-v0.2.0-local";
   const mode = "local-rules-first";
 
   function ensureLedger(state) {

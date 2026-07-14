@@ -25,20 +25,24 @@
   }
 
   function residentsPayload(engine) {
-    return engine.state.villagers.map((villager) => ({
-      id: villager.id,
-      name: villager.name,
-      zone: villager.zone,
-      health: villager.health,
-      energy: villager.energy,
-      coins: villager.coins,
-      recentAction: villager.recentAction ? {
-        activityId: villager.recentAction.activityId || "",
-        activityTitle: villager.recentAction.activityTitle || "",
-        zone: villager.recentAction.zone || "",
-        text: villager.recentAction.localText || villager.recentAction.text || ""
-      } : null
-    }));
+    return engine.state.villagers.map((villager) => {
+      const languageProfile = T.residentLanguageProfile?.profileFor?.(villager) || null;
+      return {
+        id: villager.id,
+        name: villager.name,
+        voiceStyle: languageProfile?.promptStyle || "用自然短句说眼前的事。",
+        zone: villager.zone,
+        health: villager.health,
+        energy: villager.energy,
+        coins: villager.coins,
+        recentAction: villager.recentAction ? {
+          activityId: villager.recentAction.activityId || "",
+          activityTitle: villager.recentAction.activityTitle || "",
+          zone: villager.recentAction.zone || "",
+          text: villager.recentAction.localText || villager.recentAction.text || ""
+        } : null
+      };
+    });
   }
 
   function weeklyPayload(engine) {

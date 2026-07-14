@@ -11,6 +11,20 @@ function createModelOutputGuards({ cleanString, cleanText, cleanList, forbiddenW
     return new Map((payload.residents || []).map((resident) => [resident.id, resident]));
   }
 
+  function dialogueLineText(rawText, speakerName) {
+    let value = safeVisibleText(rawText, 110);
+    if (!value) return "";
+    const chineseQuoteStart = value.lastIndexOf("：“");
+    const chineseQuoteEnd = value.lastIndexOf("”");
+    if (chineseQuoteStart >= 0 && chineseQuoteEnd > chineseQuoteStart + 2) {
+      value = value.slice(chineseQuoteStart + 2, chineseQuoteEnd).trim();
+    }
+    [`${speakerName}：`, `${speakerName}:`].forEach((prefix) => {
+      if (prefix.length > 1 && value.startsWith(prefix)) value = value.slice(prefix.length).trim();
+    });
+    return safeVisibleText(value, 110);
+  }
+
   function resolveResidentId(value, residents) {
     const raw = cleanString(value, 40);
     if (!raw) return "";
@@ -106,11 +120,12 @@ function createModelOutputGuards({ cleanString, cleanText, cleanList, forbiddenW
       const lines = Array.isArray(item?.lines) ? item.lines.map((line) => {
         const speakerId = resolveResidentId(line?.speakerId || line?.speakerName || line?.speaker, residents);
         if (!speakerId || !conversationResidents.has(speakerId)) return null;
-        const text = safeVisibleText(line?.text, 110);
+        const speakerName = residents.get(speakerId).name;
+        const text = dialogueLineText(line?.text, speakerName);
         if (!text) return null;
         return {
           speakerId,
-          speakerName: residents.get(speakerId).name,
+          speakerName,
           text
         };
       }).filter(Boolean).slice(0, 5) : [];
