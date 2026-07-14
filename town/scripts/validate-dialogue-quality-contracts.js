@@ -196,6 +196,10 @@ assert.deepEqual(personalizedPayload.residents.map((resident) => resident.voiceS
 const indexSource = read("town/index.html");
 assert(indexSource.includes("v0.2.0 · 个性化居民语言"));
 assert(indexSource.indexOf("resident-language-profile.js") < indexSource.indexOf("town-relationship-interactions.js"));
+const homeSource = read("index.html");
+assert.equal((homeSource.match(/\.\/town\/index\.html\?v=0\.2\.0/g) || []).length, 3);
+assert(!/\.\/town\/index\.html\?v=0\.1\./.test(homeSource));
+assert(homeSource.includes("<dd>v0.2.0</dd>"));
 const llmPayloads = read("town/src/llm-payloads.js");
 assert(llmPayloads.includes("voiceStyle: languageProfile?.promptStyle"));
 
