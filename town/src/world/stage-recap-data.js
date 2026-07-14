@@ -19,9 +19,14 @@
     return String(value || "").replace(/\s+/g, " ").trim().slice(0, limit);
   }
 
+  function cleanEvidenceId(value) {
+    const id = String(value || "").trim();
+    return /^(?:log|relationship)-[a-z0-9-]+$/i.test(id) ? id : "";
+  }
+
   function cleanConversation(conversation, day) {
     const residentIds = [...new Set((conversation?.residentIds || []).filter((id) => /^v\d{2}$/.test(String(id))))].slice(0, 4);
-    const evidenceLogIds = [...new Set((conversation?.evidenceLogIds || []).filter((id) => /^log-[a-z0-9-]+$/i.test(String(id))))].slice(0, 4);
+    const evidenceLogIds = [...new Set((conversation?.evidenceLogIds || []).map(cleanEvidenceId).filter(Boolean))].slice(0, 4);
     const lines = (conversation?.lines || []).map((line) => ({
       speakerId: String(line?.speakerId || ""),
       text: cleanText(line?.text, 180)

@@ -114,14 +114,97 @@ for (let index = 0; index < 3; index += 1) {
 }
 assert.equal(selectionRunner.selectConversations([repeatedCandidate], repeatedPayload, 1).selected.length, 0);
 
+const priceSelectionRunner = createModelInteractionLaneRunner({
+  runtime: {},
+  providerClient: {},
+  guards: { normalizeShadow() {}, knownResidentMap() {} }
+});
+const pricePayload = {
+  logs: [{ id: "market-price-log", residentId: "v01", kind: "talk", text: "两人在集市问今天的菜价和行情。" }]
+};
+const priceCandidate = {
+  laneIndex: 3,
+  conversation: {
+    residentIds: ["v01", "v02"],
+    evidenceLogIds: ["market-price-log"],
+    lines: [
+      { speakerId: "v01", text: "今天的价格比昨天稳一点。" },
+      { speakerId: "v02", text: "那我先按这个行情安排。" }
+    ]
+  }
+};
+for (let index = 0; index < 3; index += 1) {
+  assert.equal(priceSelectionRunner.selectConversations([priceCandidate], pricePayload, 1).selected.length, 1);
+}
+assert.equal(priceSelectionRunner.selectConversations([priceCandidate], pricePayload, 1).selected.length, 0);
+
+const stricterSelectionRunner = createModelInteractionLaneRunner({
+  runtime: {},
+  providerClient: {},
+  guards: { normalizeShadow() {}, knownResidentMap() {} }
+});
+const boardPayload = {
+  logs: [{ id: "market-board-log", residentId: "v01", kind: "talk", text: "两人在餐馆门边看小黑板和粉笔留下的送货时间。" }]
+};
+const boardCandidate = {
+  laneIndex: 3,
+  conversation: {
+    residentIds: ["v01", "v02"],
+    evidenceLogIds: ["market-board-log"],
+    lines: [
+      { speakerId: "v01", text: "小黑板上的送货时间还没改。" },
+      { speakerId: "v02", text: "那我先去问门口的人。" }
+    ]
+  }
+};
+assert.equal(stricterSelectionRunner.selectConversations([boardCandidate], boardPayload, 1).selected.length, 1);
+assert.equal(stricterSelectionRunner.selectConversations([boardCandidate], boardPayload, 1).selected.length, 1);
+assert.equal(stricterSelectionRunner.selectConversations([boardCandidate], boardPayload, 1).selected.length, 0);
+
+const mealSelectionRunner = createModelInteractionLaneRunner({
+  runtime: {},
+  providerClient: {},
+  guards: { normalizeShadow() {}, knownResidentMap() {} }
+});
+const mealPayload = {
+  logs: [{ id: "gift-meal-log", residentId: "v01", kind: "gift", text: "有人送礼，把散场前留好的一份热饭递给对方。" }]
+};
+const mealCandidate = {
+  laneIndex: 0,
+  conversation: {
+    residentIds: ["v01", "v02"],
+    evidenceLogIds: ["gift-meal-log"],
+    lines: [
+      { speakerId: "v01", text: "散场前留好的一份热饭，给你。" },
+      { speakerId: "v02", text: "谢谢，我正好还没吃。" }
+    ]
+  }
+};
+assert.equal(mealSelectionRunner.selectConversations([mealCandidate], mealPayload, 1).selected.length, 1);
+assert.equal(mealSelectionRunner.selectConversations([mealCandidate], mealPayload, 1).selected.length, 1);
+assert.equal(mealSelectionRunner.selectConversations([mealCandidate], mealPayload, 1).selected.length, 0);
+
 const browserContext = vm.createContext({ window: {}, console, Math });
 [
   "town/src/shared.js",
   "town/src/world/town-relationship-rules.js",
   "town/src/world/resident-language-profile.js",
-  "town/src/world/town-relationship-interactions.js"
+  "town/src/world/town-relationship-interactions.js",
+  "town/src/world/stage-recap-data.js"
 ].forEach((file) => vm.runInContext(read(file), browserContext, { filename: file }));
 const T = browserContext.window.MorningTown;
+const archiveState = { modelConversationArchive: [] };
+const archived = T.stageRecapData.archiveModelConversations(archiveState, [{
+  id: "relationship-evidence-conversation",
+  residentIds: ["v01", "v02"],
+  evidenceLogIds: ["relationship-rel-1-2-3"],
+  lines: [
+    { speakerId: "v01", text: "这段活我接着做。" },
+    { speakerId: "v02", text: "好，我去把工具拿来。" }
+  ]
+}], 1);
+assert.equal(archived.length, 1);
+assert.deepEqual(archived[0].evidenceLogIds, ["relationship-rel-1-2-3"]);
 const orderly = { id: "v01", name: "Anna Morgan", storage: { seeds: 3 }, traits: { work: 1, talk: 0.7, trade: 0.8, risk: 0.5, quiet: 0.8, order: 1.6 } };
 const quiet = { id: "v02", name: "Bennett Fisher", storage: {}, traits: { work: 0.8, talk: 0.5, trade: 0.7, risk: 0.6, quiet: 1.7, order: 0.9 } };
 assert.equal(T.residentLanguageProfile.profileIdFor(orderly), "orderly");
@@ -203,4 +286,4 @@ assert(homeSource.includes("<dd>v0.2.0</dd>"));
 const llmPayloads = read("town/src/llm-payloads.js");
 assert(llmPayloads.includes("voiceStyle: languageProfile?.promptStyle"));
 
-console.log("Dialogue quality contracts passed: personalized voices, sourced gifts, conflict callbacks, human accounting, spoken-line cleanup, public labels, and motif caps.");
+console.log("Dialogue quality contracts passed: personalized voices, sourced gifts, conflict callbacks, relationship evidence archives, spoken-line cleanup, public labels, and stricter motif caps.");

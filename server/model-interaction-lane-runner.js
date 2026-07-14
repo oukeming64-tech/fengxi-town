@@ -11,14 +11,16 @@ const laneSpecs = [
     instruction: "面向全部居民，优先找有人强调自己早有安排、替别人定调、争取功劳或得到他人呼应的已发生场景；不能虚构身份、关系或渠道。"
   },
   {
-    instruction: "面向全部居民，找具有具体物件、动作和地点的镇上日常；避开重复的公告板缺货核对，也不要把纸条、任务表、账页或菜价当成每天固定主题。只要日志里有足够的两人事实，本路必须给出一段。",
+    instruction: "面向全部居民，找具有具体物件、动作和地点的镇上日常；避开重复的公告板缺货核对，也不要把纸条、任务表、账页、菜价、小黑板、传真纸、路单、同一种作物报价或热饭当成连续主题。只要日志里有足够的两人事实，本路必须给出一段。",
     required: true
   }
 ];
 
 const dailyMotifSpecs = [
   { id: "restaurant-paper", limit: 3 },
-  { id: "routine-market-price", limit: 8 }
+  { id: "routine-market-price", limit: 3 },
+  { id: "market-board-or-paper", limit: 2 },
+  { id: "gift-hot-meal", limit: 2 }
 ];
 
 function createModelInteractionLaneRunner({ runtime, providerClient, guards }) {
@@ -42,9 +44,12 @@ function createModelInteractionLaneRunner({ runtime, providerClient, guards }) {
   function dailyMotifs(candidate, payload) {
     const text = candidateText(candidate, payload);
     const hasSocialEvent = /帮忙|送礼|递给|致谢|感谢|接过.*活|排挤|搁到后面|争议|拒绝|调停/.test(text);
+    const hasMarketContext = /餐馆|集市|柜台|采购站|价格|价差|行情|报价/.test(text);
     return dailyMotifSpecs.filter((motif) => {
       if (motif.id === "restaurant-paper") return /餐馆/.test(text) && /油渍|纸条|纸签/.test(text);
       if (motif.id === "routine-market-price") return !hasSocialEvent && /价格|价差|行情|报价|菜价/.test(text);
+      if (motif.id === "market-board-or-paper") return hasMarketContext && /小黑板|粉笔|传真纸|路单/.test(text);
+      if (motif.id === "gift-hot-meal") return hasSocialEvent && /一份热饭|留好.*热饭|散场前.*热饭/.test(text);
       return false;
     });
   }
@@ -102,8 +107,7 @@ function createModelInteractionLaneRunner({ runtime, providerClient, guards }) {
       const residentIds = candidate.conversation.residentIds || [];
       const pair = [...residentIds].sort().join(":");
       const motifs = dailyMotifs(candidate, payload);
-      const overusedDailyMotif = candidate.laneIndex === 3
-        && motifs.some((motif) => Number(motifExposureCounts.get(motif.id) || 0) >= motif.limit);
+      const overusedDailyMotif = motifs.some((motif) => Number(motifExposureCounts.get(motif.id) || 0) >= motif.limit);
       if (overusedDailyMotif) return;
       if (!pair || pairs.has(pair) || residentIds.some((id) => usedResidents.has(id))) return;
       pairs.add(pair);

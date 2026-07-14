@@ -67,7 +67,7 @@ function createPromptBuilders({ forbiddenWords, compactCognition } = {}) {
           "不要润色日志，不要写日报，不要写周报，不要改任何事实状态或数值。",
           `${conversationCountRule} 只写 2 到 3 句短对话。用证据里已有的具体物件和动作，不写心理诊断。`,
           "lines[].text 只能写角色真正说出口的话；不要写舞台说明，不要用‘姓名+动作+冒号+引号’把旁白塞进台词。",
-          "不要把某个物件或句式当成固定口头禅。纸条、任务表、账页、杯子等只有证据确实需要时才写；同一段里优先抓住人物之间真正发生的回应。",
+          "不要把某个物件或句式当成固定口头禅。纸条、任务表、账页、杯子等只有证据确实需要时才写；小黑板、传真纸、路单、同一种作物报价和热饭也不能连续充当对话中心。同一段里优先抓住人物之间真正发生的回应。",
           "每位居民的 voiceStyle 只约束说话节奏和关注点。让两个人听起来不同，但不能把 tag、voiceStyle 或性格标签直接说出口，也不能据此新增事实。",
           "摩擦或排挤对话必须说清被搁置的具体任务、物件或安排，不能只说‘这边的’‘另一套说法’。",
           "每段 conversation 必须使用输入里的 residentId，必须绑定 1 到 3 个 evidenceLogIds，且证据日志必须包含 conversation 任一 residentId；speakerId 必须是 conversation residentIds 里的 v01 这类 id。",
