@@ -34,7 +34,7 @@ const T = window.MorningTown;
 const theme = T.townStageFestivalTheme;
 const defaultMap = theme.defaultMapPackage;
 
-assert.equal(T.version.code, "v0.2.0");
+assert.equal(T.version.code, "v0.2.1");
 assert.equal(theme.version, "town-stage-festival-theme-v0.1.9-a");
 assert.equal(theme.source, "local-festival-calendar");
 assert.equal(defaultMap.mapAsset, T.assets.townMap);
@@ -214,7 +214,7 @@ assert(indexSource.indexOf("town-stage-festival-theme.js") < indexSource.indexOf
 assert(indexSource.indexOf("town-stage-festival-map-packages.js") < indexSource.indexOf("festival-resident-behavior.js"));
 assert(indexSource.indexOf("festival-resident-behavior.js") < indexSource.indexOf("festival-result-ledger.js"));
 assert(indexSource.indexOf("festival-resident-behavior.js") < indexSource.indexOf("world/action-policy.js"));
-assert(indexSource.includes("v0.2.0 · 个性化居民语言"));
+assert(indexSource.includes("v0.2.1 · 居民步行动画"));
 assert(packageSource.includes("theme.registerMapPackage"));
 assert(packageSource.includes("festivalId: \"rain_gutter_day\""));
 assert(packageSource.includes("festivalId: \"harvest_festival\""));

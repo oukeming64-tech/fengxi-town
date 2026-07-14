@@ -1,9 +1,9 @@
 (function () {
   const town = {
     version: {
-      code: "v0.2.0",
+      code: "v0.2.1",
       name: "枫溪镇",
-      status: "个性化居民语言"
+      status: "居民步行动画"
     },
     assets: {
       townMap: "./assets/concept/map.png",
