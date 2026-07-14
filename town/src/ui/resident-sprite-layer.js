@@ -93,11 +93,20 @@
       : "";
     const socialStyle = socialCue ? ` --social-duration: ${Math.max(400, Number(socialCue.durationMs) || 1600)}ms;` : "";
     const avatar = villager.avatar || T.residentAvatarPath(villager.id);
+    const walkCycleMs = 340 + (cell.index % 5) * 22;
+    const walkDelayMs = -((cell.index * 37) % walkCycleMs);
+    const walkFacing = Number(movement?.to?.x) < Number(movement?.from?.x) ? -1 : 1;
     return `
-      <button type="button" class="resident-token has-resident-sprite ${kind}${selected}${staged}${lifeMotion}${physicalProp}${socialClass}${travelling}" data-villager-id="${T.escapeHtml(villager.id)}" data-hotspot-id="${T.escapeHtml(event?.hotspotId || "")}" data-layout-index="${Number(event?.layoutIndex ?? 0)}" data-layout-size="${Number(event?.layoutSize ?? 1)}" data-action-key="${T.escapeHtml(actionKey)}" data-life-motion="${T.escapeHtml(lifeCue?.motionKey || "")}" data-prop-key="${T.escapeHtml(lifeCue?.propKey || "")}" data-cue-source="${T.escapeHtml(lifeCue?.sourceEventId || "")}" data-social-cue="${T.escapeHtml(socialCue?.socialCue || "")}" data-social-source="${T.escapeHtml(socialCue?.sourceEventId || "")}" data-social-role="${T.escapeHtml(socialAssignment?.role || "")}" data-sprite-index="${cell.index}" data-resident-depth="${depth}" style="left: ${position.x}%; top: ${position.y}%; --resident-depth: ${depth}; --resident-sprite-x: ${cell.x}%; --resident-sprite-y: ${cell.y}%; ${movementStyle}${socialStyle}" title="${T.escapeHtml(options.title || villager.name || "居民")}" aria-label="${T.escapeHtml(options.ariaLabel || villager.name || "居民")}">
+      <button type="button" class="resident-token has-resident-sprite ${kind}${selected}${staged}${lifeMotion}${physicalProp}${socialClass}${travelling}" data-villager-id="${T.escapeHtml(villager.id)}" data-hotspot-id="${T.escapeHtml(event?.hotspotId || "")}" data-layout-index="${Number(event?.layoutIndex ?? 0)}" data-layout-size="${Number(event?.layoutSize ?? 1)}" data-action-key="${T.escapeHtml(actionKey)}" data-life-motion="${T.escapeHtml(lifeCue?.motionKey || "")}" data-prop-key="${T.escapeHtml(lifeCue?.propKey || "")}" data-cue-source="${T.escapeHtml(lifeCue?.sourceEventId || "")}" data-social-cue="${T.escapeHtml(socialCue?.socialCue || "")}" data-social-source="${T.escapeHtml(socialCue?.sourceEventId || "")}" data-social-role="${T.escapeHtml(socialAssignment?.role || "")}" data-sprite-index="${cell.index}" data-resident-depth="${depth}" style="left: ${position.x}%; top: ${position.y}%; --resident-depth: ${depth}; --resident-sprite-x: ${cell.x}%; --resident-sprite-y: ${cell.y}%; --walk-cycle: ${walkCycleMs}ms; --walk-delay: ${walkDelayMs}ms; --walk-facing: ${walkFacing}; ${movementStyle}${socialStyle}" title="${T.escapeHtml(options.title || villager.name || "居民")}" aria-label="${T.escapeHtml(options.ariaLabel || villager.name || "居民")}">
         <span class="resident-ground-shadow" aria-hidden="true"></span>
         ${socialCue ? `<span class="resident-social-ring" aria-hidden="true"></span>` : ""}
-        <span class="resident-sprite" aria-hidden="true"><span class="resident-sprite-frame"></span></span>
+        <span class="resident-sprite" aria-hidden="true">
+          <span class="resident-sprite-frame">
+            <span class="resident-walk-part resident-walk-body"></span>
+            <span class="resident-walk-part resident-walk-leg resident-walk-leg-left"></span>
+            <span class="resident-walk-part resident-walk-leg resident-walk-leg-right"></span>
+          </span>
+        </span>
         ${physicalPropHtml}
         <span class="resident-avatar-pin" aria-hidden="true"><img src="${T.escapeHtml(avatar)}" alt=""></span>
         ${options.actionCueHtml || ""}
@@ -106,7 +115,7 @@
   }
 
   T.residentSpriteLayer = {
-    version: "resident-sprite-layer-v0.1.5-local",
+    version: "resident-sprite-layer-v0.2.1-walk-cycle",
     residentCell,
     renderPhysicalProp,
     renderToken
