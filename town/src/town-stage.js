@@ -6,6 +6,8 @@
   if (!stageRoutes) throw new Error("town-stage-routes.js must load before town-stage.js");
   const stageLayout = T.townStageLayout;
   if (!stageLayout) throw new Error("town-stage-layout.js must load before town-stage.js");
+  const WALK_MILLISECONDS_PER_MAP_UNIT = 110;
+  const MIN_WALK_DURATION_MS = 2800;
 
   const hotspots = stageData.mapHotspots || [];
   const animationAssets = stageData.actionAnimations || {};
@@ -227,6 +229,7 @@
     const from = { x: Number(fromEvent.x), y: Number(fromEvent.y) };
     const to = { x: Number(toEvent.x), y: Number(toEvent.y) };
     const route = stageRoutes.routeBetween(fromEvent.hotspotId, toEvent.hotspotId, from, to);
+    const stageBudgetMs = Math.max(MIN_WALK_DURATION_MS, Math.round((Number(toStage.durationSeconds) || 9) * 1000) - 1200);
     return {
       residentId,
       fromStageIndex: T.clamp(Number(fromStageIndex) || 0, 0, playback.stages.length - 1),
@@ -236,8 +239,13 @@
       points: route.points,
       routeNodeIds: route.nodeIds,
       routeSource: route.source,
+      routeDistance: route.distance,
       animationKey: toEvent.animationKey || "idle",
-      durationMs: T.clamp(Math.round((Number(toStage.durationSeconds) || 9) * 170), 1200, 2200),
+      durationMs: T.clamp(
+        Math.round(route.distance * WALK_MILLISECONDS_PER_MAP_UNIT),
+        MIN_WALK_DURATION_MS,
+        stageBudgetMs
+      ),
       source: "local-audited-stage-events"
     };
   }

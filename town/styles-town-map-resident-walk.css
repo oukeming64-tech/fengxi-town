@@ -1,4 +1,4 @@
-/* v0.2.1: procedural walk cycles for all 30 resident sprite cells */
+/* v0.2.2: route-faithful travel plus procedural walk cycles for all 30 resident sprite cells */
 .resident-walk-part {
   position: absolute;
   inset: 0;
@@ -84,6 +84,34 @@
 @keyframes resident-walk-facing {
   0%, 100% { transform: translateX(-50%) scaleX(var(--walk-facing, 1)) rotate(-1deg); }
   50% { transform: translateX(-50%) scaleX(var(--walk-facing, 1)) rotate(1deg); }
+}
+
+@keyframes resident-travel {
+  0% { left: var(--travel-point-0-x); top: var(--travel-point-0-y); }
+  4.1667% { left: var(--travel-point-1-x); top: var(--travel-point-1-y); }
+  8.3333% { left: var(--travel-point-2-x); top: var(--travel-point-2-y); }
+  12.5% { left: var(--travel-point-3-x); top: var(--travel-point-3-y); }
+  16.6667% { left: var(--travel-point-4-x); top: var(--travel-point-4-y); }
+  20.8333% { left: var(--travel-point-5-x); top: var(--travel-point-5-y); }
+  25% { left: var(--travel-point-6-x); top: var(--travel-point-6-y); }
+  29.1667% { left: var(--travel-point-7-x); top: var(--travel-point-7-y); }
+  33.3333% { left: var(--travel-point-8-x); top: var(--travel-point-8-y); }
+  37.5% { left: var(--travel-point-9-x); top: var(--travel-point-9-y); }
+  41.6667% { left: var(--travel-point-10-x); top: var(--travel-point-10-y); }
+  45.8333% { left: var(--travel-point-11-x); top: var(--travel-point-11-y); }
+  50% { left: var(--travel-point-12-x); top: var(--travel-point-12-y); }
+  54.1667% { left: var(--travel-point-13-x); top: var(--travel-point-13-y); }
+  58.3333% { left: var(--travel-point-14-x); top: var(--travel-point-14-y); }
+  62.5% { left: var(--travel-point-15-x); top: var(--travel-point-15-y); }
+  66.6667% { left: var(--travel-point-16-x); top: var(--travel-point-16-y); }
+  70.8333% { left: var(--travel-point-17-x); top: var(--travel-point-17-y); }
+  75% { left: var(--travel-point-18-x); top: var(--travel-point-18-y); }
+  79.1667% { left: var(--travel-point-19-x); top: var(--travel-point-19-y); }
+  83.3333% { left: var(--travel-point-20-x); top: var(--travel-point-20-y); }
+  87.5% { left: var(--travel-point-21-x); top: var(--travel-point-21-y); }
+  91.6667% { left: var(--travel-point-22-x); top: var(--travel-point-22-y); }
+  95.8333% { left: var(--travel-point-23-x); top: var(--travel-point-23-y); }
+  100% { left: var(--travel-point-24-x); top: var(--travel-point-24-y); }
 }
 
 @keyframes resident-walk-bob {

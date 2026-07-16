@@ -2,6 +2,7 @@
   const T = window.MorningTown || (window.MorningTown = {});
   const stageData = T.townStageData;
   if (!stageData) throw new Error("town-stage-data.js must load before town-stage-routes.js");
+  const ANIMATION_POINT_COUNT = 25;
 
   const reviewedRoadNodes = [
     { id: "farm-lane", x: 27, y: 31 },
@@ -133,6 +134,49 @@
     }, []);
   }
 
+  function polylineDistance(points) {
+    const line = dedupePoints(points);
+    return line.slice(1).reduce((total, point, index) => total + distance(line[index], point), 0);
+  }
+
+  function routeAnimationPoints(points, pointCount = ANIMATION_POINT_COUNT) {
+    const line = dedupePoints(points);
+    const targetCount = Math.max(2, Number(pointCount) || ANIMATION_POINT_COUNT);
+    if (!line.length) return [];
+    if (line.length === 1) return Array.from({ length: targetCount }, () => ({ ...line[0] }));
+    if (line.length > targetCount) throw new Error(`reviewed route needs ${line.length} animation points; limit is ${targetCount}`);
+
+    const lengths = line.slice(1).map((point, index) => distance(line[index], point));
+    const total = lengths.reduce((sum, length) => sum + length, 0);
+    const allocations = lengths.map(() => 1);
+    const remaining = targetCount - 1 - allocations.length;
+    const shares = lengths.map((length, index) => {
+      const exact = total ? (remaining * length) / total : remaining / lengths.length;
+      const whole = Math.floor(exact);
+      allocations[index] += whole;
+      return { index, remainder: exact - whole };
+    });
+    let allocated = allocations.reduce((sum, count) => sum + count, 0);
+    shares.sort((a, b) => b.remainder - a.remainder || a.index - b.index);
+    for (let index = 0; allocated < targetCount - 1; index += 1, allocated += 1) {
+      allocations[shares[index % shares.length].index] += 1;
+    }
+
+    const result = [{ ...line[0] }];
+    allocations.forEach((steps, segmentIndex) => {
+      const from = line[segmentIndex];
+      const to = line[segmentIndex + 1];
+      for (let step = 1; step <= steps; step += 1) {
+        const ratio = step / steps;
+        result.push(roundedPoint({
+          x: from.x + (to.x - from.x) * ratio,
+          y: from.y + (to.y - from.y) * ratio
+        }));
+      }
+    });
+    return result;
+  }
+
   function samplePolyline(points, sampleCount = 5) {
     const line = dedupePoints(points);
     if (!line.length) return [];
@@ -175,7 +219,8 @@
     return {
       nodeIds,
       rawPoints: rawPoints.length >= 2 ? rawPoints : fallbackPoints,
-      points: samplePolyline(rawPoints.length >= 2 ? rawPoints : fallbackPoints, 5),
+      points: routeAnimationPoints(rawPoints.length >= 2 ? rawPoints : fallbackPoints),
+      distance: Math.round(polylineDistance(rawPoints.length >= 2 ? rawPoints : fallbackPoints) * 100) / 100,
       source: nodeIds.length ? "local-reviewed-route-waypoints" : "local-stage-point-fallback"
     };
   }
@@ -195,6 +240,8 @@
     unreachableHotspotIds,
     shortestNodeIds,
     samplePolyline,
+    polylineDistance,
+    routeAnimationPoints,
     routeBetween
   };
 }());
