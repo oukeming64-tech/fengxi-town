@@ -85,9 +85,16 @@
       : "";
     const travelling = movement?.from && movement?.to ? " is-travelling" : "";
     const durationMs = Math.max(1, Number(movement?.durationMs) || 1);
-    const movementPoints = movement?.points?.length === 5
+    const travelPointCount = 25;
+    const movementPoints = movement?.points?.length === travelPointCount
       ? movement.points
-      : [movement?.from, movement?.from, movement?.to, movement?.to, movement?.to].filter(Boolean);
+      : Array.from({ length: travelPointCount }, (_, index) => {
+        const ratio = index / (travelPointCount - 1);
+        return {
+          x: Number(movement?.from?.x || 0) + (Number(movement?.to?.x || 0) - Number(movement?.from?.x || 0)) * ratio,
+          y: Number(movement?.from?.y || 0) + (Number(movement?.to?.y || 0) - Number(movement?.from?.y || 0)) * ratio
+        };
+      });
     const movementStyle = movement?.from && movement?.to
       ? movementPoints.map((point, index) => `--travel-point-${index}-x: ${point.x}%; --travel-point-${index}-y: ${point.y}%;`).join(" ") + ` --travel-duration: ${durationMs}ms;`
       : "";
@@ -97,7 +104,7 @@
     const walkDelayMs = -((cell.index * 37) % walkCycleMs);
     const walkFacing = Number(movement?.to?.x) < Number(movement?.from?.x) ? -1 : 1;
     return `
-      <button type="button" class="resident-token has-resident-sprite ${kind}${selected}${staged}${lifeMotion}${physicalProp}${socialClass}${travelling}" data-villager-id="${T.escapeHtml(villager.id)}" data-hotspot-id="${T.escapeHtml(event?.hotspotId || "")}" data-layout-index="${Number(event?.layoutIndex ?? 0)}" data-layout-size="${Number(event?.layoutSize ?? 1)}" data-action-key="${T.escapeHtml(actionKey)}" data-life-motion="${T.escapeHtml(lifeCue?.motionKey || "")}" data-prop-key="${T.escapeHtml(lifeCue?.propKey || "")}" data-cue-source="${T.escapeHtml(lifeCue?.sourceEventId || "")}" data-social-cue="${T.escapeHtml(socialCue?.socialCue || "")}" data-social-source="${T.escapeHtml(socialCue?.sourceEventId || "")}" data-social-role="${T.escapeHtml(socialAssignment?.role || "")}" data-sprite-index="${cell.index}" data-resident-depth="${depth}" style="left: ${position.x}%; top: ${position.y}%; --resident-depth: ${depth}; --resident-sprite-x: ${cell.x}%; --resident-sprite-y: ${cell.y}%; --walk-cycle: ${walkCycleMs}ms; --walk-delay: ${walkDelayMs}ms; --walk-facing: ${walkFacing}; ${movementStyle}${socialStyle}" title="${T.escapeHtml(options.title || villager.name || "居民")}" aria-label="${T.escapeHtml(options.ariaLabel || villager.name || "居民")}">
+      <button type="button" class="resident-token has-resident-sprite ${kind}${selected}${staged}${lifeMotion}${physicalProp}${socialClass}${travelling}" data-villager-id="${T.escapeHtml(villager.id)}" data-hotspot-id="${T.escapeHtml(event?.hotspotId || "")}" data-layout-index="${Number(event?.layoutIndex ?? 0)}" data-layout-size="${Number(event?.layoutSize ?? 1)}" data-action-key="${T.escapeHtml(actionKey)}" data-life-motion="${T.escapeHtml(lifeCue?.motionKey || "")}" data-prop-key="${T.escapeHtml(lifeCue?.propKey || "")}" data-cue-source="${T.escapeHtml(lifeCue?.sourceEventId || "")}" data-social-cue="${T.escapeHtml(socialCue?.socialCue || "")}" data-social-source="${T.escapeHtml(socialCue?.sourceEventId || "")}" data-social-role="${T.escapeHtml(socialAssignment?.role || "")}" data-route-source="${T.escapeHtml(movement?.routeSource || "")}" data-route-nodes="${T.escapeHtml((movement?.routeNodeIds || []).join(">"))}" data-route-distance="${Number(movement?.routeDistance || 0)}" data-travel-duration="${durationMs}" data-sprite-index="${cell.index}" data-resident-depth="${depth}" style="left: ${position.x}%; top: ${position.y}%; --resident-depth: ${depth}; --resident-sprite-x: ${cell.x}%; --resident-sprite-y: ${cell.y}%; --walk-cycle: ${walkCycleMs}ms; --walk-delay: ${walkDelayMs}ms; --walk-facing: ${walkFacing}; ${movementStyle}${socialStyle}" title="${T.escapeHtml(options.title || villager.name || "居民")}" aria-label="${T.escapeHtml(options.ariaLabel || villager.name || "居民")}">
         <span class="resident-ground-shadow" aria-hidden="true"></span>
         ${socialCue ? `<span class="resident-social-ring" aria-hidden="true"></span>` : ""}
         <span class="resident-sprite" aria-hidden="true">
@@ -115,7 +122,7 @@
   }
 
   T.residentSpriteLayer = {
-    version: "resident-sprite-layer-v0.2.1-walk-cycle",
+    version: "resident-sprite-layer-v0.2.2-reviewed-route-pacing",
     residentCell,
     renderPhysicalProp,
     renderToken
