@@ -6,6 +6,8 @@
   if (!stageRoutes) throw new Error("town-stage-routes.js must load before town-stage.js");
   const stageLayout = T.townStageLayout;
   if (!stageLayout) throw new Error("town-stage-layout.js must load before town-stage.js");
+  const stageDialogue = T.townStageDialogue;
+  if (!stageDialogue) throw new Error("town-stage-dialogue.js must load before town-stage.js");
   const WALK_MILLISECONDS_PER_MAP_UNIT = 110;
   const MIN_WALK_DURATION_MS = 2800;
 
@@ -91,7 +93,8 @@
       animationSprite: animation.sprite || null,
       kind: log?.kind || activity?.kind || "quiet",
       text: log?.text || villager?.recentAction?.text || "",
-      evidenceLogId: log?.id || ""
+      evidenceLogId: log?.id || "",
+      voiceProfileId: T.residentLanguageProfile?.profileIdFor?.(villager) || "practical"
     };
   }
 
@@ -99,49 +102,7 @@
     return stageLayout.assignEventPoints(events, { byId, hotspots });
   }
 
-  function evidenceLine(event) {
-    const title = event.activityTitle || "这件事";
-    if (/查账|审计|预算|复核|合同/.test(title)) return "这张纸先放桌上。";
-    if (/浇水|播种|巡田|采收|灌溉/.test(title)) return "这块地先看稳。";
-    if (/修|维护|抢险|加固|车/.test(title)) return "工具还要再递一下。";
-    if (/采购|报价|交割|售卖|摆摊/.test(title)) return "这个数先记清楚。";
-    if (/餐馆|碰头|谈话|偶遇|送礼/.test(title)) return "你也在这边。";
-    return "我把这件事处理完。";
-  }
-
-  function makeEncounters(events, slot) {
-    const byHotspot = new Map();
-    events.forEach((event) => {
-      if (!event.hotspotId || event.hotspotId.startsWith("home-")) return;
-      if (!byHotspot.has(event.hotspotId)) byHotspot.set(event.hotspotId, []);
-      byHotspot.get(event.hotspotId).push(event);
-    });
-    const encounters = [];
-    byHotspot.forEach((group, hotspotId) => {
-      if (group.length < 2) return;
-      const ordered = [...group].sort((a, b) => a.residentId.localeCompare(b.residentId));
-      const first = ordered[0];
-      const second = ordered[1];
-      const hotspot = byId.get(hotspotId);
-      encounters.push({
-        id: `encounter-${slot}-${hotspotId}-${first.residentId}-${second.residentId}`,
-        slot,
-        hotspotId,
-        hotspotLabel: hotspot?.label || first.hotspotLabel,
-        x: Math.round(((first.x + second.x) / 2) * 100) / 100,
-        y: Math.round(((first.y + second.y) / 2) * 100) / 100,
-        residentIds: [first.residentId, second.residentId],
-        lines: [
-          { speakerId: first.residentId, speakerName: first.residentName, text: evidenceLine(first) },
-          { speakerId: second.residentId, speakerName: second.residentName, text: evidenceLine(second) }
-        ],
-        evidenceLogIds: [first.evidenceLogId, second.evidenceLogId].filter(Boolean)
-      });
-    });
-    return encounters.slice(0, 4);
-  }
-
-  function buildStage(state, slot, stageIndex, logs) {
+  function buildStage(state, slot, stageIndex, logs, dialogueContext = {}) {
     const logsByResident = new Map(logs.filter((log) => log.slot === slot && log.residentId).map((log) => [log.residentId, log]));
     const events = assignEventPoints((state.villagers || []).map((villager) => {
       return eventFor(villager, logsByResident.get(villager.id), slot, stageIndex);
@@ -152,8 +113,42 @@
       kind: "action",
       durationSeconds: stageIndex === 2 ? 12 : 9,
       events,
-      encounters: makeEncounters(events, slot)
+      encounters: stageDialogue.makeEncounters(events, {
+        ...dialogueContext,
+        slot,
+        maxEncounters: 4
+      })
     };
+  }
+
+  function priorDialogueContext(playback, day) {
+    if (!playback || Number(playback.day) !== Number(day) - 1) {
+      return { priorLogs: [], previousEncounters: [] };
+    }
+    const stages = playback.stages || [];
+    const priorLogs = stages.flatMap((stage) => (stage.events || [])
+      .filter((event) => event.evidenceLogId)
+      .map((event) => ({
+        id: event.evidenceLogId,
+        day: Number(playback.day),
+        slot: stage.label,
+        residentId: event.residentId,
+        zoneId: event.zoneId,
+        place: event.hotspotLabel,
+        activityId: event.activityId,
+        activityTitle: event.activityTitle,
+        text: event.text
+      })));
+    return {
+      priorLogs,
+      previousEncounters: stages.flatMap((stage) => stage.encounters || [])
+    };
+  }
+
+  function relationshipEventsFor(state, day) {
+    if (!state?.townState || !T.townRelationshipLedger?.publicSnapshot) return [];
+    const snapshot = T.townRelationshipLedger.publicSnapshot(state.townState, { recentLimit: 18 });
+    return (snapshot?.recentInteractions || []).filter((event) => Number(event.day) === Number(day));
   }
 
   function buildHomeStage(state) {
@@ -193,11 +188,19 @@
     const timeSlots = options.timeSlots || T.engineStaticData?.timeSlots || ["清晨", "午后", "夜里"];
     const logs = options.activityLogs || state.dailyActivityLogs || [];
     const day = Number(options.day || state.day || 1);
-    const stages = timeSlots.map((slot, index) => buildStage(state, slot, index, logs));
+    const previousPlayback = options.previousPlayback || state.lastStagePlayback || null;
+    const previous = priorDialogueContext(previousPlayback, day);
+    const dialogueContext = {
+      day,
+      priorLogs: options.priorLogs || previous.priorLogs,
+      previousEncounters: options.previousEncounters || previous.previousEncounters,
+      relationshipEvents: options.relationshipEvents || relationshipEventsFor(state, day)
+    };
+    const stages = timeSlots.map((slot, index) => buildStage(state, slot, index, logs, dialogueContext));
     stages.push(buildHomeStage(state));
     return {
       id: `stage-d${day}-${logs.length}-${state.villagers?.length || 0}`,
-      version: "town-stage-v0.1.6-local-routes",
+      version: "town-stage-v0.2.3-local-dialogue",
       day,
       source: logs.length ? "audited-action-logs" : "today-plan-preview",
       weatherType: state.currentWeather?.type || state.currentWeather?.key || "cloudy",
@@ -266,7 +269,7 @@
   }
 
   T.townStage = {
-    version: "town-stage-v0.1.6-local-routes",
+    version: "town-stage-v0.2.3-local-dialogue",
     hotspots,
     animationAssets,
     byId,
