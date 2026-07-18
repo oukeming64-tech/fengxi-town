@@ -50,8 +50,30 @@ assert(!stageSource.includes("function evidenceLine("), "town-stage.js must not 
 assert(!stageSource.includes("stage-fact-d"), "planned stage previews must not fabricate evidence ids for yesterday callbacks");
 assert(mapLayerSource.includes('data-dialogue-type="${encounter.dialogueType}"'), "map dialogue markup must expose the dialogue layer");
 assert(mapLayerSource.includes("stage-dialogue--${encounter.dialogueType}"), "map dialogue styling must distinguish all three layers");
+assert(mapLayerSource.includes('data-dialogue-anchor="resident-midpoint"'),
+  "map dialogue markup must identify its live resident midpoint anchor");
+assert(mapLayerSource.includes("requestAnimationFrame(tick)"),
+  "map dialogue tracking must stay synchronized throughout resident travel");
 assert(conversationPanelSource.includes('encounter.dialogueType === "important" && encounter.archiveEligible'),
   "the complete conversation area must accept only archive-eligible important local dialogue");
+
+const mapLayerContext = vm.createContext({
+  window: {
+    MorningTown: {
+      clamp: (value, min, max) => Math.min(max, Math.max(min, value))
+    }
+  },
+  console
+});
+vm.runInContext(mapLayerSource, mapLayerContext, { filename: "src/ui/town-map-dialogue-layer.js" });
+const mapLayer = mapLayerContext.window.MorningTown.townMapDialogueLayer;
+assert.equal(typeof mapLayer.trackedPosition, "function", "dialogue resident tracking math must be callable");
+const startPosition = mapLayer.trackedPosition([{ x: 30, y: 42 }, { x: 38, y: 46 }], { x: 4, y: -8 }, "exchange");
+const movedPosition = mapLayer.trackedPosition([{ x: 42, y: 50 }, { x: 50, y: 54 }], { x: 4, y: -8 }, "exchange");
+assert.deepEqual(JSON.parse(JSON.stringify(startPosition)), { x: 38, y: 36 },
+  "dialogue position must preserve its avoidance offset from the residents' live midpoint");
+assert.deepEqual(JSON.parse(JSON.stringify(movedPosition)), { x: 50, y: 44 },
+  "dialogue position must move by the same delta as the residents' live midpoint");
 
 assert.equal(dialogue.firstName("Alice Miller"), "Alice");
 assert.equal(dialogue.firstName("  Bennett   Fisher  "), "Bennett");

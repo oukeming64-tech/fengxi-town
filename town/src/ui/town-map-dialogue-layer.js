@@ -10,6 +10,7 @@
     exchange: "现场交流",
     important: "重要交流"
   };
+  const trackingFrames = new WeakMap();
 
   function dialogueTypeFor(encounter) {
     return Object.hasOwn(dialogueSizes, encounter?.dialogueType)
@@ -36,14 +37,34 @@
         ? [[0, -11], [13, -8], [-13, -8], [14, 8], [-14, 8], [0, 12], [16, 0], [-16, 0]]
         : [[0, -13], [14, -9], [-14, -9], [15, 9], [-15, 9], [0, 14], [17, 0], [-17, 0]];
     const size = dialogueSizes[dialogueType];
-    const minX = Math.max(10, size.halfWidth + 2);
-    const maxX = Math.min(90, 100 - size.halfWidth - 2);
-    const minY = Math.max(12, size.halfHeight + 3);
-    const maxY = Math.min(70, 100 - size.halfHeight - 3);
+    const { minX, maxX, minY, maxY } = positionBounds(dialogueType);
     return offsets.map(([offsetX, offsetY]) => ({
       x: T.clamp(Math.round((baseX + direction * offsetX) * 100) / 100, minX, maxX),
       y: T.clamp(Math.round((baseY + offsetY) * 100) / 100, minY, maxY)
     }));
+  }
+
+  function positionBounds(dialogueType) {
+    const size = dialogueSizes[dialogueTypeFor({ dialogueType })];
+    return {
+      minX: Math.max(10, size.halfWidth + 2),
+      maxX: Math.min(90, 100 - size.halfWidth - 2),
+      minY: Math.max(12, size.halfHeight + 3),
+      maxY: Math.min(70, 100 - size.halfHeight - 3)
+    };
+  }
+
+  function trackedPosition(anchorPoints, offset = {}, dialogueType = "exchange") {
+    if (!anchorPoints.length) return null;
+    const origin = anchorPoints.reduce((position, point) => ({
+      x: position.x + Number(point.x || 0) / anchorPoints.length,
+      y: position.y + Number(point.y || 0) / anchorPoints.length
+    }), { x: 0, y: 0 });
+    const { minX, maxX, minY, maxY } = positionBounds(dialogueType);
+    return {
+      x: Math.round(T.clamp(origin.x + Number(offset.x || 0), minX, maxX) * 100) / 100,
+      y: Math.round(T.clamp(origin.y + Number(offset.y || 0), minY, maxY) * 100) / 100
+    };
   }
 
   function candidateScore(candidate, origin, size, blocks, placed) {
@@ -123,12 +144,96 @@
       ? `<span class="stage-dialogue__cue">有件事值得听完</span>`
       : "";
     const dialogueId = encounter.id || `encounter-${index + 1}`;
+    const anchorResidentIds = (encounter.residentIds || []).filter(Boolean).join(",");
+    const offsetX = Math.round((encounter.displayX - Number(encounter.x || 50)) * 100) / 100;
+    const offsetY = Math.round((encounter.displayY - Number(encounter.y || 50)) * 100) / 100;
     return `
-      <div class="stage-dialogue stage-dialogue--${encounter.dialogueType}" role="group" aria-label="${T.escapeHtml(ariaLabel)}" data-dialogue-id="${T.escapeHtml(dialogueId)}" data-dialogue-type="${encounter.dialogueType}" data-dialogue-motif="${T.escapeHtml(encounter.motif || "")}" data-archive-eligible="${Boolean(encounter.archiveEligible)}" data-dialogue-x="${encounter.displayX}" data-dialogue-y="${encounter.displayY}" data-avoids="residents facilities relationships controls" style="left: ${encounter.displayX}%; top: ${encounter.displayY}%;">
+      <div class="stage-dialogue stage-dialogue--${encounter.dialogueType}" role="group" aria-label="${T.escapeHtml(ariaLabel)}" data-dialogue-id="${T.escapeHtml(dialogueId)}" data-dialogue-type="${encounter.dialogueType}" data-dialogue-motif="${T.escapeHtml(encounter.motif || "")}" data-archive-eligible="${Boolean(encounter.archiveEligible)}" data-dialogue-x="${encounter.displayX}" data-dialogue-y="${encounter.displayY}" data-anchor-resident-ids="${T.escapeHtml(anchorResidentIds)}" data-dialogue-offset-x="${offsetX}" data-dialogue-offset-y="${offsetY}" data-dialogue-anchor="resident-midpoint" data-avoids="residents facilities relationships controls" style="left: ${encounter.displayX}%; top: ${encounter.displayY}%;">
         ${importantCue}
         <div class="stage-dialogue__lines">${renderLines(encounter, lines)}</div>
       </div>
     `;
+  }
+
+  function residentPoint(resident, surfaceRect) {
+    const rect = resident.getBoundingClientRect();
+    return {
+      x: ((rect.left + rect.width / 2 - surfaceRect.left) / surfaceRect.width) * 100,
+      y: ((rect.top + rect.height / 2 - surfaceRect.top) / surfaceRect.height) * 100
+    };
+  }
+
+  function hasActiveTravel(resident) {
+    if (!resident.classList.contains("is-travelling")) return false;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return false;
+    if (typeof resident.getAnimations !== "function") return true;
+    return resident.getAnimations().some((animation) => (
+      animation.animationName === "resident-travel" && animation.playState !== "finished"
+    ));
+  }
+
+  function avoidControlRail(position, dialogue, mapRoot, surfaceRect) {
+    const rail = mapRoot.closest?.(".stage-shell")?.querySelector?.(".stage-drawer-rail");
+    if (!rail) return position;
+    const railRect = rail.getBoundingClientRect();
+    if (railRect.left >= surfaceRect.right || railRect.right <= surfaceRect.left) return position;
+    const dialogueWidth = dialogue.getBoundingClientRect().width;
+    const railLeft = ((railRect.left - surfaceRect.left) / surfaceRect.width) * 100;
+    const safeX = railLeft - (dialogueWidth / surfaceRect.width) * 50 - 1.5;
+    const { minX } = positionBounds(dialogue.dataset.dialogueType);
+    return { ...position, x: Math.round(Math.max(minX, Math.min(position.x, safeX)) * 100) / 100 };
+  }
+
+  function syncTrackedDialogues(mapRoot) {
+    const surface = mapRoot?.querySelector?.(".map-stage-surface");
+    if (!surface) return false;
+    const surfaceRect = surface.getBoundingClientRect();
+    if (!surfaceRect.width || !surfaceRect.height) return false;
+    const residents = new Map([...surface.querySelectorAll(".resident-token[data-villager-id]")]
+      .map((resident) => [resident.dataset.villagerId, resident]));
+    let hasActiveTracking = false;
+    surface.querySelectorAll(".stage-dialogue[data-anchor-resident-ids]").forEach((dialogue) => {
+      const anchors = String(dialogue.dataset.anchorResidentIds || "")
+        .split(",")
+        .map((residentId) => residents.get(residentId))
+        .filter(Boolean);
+      if (!anchors.length) return;
+      let position = trackedPosition(
+        anchors.map((resident) => residentPoint(resident, surfaceRect)),
+        {
+          x: Number(dialogue.dataset.dialogueOffsetX || 0),
+          y: Number(dialogue.dataset.dialogueOffsetY || 0)
+        },
+        dialogue.dataset.dialogueType
+      );
+      if (!position) return;
+      position = avoidControlRail(position, dialogue, mapRoot, surfaceRect);
+      dialogue.style.left = `${position.x}%`;
+      dialogue.style.top = `${position.y}%`;
+      dialogue.dataset.dialogueX = position.x;
+      dialogue.dataset.dialogueY = position.y;
+      hasActiveTracking = anchors.some(hasActiveTravel) || hasActiveTracking;
+    });
+    return hasActiveTracking;
+  }
+
+  function stopTracking(mapRoot) {
+    const frame = trackingFrames.get(mapRoot);
+    if (frame !== undefined) window.cancelAnimationFrame?.(frame);
+    trackingFrames.delete(mapRoot);
+  }
+
+  function bindTracking(mapRoot) {
+    stopTracking(mapRoot);
+    if (!mapRoot?.querySelector?.(".stage-dialogue[data-anchor-resident-ids]")) return;
+    const tick = () => {
+      if (syncTrackedDialogues(mapRoot)) {
+        trackingFrames.set(mapRoot, window.requestAnimationFrame(tick));
+      } else {
+        trackingFrames.delete(mapRoot);
+      }
+    };
+    trackingFrames.set(mapRoot, window.requestAnimationFrame(tick));
   }
 
   function render(engine, options = {}) {
@@ -140,10 +245,13 @@
   }
 
   T.townMapDialogueLayer = {
-    version: "town-map-dialogue-layer-v0.2.3-local-dialogues",
+    version: "town-map-dialogue-layer-v0.2.3-resident-follow",
     dialogueTypeFor,
     socialBlocksFor,
     layoutDialogues,
+    trackedPosition,
+    syncTrackedDialogues,
+    bindTracking,
     render
   };
 }());

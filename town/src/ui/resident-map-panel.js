@@ -168,6 +168,7 @@
         ${T.townMapHotspotLayer.renderInspector(engine, activeStage, options.selectedHotspotId)}
       </div>
     `;
+    T.townMapDialogueLayer?.bindTracking?.(container);
     bindMapImageFallback(container, festivalTheme);
   }
 
