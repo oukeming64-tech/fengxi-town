@@ -75,10 +75,10 @@
       return { conversations, weeklyReport, riskNotes };
     }
 
-    function archiveShadowConversations(shadow) {
-      if (!shadow?.conversations?.length) return;
+    function archiveShadowConversations(shadow, revisedEventIds = []) {
+      if (!shadow?.conversations?.length && !revisedEventIds.length) return;
       const completedDay = Number(engine.state.lastReport?.day) || Math.max(1, Number(engine.state.day) - 1);
-      T.stageRecapData?.archiveModelConversations?.(engine.state, shadow.conversations, completedDay);
+      T.stageRecapData?.archiveModelConversations?.(engine.state, shadow?.conversations || [], completedDay, revisedEventIds);
     }
 
     return { applyLogs, applyReport, validateShadow, archiveShadowConversations };

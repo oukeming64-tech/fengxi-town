@@ -37,7 +37,7 @@ for (let pointIndex = 0; pointIndex < 25; pointIndex += 1) {
   assert(walkStyles.includes(`--travel-point-${pointIndex}-y`), `travel keyframe ${pointIndex} must include a y coordinate`);
 }
 assert(index.includes("styles-town-map-resident-walk.css?v=0.2.2"), "the corrected walking stylesheet must bypass older caches");
-assert(index.includes("src/shared.js?v=0.2.2"), "the v0.2.2 runtime version must bypass older caches");
+assert(index.includes("src/shared.js?v=0.3.0"), "the current runtime version must bypass older caches");
 assert(stage.includes('source: "local-audited-stage-events"'), "walking must remain driven by audited local stage events");
 assert(stage.includes("WALK_MILLISECONDS_PER_MAP_UNIT = 110"), "walk duration must scale with reviewed route distance");
 assert(stage.includes("MIN_WALK_DURATION_MS = 2800"), "short routes must no longer flash by too quickly");

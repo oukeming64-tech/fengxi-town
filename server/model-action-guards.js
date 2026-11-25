@@ -1,3 +1,5 @@
+const { talkAims } = require("./conversation-aims");
+
 function createModelActionGuards({ cleanString, cleanList, safeVisibleText }) {
   const slotDefs = [
     { key: "morning", label: "清晨" },
@@ -91,6 +93,7 @@ function createModelActionGuards({ cleanString, cleanList, safeVisibleText }) {
     return {
       targetResidentId,
       mode,
+      ...(mode === "talk" && Object.hasOwn(talkAims, source.talkAim) ? { talkAim: source.talkAim } : {}),
       slot: slotKey,
       evidenceMemoryIds,
       publicNote: safeVisibleText(source.publicNote || source.note || "", 160)

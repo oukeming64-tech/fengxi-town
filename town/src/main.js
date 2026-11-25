@@ -7,18 +7,14 @@
   let running = false;
 
   function setBusy(value) {
-    [ui.el.resetBtn, ui.el.advanceBtn, ui.el.modelConfigBtn].forEach((button) => {
-      if (!button) return;
-      button.disabled = value;
+    [ui.el.resetBtn, ui.el.advanceBtn, ui.el.modelConfigBtn, ui.el.advanceSelect,
+      ui.el.seasonSelect, ui.el.sceneSelect, ui.el.modelSelect].forEach((control) => {
+      if (control) control.disabled = value;
     });
   }
 
-  function shouldUseModelText() {
+  function useResidentAI() {
     return ui.el.modelSelect.value === "model";
-  }
-
-  function shouldUseModelActionControl() {
-    return localStorage.getItem("morningTownModelActionControl") !== "0";
   }
 
   function apiKeyInputs() {
@@ -37,22 +33,35 @@
     });
   }
 
-  async function runAction(action) {
+  async function configureModel() {
+    ui.openModelConfig();
+    await llm.loadConfig();
+    ui.render();
+  }
+
+  async function advanceSelectedDays() {
     if (running) return;
+    if (T.modelTransport.direct && useResidentAI() && !llm.config?.hasKey) {
+      await configureModel();
+      return;
+    }
     running = true;
     setBusy(true);
     try {
-      if (llm && shouldUseModelText() && shouldUseModelActionControl()) {
-        const actionTask = llm.generateActionPlan();
-        ui.render();
-        await actionTask;
-      }
-      action();
-      ui.render();
-      if (llm && shouldUseModelText()) {
-        const task = llm.generateInteractions ? llm.generateInteractions() : llm.generateLatest();
-        ui.render();
-        await task;
+      const days = Number(ui.el.advanceSelect.value) || 1;
+      if (llm && useResidentAI()) {
+        for (let i = 0; i < days; i += 1) {
+          const decision = llm.generateActionPlan();
+          ui.render();
+          const planned = await decision;
+          if (!planned && T.modelTransport.direct) break;
+          engine.advanceDays(1);
+          const dialogue = llm.generateInteractions();
+          ui.render();
+          await dialogue;
+        }
+      } else {
+        engine.advanceDays(days);
       }
       ui.render();
       ui.openPendingStageRecap?.();
@@ -68,9 +77,7 @@
     ui.render();
   });
 
-  ui.el.advanceBtn.addEventListener("click", () => {
-    runAction(() => engine.advanceDays(ui.el.advanceSelect.value));
-  });
+  ui.el.advanceBtn.addEventListener("click", advanceSelectedDays);
 
   ui.el.sceneSelect?.addEventListener("change", () => {
     ui.render();
@@ -83,17 +90,12 @@
   });
 
   ui.el.modelSelect.addEventListener("change", () => {
-    if (!shouldUseModelText() && llm) llm.resetStatus();
+    if (!useResidentAI() && llm) llm.resetStatus();
     ui.render();
+    if (T.modelTransport.direct && useResidentAI() && !llm.config?.hasKey) configureModel();
   });
 
-  ui.el.modelConfigBtn?.addEventListener("click", async () => {
-    ui.openModelConfig();
-    if (llm) {
-      await llm.loadConfig();
-      ui.render();
-    }
-  });
+  ui.el.modelConfigBtn?.addEventListener("click", configureModel);
 
   ui.el.saveModelConfigBtn?.addEventListener("click", async () => {
     if (!llm) return;
@@ -104,8 +106,9 @@
       endpoint: ui.el.modelEndpointInput.value
     };
     if (apiKeys.length) config.apiKeys = apiKeys;
-    await llm.saveConfig(config);
+    const saved = await llm.saveConfig(config);
     clearApiKeyInputs();
+    if (saved?.hasKey && T.modelTransport.direct) ui.closeModelConfig();
     ui.render();
   });
 
@@ -129,6 +132,12 @@
     }
   });
 
+  if (T.modelTransport.direct) {
+    document.querySelectorAll("[data-local-config]").forEach((field) => { field.hidden = true; });
+    document.getElementById("modelConfigIntro").textContent = "Jev 安排居民的一天，DeepSeek 写对白。推进会使用你自己的 OpenRouter 额度。";
+    document.getElementById("firstKeyLabel").textContent = "OpenRouter key";
+    ui.el.apiKeyInput1.placeholder = "仅在当前标签页有效";
+  }
   engine.reset();
   ui.render();
 }());

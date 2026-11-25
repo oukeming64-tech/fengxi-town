@@ -32,6 +32,7 @@
       activityTitle: log.activityTitle || resident.recentAction?.activityTitle || log.place || "今天的事",
       legacyAction: log.legacyAction || "",
       kind: log.kind || resident.recentAction?.kind || "quiet",
+      modelControl: log.modelControl || null,
       score: Number(log.score || 0)
     };
   }
@@ -125,6 +126,10 @@
     const targetName = rules.residentName(target, otherLog.residentId);
     const place = rules.cleanPlace(log.place || otherLog.place, "小路");
     const activity = log.activityTitle || otherLog.activityTitle || "今天的事";
+    if (type === "talk") return `${actorName}在${place}和${targetName}聊起${activity}。`;
+    if (type === "appreciate") return `${actorName}在${place}向${targetName}道了声谢。`;
+    if (type === "wait") return `${actorName}在${place}等${targetName}忙完手上的活。`;
+    if (type === "avoid") return `${actorName}在${place}看见${targetName}，让开了路。`;
     if (type === "help") return `${actorName}在${place}接过${targetName}手边一段活，${activity}没有断下来。`;
     if (type === "gift") {
       const item = language.giftItemFor?.(actor, log) || "今天收工时留好的一件小东西";
@@ -144,21 +149,23 @@
     return `${actorName}在${place}替${targetName}把刚才那句话梳理了一遍，事情暂时回到桌面上。`;
   }
 
-  function makeInteraction({ state, ledger, context, log, otherLog }) {
+  function makeInteraction({ state, ledger, context, log, otherLog, intentMode }) {
     if (!log || !otherLog || log.residentId === otherLog.residentId) return null;
     const pair = rules.ensurePair(ledger, log.residentId, otherLog.residentId);
     pair.residentLabels[log.residentId] = log.displayName;
     pair.residentLabels[otherLog.residentId] = otherLog.displayName;
     const currentDay = Number(state.day || context.day || 1);
     const priorFriction = unresolvedFriction(pair, currentDay);
-    const type = chooseType(log, otherLog, pair, context, priorFriction);
+    const type = intentMode || chooseType(log, otherLog, pair, context, priorFriction);
     const effect = typeEffects[type] || typeEffects.help;
     const tag = tagFor(log, otherLog, context);
     const memory = {
-      id: `rel-${state.day || context.day || 1}-${ledger.recentInteractions.length + 1}`,
+      id: intentMode ? `rel-d${currentDay}-${log.residentId}-${otherLog.residentId}` : `rel-${currentDay}-${ledger.recentInteractions.length + 1}`,
       day: currentDay,
       slot: log.slot || otherLog.slot || "一天里",
       type,
+      ...(intentMode === "talk" && log.modelControl?.interactionIntent?.talkAim
+        ? { talkAim: log.modelControl.interactionIntent.talkAim } : {}),
       label: typeLabels[type] || type,
       residentIds: [log.residentId, otherLog.residentId],
       actorId: log.residentId,

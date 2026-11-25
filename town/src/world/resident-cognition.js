@@ -88,7 +88,7 @@
     };
   }
 
-  function auditInteractionIntent(engine, villager, rawIntent, rawPlan = {}) {
+  function auditInteractionIntent(engine, villager, rawIntent, rawPlan = {}, jevPlans = null) {
     const cognition = ensureState(engine);
     const payload = cognition.lastBuild || build(engine);
     const packet = (payload.perceptionPackets || []).find((item) => item.residentId === villager.id) || null;
@@ -104,6 +104,7 @@
       residentId: villager.id,
       targetResidentId,
       mode,
+      ...(mode === "talk" && rawIntent?.talkAim ? { talkAim: cleanText(rawIntent.talkAim, 24) } : {}),
       modeLabel: intentLabels[mode] || mode,
       slotKey,
       slot: slotLabels[slotKey] || "",
@@ -122,7 +123,8 @@
 
     const evidenceNodes = evidenceVisible(memoryIndex, villager.id, evidenceMemoryIds, villager.zone);
     if (evidenceNodes.length !== evidenceMemoryIds.length) return reject("invalid_or_invisible_evidence_memory", base);
-    if (!targetVisible(targetResidentId, packet, evidenceNodes)) return reject("target_not_visible_from_packet", base);
+    const meeting = jevPlans && T.jevDay.sharedPlanPlace(jevPlans, villager.id, targetResidentId, slotKey);
+    if (jevPlans ? !meeting : !targetVisible(targetResidentId, packet, evidenceNodes)) return reject("target_not_visible_from_packet", base);
     const groupHelp = mode === "help" && T.residentGroupProfiles?.evaluateHelp
       ? T.residentGroupProfiles.evaluateHelp(villager.id, targetResidentId, {
         evidenceTexts: evidenceNodes.map((node) => node.publicText)
@@ -138,11 +140,11 @@
     }
     if (mode === "gift" && Number(villager.energy || 0) < 12) return reject("body_pressure_too_high_for_gift", base);
 
-    const replacement = replacementActivityId(mode, slotKey);
+    const replacement = jevPlans ? rawPlan.slots[slotKey] : replacementActivityId(mode, slotKey);
     if (!replacement || !T.activityRules.getActivity(replacement)) return reject("missing_replacement_activity", base);
 
     const target = targetFrom(engine, targetResidentId);
-    const zone = engine.zoneName?.(villager.zone) || villager.zone || "镇上";
+    const zone = meeting?.label || engine.zoneName?.(villager.zone) || villager.zone || "镇上";
     const publicSummary = `${villager.name}想在${zone}${intentLabels[mode]}${target.name}，证据来自 ${evidenceMemoryIds.slice(0, 2).join("、")}。`;
     cognition.chatCooldowns[cooldownKey] = Number(engine.state.day || 1);
     const accepted = {
@@ -150,7 +152,7 @@
       accepted: true,
       reason: "local_cognition_guard_allowed",
       targetName: target.name,
-      zoneId: villager.zone || target.zone || "",
+      zoneId: meeting?.zoneId || villager.zone || target.zone || "",
       replacementActivityId: replacement,
       publicSummary,
       evidenceTexts: evidenceNodes.map((node) => node.publicText).slice(0, 2)

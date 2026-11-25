@@ -79,9 +79,9 @@
       .join("");
 
     if (!conversations && !notices) {
-      const text = llm.busy && llm.status === "整理对话中"
-        ? "居民短对话正在整理中。"
-        : "普通招呼会直接出现在地图上；有事实依据的重要交流会留在这里。打开模型文本后，还会补充审核通过的居民短对话。";
+      const text = llm.busy && llm.status === "撰写对白中"
+        ? "正在写今天的居民对白。"
+        : "推进一天后，可以在这里回看居民的交谈。";
       const softAlert = llm.lastError ? `<p class="conversation-alert">这次没有整理出可展示对话。</p>` : "";
       panel.innerHTML = `
         <div class="empty">${T.escapeHtml(text)}</div>

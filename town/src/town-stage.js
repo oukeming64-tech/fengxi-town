@@ -113,7 +113,7 @@
       kind: "action",
       durationSeconds: stageIndex === 2 ? 12 : 9,
       events,
-      encounters: stageDialogue.makeEncounters(events, {
+      encounters: dialogueContext.jevDay ? [] : stageDialogue.makeEncounters(events, {
         ...dialogueContext,
         slot,
         maxEncounters: 4
@@ -192,6 +192,7 @@
     const previous = priorDialogueContext(previousPlayback, day);
     const dialogueContext = {
       day,
+      jevDay: state.modelActionControl?.source === "jev" && state.modelActionControl.day === day,
       priorLogs: options.priorLogs || previous.priorLogs,
       previousEncounters: options.previousEncounters || previous.previousEncounters,
       relationshipEvents: options.relationshipEvents || relationshipEventsFor(state, day)

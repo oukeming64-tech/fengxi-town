@@ -47,20 +47,21 @@ function createProviderClient({
       temperature: tuning.temperature,
       max_tokens: tuning.maxTokens
     };
-    if (purpose === "action-control" || purpose === "interaction-scenes") {
+    if (["action-control", "interaction-scenes", "settled-dialogue"].includes(purpose)) {
       body.reasoning = { effort: "none", exclude: true };
     }
     if (useJsonMode) body.response_format = { type: "json_object" };
     return body;
   }
 
-  async function callProviderWithKey(config, provider, key, body) {
+  async function callProviderWithKey(config, provider, key, body, purpose) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), modelTimeoutMs);
     let response;
     try {
       response = await fetch(config.endpoint, {
         method: "POST",
+        redirect: "error",
         headers: {
           Authorization: `Bearer ${key}`,
           "Content-Type": "application/json",
@@ -92,7 +93,8 @@ function createProviderClient({
     const choice = data.choices?.[0] || {};
     const content = modelMessageToText(choice.message || choice);
     try {
-      return parseModelJson(content);
+      const parsed = parseModelJson(content);
+      return purpose === "settled-dialogue" ? { ...parsed, generationModel: data.model || config.model } : parsed;
     } catch (error) {
       error.modelContentLength = content.length;
       error.modelContentSnippet = content.slice(0, 800);
@@ -118,7 +120,7 @@ function createProviderClient({
       if (!keyConfig.model) throw new Error("missing_model_name");
       try {
         const body = buildProviderBody(payload, useJsonMode, purpose, keyConfig);
-        const result = await callProviderWithKey(keyConfig, provider, keyConfig.key, body);
+        const result = await callProviderWithKey(keyConfig, provider, keyConfig.key, body, purpose);
         runtime.runtimeConfig.keyCursor[cursorKey] = (index + 1) % keyPool.keys.length;
         return result;
       } catch (error) {
@@ -139,7 +141,7 @@ function createProviderClient({
     if (!config.endpoint) throw new Error("missing_model_endpoint");
     if (!config.model) throw new Error("missing_model_name");
     if (!config.key) throw new Error(`missing_${provider.id}_key`);
-    return callProviderWithKey(config, provider, config.key, buildProviderBody(payload, useJsonMode, purpose, config));
+    return callProviderWithKey(config, provider, config.key, buildProviderBody(payload, useJsonMode, purpose, config), purpose);
   }
 
   async function callWithJsonFallback(payload, purpose = "full") {

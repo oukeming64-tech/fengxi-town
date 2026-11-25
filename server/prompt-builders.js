@@ -1,3 +1,4 @@
+const { dialogueMessages } = require("./settled-dialogue");
 const { createPromptPayloadBuilders } = require("./prompt-payload-builders");
 
 const worldSummary = {
@@ -87,6 +88,7 @@ function createPromptBuilders({ forbiddenWords, compactCognition } = {}) {
   }
 
   function buildMessages(payload, purpose = "full") {
+    if (purpose === "settled-dialogue") return dialogueMessages(payload);
     if (purpose === "action-control") return buildActionMessages(payload);
     if (purpose === "interaction-scenes") return buildInteractionMessages(payload);
     const shadowOnly = purpose === "shadow-only";
@@ -124,6 +126,7 @@ function createPromptBuilders({ forbiddenWords, compactCognition } = {}) {
   function modelTuning(purpose) {
     return {
       "action-control": { temperature: 0.45, maxTokens: 2600 },
+      "settled-dialogue": { temperature: 0.8, maxTokens: 2400 },
       "interaction-scenes": { temperature: 0.35, maxTokens: 1400 },
       "shadow-only": { temperature: 0.78, maxTokens: 2400 },
       full: { temperature: 0.82, maxTokens: 2800 }

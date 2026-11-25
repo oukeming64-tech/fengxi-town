@@ -97,9 +97,9 @@
     };
   }
 
-  function auditInteractionIntent(engine, villager, rawPlan) {
+  function auditInteractionIntent(engine, villager, rawPlan, plans) {
     if (!rawPlan?.interactionIntent || !T.residentCognition?.auditInteractionIntent) return null;
-    const audit = T.residentCognition.auditInteractionIntent(engine, villager, rawPlan.interactionIntent, rawPlan);
+    const audit = T.residentCognition.auditInteractionIntent(engine, villager, rawPlan.interactionIntent, rawPlan, plans);
     if (!audit.accepted) {
       const cognition = T.residentCognition.ensureState(engine);
       cognition.rejectedIntents.push(audit);
@@ -148,6 +148,7 @@
       day: engine.state.day,
       mode: "resident-cognition-loop-local-audited",
       serverAudit,
+      source: actionPlan?.source || "model",
       cognition: engine.state.residentCognition?.lastBuild ? {
         version: engine.state.residentCognition.lastBuild.version,
         memoryNodes: engine.state.residentCognition.lastBuild.memoryStream?.nodes?.length || 0,
@@ -162,7 +163,7 @@
 
     engine.state.villagers.forEach((villager) => {
       const rawPlan = rawByResident.get(villager.id) || null;
-      const interactionAudit = auditInteractionIntent(engine, villager, rawPlan);
+      const interactionAudit = auditInteractionIntent(engine, villager, rawPlan, control.source === "jev" ? rawByResident : null);
       const slots = slotLabels.map((slot, index) => auditSlot(engine, villager, rawPlan, slot, index, interactionAudit));
       const finalInteractionAudit = rejectInteractionAfterActionAudit(engine, villager, interactionAudit, slots);
       if (finalInteractionAudit) control.interactionIntents.push(finalInteractionAudit);

@@ -37,7 +37,7 @@ function log(id, activityId, residentId, place, slot = "午后") {
   };
 }
 
-assert.equal(T.version.code, "v0.2.2");
+assert.equal(T.version.code, "v0.3.0");
 assert.equal(ledger.version, "festival-result-ledger-v0.1.9-f");
 assert.equal(ledger.source, "executed-local-actions-and-festival-calendar");
 
@@ -124,7 +124,7 @@ assert(weeklyLines[0].includes("4 次已执行行动"));
 const indexSource = read("index.html");
 assert(indexSource.indexOf("festival-resident-behavior.js") < indexSource.indexOf("festival-result-ledger.js"));
 assert(indexSource.indexOf("festival-result-ledger.js") < indexSource.indexOf("engine-day-cycle.js"));
-assert(indexSource.includes("v0.2.2 · 路线步速校正"));
+assert(indexSource.includes("v0.3.0 · 居民的一天"));
 
 console.log(JSON.stringify({
   ok: true,

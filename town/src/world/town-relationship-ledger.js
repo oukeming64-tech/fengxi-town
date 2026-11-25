@@ -29,17 +29,17 @@
     }
 
     const logs = interactions.logsFromContext(context, residentMap);
-    const candidates = interactions.candidatePairs(logs, context, residentMap);
+    const candidates = context.jevDay ? T.jevDay.settledPairs(logs) : interactions.candidatePairs(logs, context, residentMap);
     const targetCount = rules.clamp(Math.ceil(Math.max(logs.length, residentMap.size / 2) / 6), 3, 8);
     const relationshipChanges = [];
     const touchedPairs = new Set();
 
-    candidates.forEach(([log, otherLog]) => {
-      if (relationshipChanges.length >= targetCount) return;
+    candidates.forEach(([log, otherLog, intentMode]) => {
+      if (!context.jevDay && relationshipChanges.length >= targetCount) return;
       const key = rules.pairKey(log.residentId, otherLog.residentId);
       if (touchedPairs.has(key)) return;
       touchedPairs.add(key);
-      const memory = interactions.makeInteraction({ state, ledger, context, log, otherLog });
+      const memory = interactions.makeInteraction({ state, ledger, context, log, otherLog, intentMode });
       if (memory) relationshipChanges.push(memory);
     });
 

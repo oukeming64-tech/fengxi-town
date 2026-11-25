@@ -409,3 +409,100 @@ a {
     display: grid;
   }
 }
+
+.day-edition {
+  background: #f7f6ed;
+  scroll-margin-top: 52px;
+}
+
+.day-edition .day-intro {
+  max-width: 44em;
+  font-size: 1.12rem;
+  margin: 22px 0 32px;
+  color: var(--ink);
+}
+
+.day-scenes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.day-scenes article {
+  border-top: 2px solid var(--forest);
+  padding-top: 14px;
+}
+
+.day-scenes .scene-place, .day-byline, .day-register td, .day-meetings span {
+  font-size: 0.9rem;
+}
+
+.day-scenes .scene-place, .day-scenes dl, .day-scenes h3 {
+  margin: 0;
+}
+
+.day-scenes h3 {
+  margin: 5px 0 15px;
+  font-size: 1.35rem;
+}
+
+.day-scenes dt {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--forest);
+}
+
+.day-scenes dd {
+  margin: 0 0 12px;
+}
+
+.day-byline {
+  margin: 14px 0 22px;
+}
+
+.day-register {
+  border-top: 1px solid var(--line);
+  padding: 12px 0;
+}
+
+.day-register summary {
+  cursor: pointer;
+  font-weight: 700;
+  padding: 4px;
+}
+
+.day-register table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.day-register th, .day-register td {
+  border-bottom: 1px solid var(--line);
+  padding: 8px;
+}
+
+.day-meetings {
+  list-style: none;
+  padding: 0;
+}
+
+.day-meetings li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 6px 0;
+}
+
+.day-meetings span {
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .day-scenes { grid-template-columns: 1fr; gap: 16px; }
+  .day-register tr { display: block; border-bottom: 1px solid var(--line); padding: 8px 0; }
+  .day-register thead { position: absolute; clip-path: inset(50%); height: 1px; width: 1px; overflow: hidden; }
+  .day-register th, .day-register td { display: block; border: 0; padding: 2px 0; }
+  .day-register td::before { content: attr(data-time); color: var(--muted); margin-right: 1em; }
+}

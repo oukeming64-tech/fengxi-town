@@ -27,7 +27,10 @@
       visibilityRule: "观察者只看动作、对话、地点和公开结果；底层行动理由仅供调试和审计。"
     };
     if (options.includeActivities) {
-      summary.activities = rules.activities.map(rules.publicSummary);
+      summary.activities = rules.activities.map((a) => {
+        const place = T.jevDay.publicPlace(a);
+        return { ...rules.publicSummary(a), meetingPlace: place?.id || "", placeLabel: place?.label || "" };
+      });
     }
     return summary;
   }
@@ -163,6 +166,7 @@
       } : {},
       residents: engine.state.villagers.map((villager) => ({
         ...summarizeResident(villager),
+        ...T.jevDay.optionsFor(engine, villager),
         todayPlan: villager.todayPlan ? {
           day: villager.todayPlan.day,
           source: villager.todayPlan.source || "local",

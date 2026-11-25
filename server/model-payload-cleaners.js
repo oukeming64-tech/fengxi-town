@@ -43,6 +43,7 @@ function createModelPayloadCleaner({
     const actionControl = payload.actionControl && typeof payload.actionControl === "object" ? payload.actionControl : {};
     return {
       mode: cleanString(payload.mode || "shadow", 24),
+      ...(payload.mode === "settled-dialogue" ? { recentLines: cleanList(payload.recentLines, 18, 110) } : {}),
       actionControl: {
         day: Number(actionControl.day || payload.day || 0),
         slots: cleanList(actionControl.slots, 3, 20),
@@ -88,6 +89,8 @@ function createModelPayloadCleaner({
           title: cleanString(activity.title, 60),
           zoneId: cleanString(activity.zoneId, 40),
           zoneName: cleanString(activity.zoneName, 40),
+          meetingPlace: cleanString(activity.meetingPlace ?? (activity.id === "REST-01" ? "" : activity.zoneId), 60),
+          placeLabel: cleanString(activity.placeLabel, 60),
           laborCost: Number(activity.laborCost || 0),
           riskLevel: Number(activity.riskLevel || 0),
           skills: cleanList(activity.skills, 4, 24),
@@ -111,6 +114,9 @@ function createModelPayloadCleaner({
         name: cleanString(resident.name, 30),
         tag: cleanString(resident.tag, 40),
         voiceStyle: cleanString(resident.voiceStyle, 120),
+        specialties: cleanList(resident.specialties, 3, 40),
+        activityOptions: resident.activityOptions ? Object.fromEntries(["morning", "afternoon", "evening"].map((s) =>
+          [s, cleanList(resident.activityOptions[s], 140, 20)])) : null,
         zone: cleanString(resident.zone, 40),
         health: Number(resident.health || 0),
         energy: Number(resident.energy || 0),
@@ -133,7 +139,22 @@ function createModelPayloadCleaner({
         zoneId: cleanString(log.zoneId, 40),
         activityId: cleanString(log.activityId, 20),
         activityTitle: cleanString(log.activityTitle, 60),
-        text: cleanString(log.text, 280)
+        text: cleanString(log.text, 280),
+        ...(payload.mode === "settled-dialogue" ? {
+          talkAim: cleanString(log.talkAim, 24),
+          observations: (Array.isArray(log.observations) ? log.observations : []).slice(0, 2).map((o) => ({
+            id: cleanString(o?.id, 40), residentId: cleanString(o?.residentId, 12),
+            activity: cleanString(o?.activity, 60), text: safeVisibleText(o?.text, 280), terms: cleanList(o?.terms, 8, 40),
+            earlierToday: (Array.isArray(o?.earlierToday) ? o.earlierToday : []).slice(0, 2).map((item) => ({
+              id: cleanString(item?.id, 40), slot: cleanString(item?.slot, 20), activity: cleanString(item?.activity, 60)
+            }))
+          })),
+          previousMeeting: log.previousMeeting ? {
+            id: cleanString(log.previousMeeting.id, 40), residentIds: cleanList(log.previousMeeting.residentIds, 2, 12),
+            day: Number(log.previousMeeting.day), text: safeVisibleText(log.previousMeeting.text, 180),
+            place: cleanString(log.previousMeeting.place, 30), activity: cleanString(log.previousMeeting.activity, 60), kind: cleanString(log.previousMeeting.kind, 20)
+          } : null
+        } : {})
       })).filter((log) => log.id && log.text),
       report: report ? {
         day: Number(report.day || 0),

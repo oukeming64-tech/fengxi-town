@@ -111,7 +111,7 @@
       : "还没有可用 key";
     const provider = config.providerLabel || config.provider || "模型平台";
     const model = config.model || "未填写模型";
-    return `${provider} · ${model} · ${keyText}`;
+    return `行动：${config.decisionModel || "Jev"}${config.hasDecisionKey ? "" : "（需 OpenRouter key）"} · 对白：${provider} / ${model} · ${keyText}`;
   }
 
   function renderModelConfig() {

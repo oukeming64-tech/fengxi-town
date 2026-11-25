@@ -7,6 +7,7 @@
   const defaultTrust = 42;
 
   const typeLabels = {
+    talk: "交谈", appreciate: "致谢", wait: "等候", avoid: "避开",
     help: "帮忙",
     gift: "送礼",
     alliance: "结盟",
@@ -15,6 +16,10 @@
   };
 
   const typeEffects = {
+    talk: { familiarity: 1, trust: 0, friction: 0, exclusion: 0, favorDebt: 0 },
+    appreciate: { familiarity: 1, trust: 1, friction: 0, exclusion: 0, favorDebt: 0 },
+    wait: { familiarity: 0, trust: 0, friction: 0, exclusion: 0, favorDebt: 0 },
+    avoid: { familiarity: 0, trust: 0, friction: 0, exclusion: 0, favorDebt: 0 },
     help: { familiarity: 6, trust: 5, friction: -1, exclusion: -1, favorDebt: 2 },
     gift: { familiarity: 5, trust: 3, friction: -1, exclusion: -1, favorDebt: 1 },
     alliance: { familiarity: 4, trust: 4, friction: 0, exclusion: -1, favorDebt: 0 },

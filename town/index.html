@@ -30,7 +30,7 @@
   <link rel="stylesheet" href="./styles-conversation-panel.css?v=0.1.5">
   <link rel="stylesheet" href="./styles-weekly-timeline.css?v=0.1.5">
   <link rel="stylesheet" href="./styles-stage-drawer-content.css?v=0.1.6">
-  <link rel="stylesheet" href="./styles-model-config.css?v=0.1.5">
+  <link rel="stylesheet" href="./styles-model-config.css?v=0.3.0">
   <link rel="stylesheet" href="./styles-stage-recap.css?v=0.1.8-e2">
   <link rel="stylesheet" href="./styles-stage-recap-history.css?v=0.1.9-e2">
   <title>枫溪镇</title>
@@ -41,7 +41,7 @@
       <div class="title-block">
         <h1>枫溪镇</h1>
         <div class="status-strip" aria-live="polite">
-          <span class="pill stage-detail-pill">版本 <strong id="versionLabel">v0.2.2 · 路线步速校正</strong></span>
+          <span class="pill stage-detail-pill">版本 <strong id="versionLabel">v0.3.0 · 居民的一天</strong></span>
           <span class="pill stage-primary-pill">日子 <strong id="dayLabel">第 1 天</strong></span>
           <span class="pill stage-primary-pill">季节 <strong id="seasonLabel">春季</strong></span>
           <span class="pill stage-primary-pill">天气 <strong id="weatherLabel">阴天</strong></span>
@@ -49,7 +49,7 @@
           <span class="pill stage-primary-pill">时辰 <strong id="slotLabel">清晨待开始</strong></span>
           <span class="pill stage-detail-pill">居民 <strong id="countLabel">30 人</strong></span>
           <span class="pill stage-detail-pill">小报 <strong id="reportLabel">尚未写成</strong></span>
-          <span class="pill stage-primary-pill">文本 <strong id="llmLabel">本地</strong></span>
+          <span class="pill stage-primary-pill">居民 AI <strong id="llmLabel">本地</strong></span>
         </div>
       </div>
 
@@ -73,7 +73,7 @@
           </select>
         </label>
         <label class="control-field">
-          <span class="field-label">外部文本</span>
+          <span class="field-label">居民 AI</span>
           <select id="modelSelect">
             <option value="local">关闭</option>
             <option value="model">开启</option>
@@ -161,7 +161,7 @@
             <div class="pane-header">
               <div>
                 <h2 class="pane-title" id="conversationTitle">镇上对话</h2>
-                <p class="pane-note">推进后出现居民短会话</p>
+                <a class="pane-note" href="../index.html#day-1">看第 1 天的三场相遇</a>
               </div>
             </div>
             <div class="pane-body">
@@ -202,43 +202,43 @@
       <div class="model-config-card">
         <div class="notice-board-head">
           <div>
-            <h3 id="modelConfigTitle">外部文本配置</h3>
-            <p>key 只发给本机桥接服务，不写进页面日志</p>
+            <h3 id="modelConfigTitle">居民 AI 配置</h3>
+            <p id="modelConfigIntro">Jev 安排行动和相遇，下面的配置用于写对白。</p>
           </div>
           <button type="button" id="modelConfigClose" class="notice-board-close">关闭</button>
         </div>
         <div class="model-config-body">
           <div class="config-status" id="modelConfigStatus">读取配置中</div>
-          <label class="control-field">
-            <span class="field-label">平台</span>
+          <label class="control-field" data-local-config>
+            <span class="field-label">对白平台</span>
             <select id="providerSelect">
               <option value="openrouter">OpenRouter</option>
               <option value="openai">OpenAI</option>
               <option value="compatible">OpenAI-compatible</option>
             </select>
           </label>
-          <label class="control-field">
-            <span class="field-label">模型</span>
+          <label class="control-field" data-local-config>
+            <span class="field-label">对白模型</span>
             <input id="modelNameInput" type="text" autocomplete="off" placeholder="deepseek/deepseek-v4-pro">
           </label>
-          <label class="control-field">
+          <label class="control-field" data-local-config>
             <span class="field-label">接口地址</span>
             <input id="modelEndpointInput" type="url" autocomplete="off" placeholder="https://openrouter.ai/api/v1/chat/completions">
           </label>
           <div class="key-grid" aria-label="API keys">
             <label class="control-field key-field">
-              <span class="field-label">API key 1</span>
+              <span id="firstKeyLabel" class="field-label">API key 1</span>
               <input id="apiKeyInput1" type="password" autocomplete="off" placeholder="可选">
             </label>
-            <label class="control-field key-field">
+            <label class="control-field key-field" data-local-config>
               <span class="field-label">API key 2</span>
               <input id="apiKeyInput2" type="password" autocomplete="off" placeholder="可选">
             </label>
-            <label class="control-field key-field">
+            <label class="control-field key-field" data-local-config>
               <span class="field-label">API key 3</span>
               <input id="apiKeyInput3" type="password" autocomplete="off" placeholder="可选">
             </label>
-            <label class="control-field key-field">
+            <label class="control-field key-field" data-local-config>
               <span class="field-label">API key 4</span>
               <input id="apiKeyInput4" type="password" autocomplete="off" placeholder="可选">
             </label>
@@ -270,7 +270,7 @@
     </aside>
   </div>
 
-  <script src="./src/shared.js?v=0.2.2"></script>
+  <script src="./src/shared.js?v=0.3.0"></script>
   <script src="./src/world/world-config.js?v=0.1.5"></script>
   <script src="./src/world/model-contract.js?v=0.1.8-e2"></script>
   <script src="./src/world/weather-types-data.js?v=0.1.9-e2"></script>
@@ -310,23 +310,23 @@
   <script src="./src/world/town-contract-ledger.js?v=0.1.5"></script>
   <script src="./src/world/town-debt-ledger.js?v=0.1.5"></script>
   <script src="./src/world/resident-group-profiles.js?v=0.1.7"></script>
-  <script src="./src/world/town-relationship-rules.js?v=0.1.5"></script>
+  <script src="./src/world/town-relationship-rules.js?v=jev-20261125"></script>
   <script src="./src/world/resident-language-profile.js?v=0.2.0"></script>
-  <script src="./src/world/town-relationship-interactions.js?v=0.2.0"></script>
+  <script src="./src/world/town-relationship-interactions.js?v=dialogue-20261125"></script>
   <script src="./src/world/town-relationship-public.js?v=0.2.0"></script>
   <script src="./src/world/relationship-visual-cues.js?v=0.1.8"></script>
-  <script src="./src/world/town-relationship-ledger.js?v=0.2.0"></script>
+  <script src="./src/world/town-relationship-ledger.js?v=jev-20261125"></script>
   <script src="./src/world/town-ledger.js?v=0.1.5"></script>
   <script src="./src/world/weekly-timeline-utils.js?v=0.1.5"></script>
   <script src="./src/world/weekly-timeline-snapshots.js?v=0.1.5"></script>
   <script src="./src/world/weekly-timeline-reports.js?v=0.1.5"></script>
   <script src="./src/world/stage-labor-fairness.js?v=0.1.8-e"></script>
   <script src="./src/world/weekly-timeline-stage.js?v=0.1.8-e2"></script>
-  <script src="./src/world/stage-recap-data.js?v=0.1.8-e"></script>
+  <script src="./src/world/stage-recap-data.js?v=dialogue-20261125-2"></script>
   <script src="./src/world/weekly-timeline.js?v=0.1.5"></script>
-  <script src="./src/world/activity-data.js?v=0.1.5"></script>
+  <script src="./src/world/activity-data.js?v=dialogue-20261125"></script>
   <script src="./src/world/activity-effects.js?v=0.1.5"></script>
-  <script src="./src/world/activity-copy.js?v=0.2.0"></script>
+  <script src="./src/world/activity-copy.js?v=dialogue-20261125"></script>
   <script src="./src/world/activity-rules.js?v=0.1.5"></script>
   <script src="./src/town-stage-hotspot-data.js?v=0.1.9-e2"></script>
   <script src="./src/town-stage-action-data.js?v=0.1.9-e2"></script>
@@ -338,17 +338,18 @@
   <script src="./src/world/festival-result-ledger.js?v=0.1.9-f"></script>
   <script src="./src/town-stage-layout.js?v=0.1.6"></script>
   <script src="./src/town-stage-dialogue.js?v=dialogue-20260718"></script>
-  <script src="./src/town-stage.js?v=dialogue-20260718"></script>
+  <script src="./src/town-stage.js?v=jev-20261125"></script>
   <script src="./src/town-stage-life-cues.js?v=0.1.8"></script>
   <script src="./src/town-stage-facility-feedback.js?v=0.1.6"></script>
   <script src="./src/world/action-policy-town-needs.js?v=0.1.5"></script>
   <script src="./src/world/action-policy.js?v=0.1.9-e"></script>
   <script src="./src/world/resident-memory-stream.js?v=0.1.5"></script>
   <script src="./src/world/resident-cognition-payload.js?v=0.1.7"></script>
-  <script src="./src/world/resident-cognition.js?v=0.1.7"></script>
+  <script src="./src/world/resident-cognition.js?v=dialogue-20261125"></script>
   <script src="./src/world/model-action-audit.js?v=0.1.5"></script>
-  <script src="./src/world/model-action-proposals.js?v=0.1.5"></script>
-  <script src="./src/world/prompt-context.js?v=0.2.0"></script>
+  <script src="./src/world/model-action-proposals.js?v=jev-20261125"></script>
+  <script src="./src/world/jev-day.js?v=dialogue-20261125-2"></script>
+  <script src="./src/world/prompt-context.js?v=jev-20261125"></script>
   <script src="./src/villagers/villager-01.js?v=0.1.5"></script>
   <script src="./src/villagers/villager-02.js?v=0.1.5"></script>
   <script src="./src/villagers/villager-03.js?v=0.1.5"></script>
@@ -383,7 +384,7 @@
   <script src="./src/engine-daily-report.js?v=0.1.9-f"></script>
   <script src="./src/engine-action-runner.js?v=0.1.7"></script>
   <script src="./src/engine-timeline.js?v=0.1.9-f"></script>
-  <script src="./src/engine-day-cycle.js?v=0.1.9-f"></script>
+  <script src="./src/engine-day-cycle.js?v=jev-20261125"></script>
   <script src="./src/engine-resident-factory.js?v=0.1.9-e2"></script>
   <script src="./src/engine.js?v=0.1.9-f"></script>
   <script src="./src/ui/weekly-timeline-panel.js?v=0.1.9-f"></script>
@@ -399,14 +400,15 @@
   <script src="./src/ui/resident-map-panel.js?v=dialogue-follow-20260718"></script>
   <script src="./src/ui/daily-panels.js?v=0.1.5"></script>
   <script src="./src/ui/town-state-panel.js?v=0.1.5"></script>
-  <script src="./src/ui/conversation-panel.js?v=dialogue-20260718"></script>
+  <script src="./src/ui/conversation-panel.js?v=jev-20261125"></script>
   <script src="./src/ui/ui-elements.js?v=0.1.9-e2"></script>
   <script src="./src/ui/ui-map-controller.js?v=0.1.9-e2"></script>
   <script src="./src/ui/ui-stage-recap-controller.js?v=0.1.9-e2"></script>
-  <script src="./src/ui.js?v=0.1.9-e2"></script>
+  <script src="./src/ui.js?v=0.3.0"></script>
   <script src="./src/llm-payloads.js?v=0.2.0"></script>
-  <script src="./src/llm-result-applier.js?v=0.1.9-e2"></script>
-  <script src="./src/llm.js?v=0.1.9-e2"></script>
-  <script src="./src/main.js?v=0.1.8-e"></script>
+  <script src="./src/llm-result-applier.js?v=dialogue-20261125"></script>
+  <script src="./src/model-transport.js?v=0.3.0"></script>
+  <script src="./src/llm.js?v=0.3.0"></script>
+  <script src="./src/main.js?v=0.3.0"></script>
 </body>
 </html>

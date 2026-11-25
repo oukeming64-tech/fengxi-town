@@ -178,9 +178,9 @@
 
     if (activity.zoneCode === "GG" || activity.zoneCode === "SR" || (activity.skills.includes("trade") && !["CH", "TC", "RW", "MF", "OM"].includes(activity.zoneCode))) {
       return T.pick([
-        `${name}到${zone}把${contract?.cropName || "货架货"}的交付日问清楚。${marketText(townState)}，报价先写在路单背面。`,
-        `${zone}的柜台边，${name}把${contract?.buyer || "买方"}那一单夹进报价夹：${contractText(contract, townState)}。价钱先按行情留了余地。`,
-        `${name}在${zone}把货先留在身后，只把${contract?.cropName || "货架货"}的数量和路况写在一起。${marketText(townState)}。`
+        `${name}到${zone}问${contract?.cropName || "这批货"}最晚哪天要交。${marketText(townState)}。`,
+        `${name}在${zone}核对这次要交的货。${contractText(contract, townState)}。`,
+        `${name}在${zone}问起路况，想算算${contract?.cropName || "这批货"}来不来得及运到。`
       ]);
     }
 
@@ -235,10 +235,13 @@
       if (/邮局|传真|电话/.test(activity.title)) {
         return `${name}在${zone}把传真纸夹进信封，写的是${contract?.buyer || "买方"}那边的确认回话，不是农场当天账页。`;
       }
-      return T.pick([
-        `${name}在${zone}把${contract?.cropName || "明天要卖的菜"}问了一圈。${marketText(townState)}，摊主给的价差被记在纸边。`,
-        `${zone}的柜台边，${name}先问谁还要${contract?.cropName || "货架货"}，再看路单和传真纸。今天这趟更像把消息带回农场。`
-      ]);
+      if (activity.id === "TC-01") {
+        return contract ? `${name}停在镇中心的公告栏前。${contractText(contract, townState)}。`
+          : `${name}到公告栏前看今天有什么活可以接。`;
+      }
+      if (activity.id === "TC-05") return `${name}在镇中心打听${contract?.cropName || "蔬菜"}的行情。${marketText(townState)}。`;
+      const visit = activityData.townCenterVisits[activity.id];
+      if (visit) return name + visit;
     }
 
     if (activity.zoneCode === "AC" || /查账|旧账|补贴|发票|收据|成本|预算|审计|档案|复核|认证/.test(activity.title)) {
@@ -263,7 +266,7 @@
         `${name}在${zone}停下来说了几句，话题绕到${contract?.cropName || "明天的农活"}和${marketText(townState)}。旁边的人把空杯子挪开，让他们能靠近一点说。`,
         `${zone}里有人问起${contract?.cropName || "明天的农活"}，${name}用指节敲了敲门边的货筐，又把话题拉回今天要做的事。`,
         `${name}等${zone}里的收音机播完天气，才接着说${contract?.cropName || "明天的农活"}。${marketText(townState)}，几个人都没有急着下结论。`,
-        `${zone}里有人提到${contract?.cropName || "明天的农活"}，${name}把听到的话记在旧信封背面，再抬头确认了一遍。`
+        `${name}问起${contract?.cropName || "明天的农活"}。说到${contract?.buyer || "买家"}时，${name}又多问了一句。`
       ]);
     }
 

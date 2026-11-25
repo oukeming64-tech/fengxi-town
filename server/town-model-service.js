@@ -1,11 +1,10 @@
-const { createModelActionShardRunner } = require("./model-action-shard-runner");
+const { createJevPlanner } = require("./jev-planner");
+const { writeSettledDialogue } = require("./settled-dialogue");
 const { createModelInteractionLaneRunner } = require("./model-interaction-lane-runner");
 
 function createTownModelService({
   mockModel,
-  actionParallelism,
-  maxActionShardResidents,
-  maxActionShardRetries,
+  modelTimeoutMs,
   runtime,
   providerClient,
   guards,
@@ -27,14 +26,7 @@ function createTownModelService({
     callWithJsonFallback,
     isModelJsonError
   } = providerClient;
-  const actionShardRunner = createModelActionShardRunner({
-    actionParallelism,
-    maxActionShardResidents,
-    maxActionShardRetries,
-    runtime,
-    providerClient,
-    actionGuards
-  });
+  const planDay = createJevPlanner({ runtime, modelTimeoutMs, actionGuards });
   const interactionLaneRunner = createModelInteractionLaneRunner({
     runtime,
     providerClient,
@@ -90,10 +82,13 @@ function createTownModelService({
       return output;
     }
 
-    return actionShardRunner.generateTownActions(payload, residents);
+    return planDay(payload);
   }
 
   async function generateTownInteractions(payload) {
+    if (payload.mode === "settled-dialogue") {
+      return writeSettledDialogue(payload, { callWithJsonFallback, guards, mockModel });
+    }
     const config = runtime.activeConfig();
     const provider = runtime.providerDefaults(config.provider);
     const keyPool = runtime.activeKeyPool(provider.id);

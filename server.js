@@ -17,9 +17,6 @@ const port = Number(process.env.MORNING_TOWN_PORT || 8787);
 const mockModel = process.env.MORNING_TOWN_MOCK_MODEL === "1";
 const maxBodyBytes = 260000;
 const modelTimeoutMs = Number(process.env.MORNING_TOWN_MODEL_TIMEOUT_MS || 75000);
-const actionParallelism = Math.max(1, Math.min(8, Number(process.env.MORNING_TOWN_ACTION_PARALLELISM || 4) || 4));
-const maxActionShardResidents = Math.max(3, Math.min(15, Number(process.env.MORNING_TOWN_ACTION_SHARD_SIZE || 8) || 8));
-const maxActionShardRetries = Math.max(0, Math.min(3, Number(process.env.MORNING_TOWN_ACTION_SHARD_RETRIES || 3) || 0));
 
 const guards = createModelGuards({ worldSummary });
 const actionGuards = createModelActionGuards(guards);
@@ -43,9 +40,7 @@ const providerClient = createProviderClient({
 const mock = createMockModel({ makeCognitionIntentConversation });
 const townModel = createTownModelService({
   mockModel,
-  actionParallelism,
-  maxActionShardResidents,
-  maxActionShardRetries,
+  modelTimeoutMs,
   runtime,
   providerClient,
   guards,
@@ -66,6 +61,20 @@ function modelError(error, fallback) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${host}:${port}`);
+  const origin = req.headers.origin;
+  if (origin) {
+    let allowed = origin === "null"; // The downloadable town also runs from a local file.
+    try {
+      const page = new URL(origin);
+      allowed = ["http:", "https:"].includes(page.protocol) &&
+        (["localhost", "127.0.0.1", "[::1]"].includes(page.hostname) || page.origin === url.origin);
+    } catch { /* File pages send the literal null origin. */ }
+    if (!allowed) return sendJson(res, 403, { ok: false, error: "origin_not_allowed" });
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  if (req.method === "POST" && !/^application\/json(?:\s*;|$)/i.test(req.headers["content-type"] || "")) {
+    return sendJson(res, 415, { ok: false, error: "json_required" });
+  }
   if (req.method === "OPTIONS") {
     sendJson(res, 204, {});
     return;

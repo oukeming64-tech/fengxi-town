@@ -21,7 +21,7 @@
 
   function cleanEvidenceId(value) {
     const id = String(value || "").trim();
-    return /^(?:log|relationship)-[a-z0-9-]+$/i.test(id) ? id : "";
+    return /^(?:(?:log|relationship)-[a-z0-9-]+|rel-d\d+-v\d{2}-v\d{2}|rel-\d+-\d+)$/i.test(id) ? id : "";
   }
 
   function cleanConversation(conversation, day) {
@@ -46,16 +46,24 @@
     });
   }
 
-  function archiveModelConversations(state, conversations, day) {
+  function archiveModelConversations(state, conversations, day, revisedEventIds = []) {
     if (!state || !Array.isArray(conversations)) return Object.freeze([]);
     state.modelConversationArchive = Array.isArray(state.modelConversationArchive) ? state.modelConversationArchive : [];
     const completedDay = Math.max(1, Number(day) || Number(state.day) - 1 || 1);
+    const records = conversations.map((c) => cleanConversation(c, completedDay)).filter(Boolean);
+    if (revisedEventIds.length) {
+      const sealed = (state.stageConversationRecaps || []).some((recap) => recap.startDay <= completedDay && recap.endDay >= completedDay);
+      if (state.lastReport?.day !== completedDay || sealed) return Object.freeze([]);
+      const settled = state.lastSettlement?.settlement?.relationshipChanges || [];
+      const revising = new Set(records.map((r) => r.id).filter((id) => revisedEventIds.includes(id)
+        && settled.some((e) => e.day === completedDay && e.id === id)));
+      state.modelConversationArchive = state.modelConversationArchive.filter((old) => old.day !== completedDay || !revising.has(old.id));
+    }
     const keys = new Set(state.modelConversationArchive.map((item) => `${item.day}:${item.id}`));
     const accepted = [];
-    conversations.forEach((conversation) => {
-      const record = cleanConversation(conversation, completedDay);
-      const key = record ? `${record.day}:${record.id}` : "";
-      if (!record || keys.has(key)) return;
+    records.forEach((record) => {
+      const key = `${record.day}:${record.id}`;
+      if (keys.has(key)) return;
       keys.add(key);
       state.modelConversationArchive.push(record);
       accepted.push(record);

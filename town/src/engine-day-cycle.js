@@ -48,14 +48,17 @@
         const action = plan.legacyAction;
         const delta = actionRunner.applyAction(villager, plan);
         stageLaborFairness.recordAction?.(state.stageLaborLedger, villager, plan);
-        const samePlace = state.villagers.filter((item) => item.id !== villager.id && item.zone === villager.zone);
-        const target = samePlace.length ? T.pick(samePlace) : T.pick(state.villagers.filter((item) => item.id !== villager.id));
-        if (["inn", "market", "river", "bridge"].includes(action)) {
-          nudgeBond(villager, target, { warmth: action === "inn" || action === "river" ? 2 : 1, debt: action === "inn" ? 1 : 0 });
-        }
-        if (action === "notice" && villager.renown > villager.help + 30) {
-          villager.distance = T.clamp(villager.distance + 1, 0, 99);
-          nudgeBond(villager, target, { rub: 1 });
+        const jevDay = state.modelActionControl?.source === "jev" && state.modelActionControl.day === state.day;
+        if (!jevDay) {
+          const samePlace = state.villagers.filter((item) => item.id !== villager.id && item.zone === villager.zone);
+          const target = samePlace.length ? T.pick(samePlace) : T.pick(state.villagers.filter((item) => item.id !== villager.id));
+          if (["inn", "market", "river", "bridge"].includes(action)) {
+            nudgeBond(villager, target, { warmth: action === "inn" || action === "river" ? 2 : 1, debt: action === "inn" ? 1 : 0 });
+          }
+          if (action === "notice" && villager.renown > villager.help + 30) {
+            villager.distance = T.clamp(villager.distance + 1, 0, 99);
+            nudgeBond(villager, target, { rub: 1 });
+          }
         }
         const text = activityRules.formatLine
           ? activityRules.formatLine(villager, plan.activity, { scene: state.scene, slot, state })
@@ -119,6 +122,7 @@
           weather: state.currentWeather,
           villagers: state.villagers,
           activityLogs: settlementActivityLogs,
+          jevDay: state.modelActionControl?.source === "jev" && state.modelActionControl.day === state.day,
           includeRecentActions: false,
           sceneKey: currentSceneKey()
         })

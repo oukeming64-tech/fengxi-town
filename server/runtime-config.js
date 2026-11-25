@@ -1,3 +1,5 @@
+const { model: decisionModel } = require("./jev-planner");
+
 function splitKeyList(value) {
   return String(value || "")
     .split(/[\s,;]+/)
@@ -155,10 +157,10 @@ function createRuntimeConfig({ host, port, mockModel, cleanString }) {
 
   function activeKeyPool(providerId) {
     const provider = providerDefaults(providerId || runtimeConfig.provider);
-    const environmentConfigs = envKeys(provider.id).map((key) => makeKeyConfig({
+    const environmentConfigs = (provider.endpoint ? envKeys(provider.id) : []).map((key) => makeKeyConfig({
       provider: provider.id,
-      endpoint: runtimeConfig.endpoint || provider.endpoint,
-      model: runtimeConfig.model || provider.model,
+      endpoint: provider.endpoint,
+      model: provider.id === runtimeConfig.provider ? runtimeConfig.model || provider.model : provider.model,
       key
     }));
     const sessionConfigs = uniqueKeyConfigs([
@@ -201,12 +203,14 @@ function createRuntimeConfig({ host, port, mockModel, cleanString }) {
     const config = {
       provider: provider.id,
       providerLabel: provider.label,
-      endpoint: runtimeConfig.endpoint || firstSlot.endpoint || provider.endpoint,
+      endpoint: firstSlot.endpoint || runtimeConfig.endpoint || provider.endpoint,
       model: runtimeConfig.model || firstSlot.model || provider.model,
       hasKey: Boolean(keyPool.keys.length),
       keyCount: keyPool.keys.length,
       keySource: keyPool.source
     };
+    config.decisionModel = decisionModel;
+    config.hasDecisionKey = activeKeyPool("openrouter").keys.some((slot) => slot.provider === "openrouter");
     config.keySlots = publicKeySlots(keyPool, config);
     return config;
   }
