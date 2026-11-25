@@ -56,7 +56,7 @@
       <div class="controls">
         <label class="control-field stage-secondary-control">
           <span class="field-label">季节</span>
-          <select id="seasonSelect">
+          <select id="seasonSelect" disabled>
             <option value="spring">春季</option>
             <option value="summer">夏季</option>
             <option value="fall">秋季</option>
@@ -65,7 +65,7 @@
         </label>
         <label class="control-field">
           <span class="field-label">推进天数</span>
-          <select id="advanceSelect">
+          <select id="advanceSelect" disabled>
             <option value="1">1 天</option>
             <option value="3">3 天</option>
             <option value="7">7 天</option>
@@ -74,14 +74,14 @@
         </label>
         <label class="control-field">
           <span class="field-label">居民 AI</span>
-          <select id="modelSelect">
+          <select id="modelSelect" disabled>
             <option value="local">关闭</option>
             <option value="model">开启</option>
           </select>
         </label>
-        <button type="button" id="modelConfigBtn" class="stage-secondary-control">配置</button>
-        <button id="advanceBtn" class="primary">推进</button>
-        <button id="resetBtn">重新开始</button>
+        <button type="button" id="modelConfigBtn" class="stage-secondary-control" disabled>配置</button>
+        <button id="advanceBtn" class="primary" disabled>推进</button>
+        <button id="resetBtn" disabled>重新开始</button>
       </div>
     </header>
 
@@ -409,6 +409,6 @@
   <script src="./src/llm-result-applier.js?v=dialogue-20261125"></script>
   <script src="./src/model-transport.js?v=0.3.0"></script>
   <script src="./src/llm.js?v=0.3.0"></script>
-  <script src="./src/main.js?v=0.3.0"></script>
+  <script src="./src/main.js?v=0.3.0-1"></script>
 </body>
 </html>

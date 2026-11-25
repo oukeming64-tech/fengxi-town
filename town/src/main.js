@@ -140,4 +140,5 @@
   }
   engine.reset();
   ui.render();
+  setBusy(false);
 }());
